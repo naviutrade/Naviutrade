@@ -39,11 +39,10 @@ const app = express();
 
 // --- CORS Setup ---
 const allowedOrigins = [
-  // 'http://localhost:3000', // Your local frontend dev server
-  // 'http://localhost:5000', // The backend itself
-  'http://localhost:10000', 
-  // 'https://naviutrading.onrender.com',
-  'https://ese-paper.onrender.com',
+
+  // 'http://localhost:10000', 
+  'https://naviutrade.onrender.com',
+  
   'https://pay.easebuzz.in', // Easebuzz payment gateway
   // 'https://testpay.easebuzz.in' // Easebuzz test payment gateway
 ];
