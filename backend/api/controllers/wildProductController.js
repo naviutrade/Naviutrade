@@ -39,7 +39,7 @@ const getNextWildProductId = async (client) => {
  * CREATE: Add a new wild product and upload its image to Cloudflare R2.
  */
 exports.addWildProduct = async (req, res) => {
-    const { product_name, base_price, selling_price, selling_price_2, selling_price_3, gst_percentage = 18.00, available_stock } = req.body;
+    const { product_name, base_price, selling_price, gst_percentage = 18.00, available_stock } = req.body;
     const productImageFile = req.file;
 
     if (!product_name || !base_price || !selling_price || !available_stock || !productImageFile) {
@@ -61,10 +61,10 @@ exports.addWildProduct = async (req, res) => {
         const stock_status = calculateStockStatus(available_stock);
         
         const query = `
-            INSERT INTO wild_products (wild_product_id, product_name, product_image_url, base_price, selling_price, selling_price_2, selling_price_3, gst_percentage, available_stock, stock_status, selling_date_count, last_updated)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 30, NOW()) RETURNING *;
+            INSERT INTO wild_products (wild_product_id, product_name, product_image_url, base_price, selling_price, gst_percentage, available_stock, stock_status, selling_date_count, last_updated)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 30, NOW()) RETURNING *;
         `;
-        const params = [wild_product_id, product_name, product_image_url, base_price, selling_price, selling_price_2 || selling_price, selling_price_3 || selling_price, gst_percentage, available_stock, stock_status];
+        const params = [wild_product_id, product_name, product_image_url, base_price, selling_price, gst_percentage, available_stock, stock_status];
         const { rows } = await client.query(query, params);
         
         await client.query('COMMIT');
@@ -231,7 +231,7 @@ exports.getAvailableWildProducts = async (req, res) => {
         }
         
         const query = `
-            SELECT wild_product_id, product_image_url, product_name, base_price, selling_price, selling_price_2, selling_price_3, gst_percentage, 
+            SELECT wild_product_id, product_image_url, product_name, base_price, selling_price, gst_percentage, 
                    available_stock, stock_status, selling_date_count
             FROM wild_products 
             WHERE stock_status != 'out_of_stock' 
@@ -279,7 +279,7 @@ exports.getAvailableWildProducts = async (req, res) => {
  */
 exports.updateWildProduct = async (req, res) => {
     const { wildProductId } = req.params;
-    const { base_price, selling_price, selling_price_2, selling_price_3, available_stock, gst_percentage, selling_date_count } = req.body;
+    const { base_price, selling_price, available_stock, gst_percentage, selling_date_count } = req.body;
 
     if (base_price === undefined || selling_price === undefined || available_stock === undefined || gst_percentage === undefined) {
         return res.status(400).json({ message: 'Base price, Selling price, GST percentage, and available stock are required for an update.' });
@@ -289,11 +289,11 @@ exports.updateWildProduct = async (req, res) => {
         const stock_status = calculateStockStatus(available_stock);
         const query = `
             UPDATE wild_products 
-            SET base_price = $1, selling_price = $2, selling_price_2 = $3, selling_price_3 = $4, gst_percentage = $5, stock_status = $6, available_stock = $7, selling_date_count = $8, last_updated = NOW()
-            WHERE wild_product_id = $9 RETURNING *;
+            SET base_price = $1, selling_price = $2, gst_percentage = $3, stock_status = $4, available_stock = $5, selling_date_count = $6, last_updated = NOW()
+            WHERE wild_product_id = $7 RETURNING *;
         `;
         const sellingDays = selling_date_count !== undefined ? selling_date_count : 30; // Default to 30 if not provided
-        const { rows } = await db.query(query, [base_price, selling_price, selling_price_2 || selling_price, selling_price_3 || selling_price, gst_percentage, stock_status, available_stock, sellingDays, wildProductId]);
+        const { rows } = await db.query(query, [base_price, selling_price, gst_percentage, stock_status, available_stock, sellingDays, wildProductId]);
 
         if (rows.length === 0) {
             return res.status(404).json({ message: 'Wild product not found.' });

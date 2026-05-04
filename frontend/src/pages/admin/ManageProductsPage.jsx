@@ -314,7 +314,7 @@ import AdminNavBar from '../../components/layout/AdminNavBar';
 const ProductModal = ({ isOpen, onClose, onSave, product, isEditing }) => {
   const initialFormState = {
     paper_type: '', size: '', gsm: '', price_per_slot: '', selling_price: '',
-    available_stock: '', selling_days: '', selling_price_2: '', selling_price_3: ''
+    available_stock: '', selling_days: ''
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -331,8 +331,6 @@ const ProductModal = ({ isOpen, onClose, onSave, product, isEditing }) => {
           gsm: product.gsm || '',
           price_per_slot: product.price_per_slot || '',
           selling_price: product.selling_price || '',
-          selling_price_2: product.selling_price_2 || '',
-          selling_price_3: product.selling_price_3 || '',
           available_stock: product.available_stock || '',
           selling_days: product.selling_days ? String(product.selling_days) : ''
         });
@@ -414,19 +412,9 @@ const ProductModal = ({ isOpen, onClose, onSave, product, isEditing }) => {
               <NumberInputField name="price_per_slot" fontWeight="bold" />
             </NumberInput>
           </FormControl>
-          <FormControl mt={4} isRequired><FormLabel fontWeight="bold">Selling Price 1 (Primary)</FormLabel>
+          <FormControl mt={4} isRequired><FormLabel fontWeight="bold">Selling Price</FormLabel>
             <NumberInput value={formData.selling_price || ''} onChange={(value) => handleNumberChange(value, 'selling_price')} min={0} precision={2} step={0.01}>
               <NumberInputField name="selling_price" fontWeight="bold" />
-            </NumberInput>
-          </FormControl>
-          <FormControl mt={4}><FormLabel fontWeight="bold">Selling Price 2 (Secondary)</FormLabel>
-            <NumberInput value={formData.selling_price_2 || ''} onChange={(value) => handleNumberChange(value, 'selling_price_2')} min={0} precision={2} step={0.01}>
-              <NumberInputField name="selling_price_2" fontWeight="bold" />
-            </NumberInput>
-          </FormControl>
-          <FormControl mt={4}><FormLabel fontWeight="bold">Selling Price 3 (Tertiary)</FormLabel>
-            <NumberInput value={formData.selling_price_3 || ''} onChange={(value) => handleNumberChange(value, 'selling_price_3')} min={0} precision={2} step={0.01}>
-              <NumberInputField name="selling_price_3" fontWeight="bold" />
             </NumberInput>
           </FormControl>
           <FormControl mt={4} isRequired><FormLabel fontWeight="bold">Stock Status</FormLabel>
@@ -537,8 +525,6 @@ const ManageProductsPage = ({ url }) => {
       gsm: formData.gsm === '' || formData.gsm === null ? null : Number(formData.gsm),
       price_per_slot: formData.price_per_slot === '' || formData.price_per_slot === null ? null : Number(formData.price_per_slot),
       selling_price: formData.selling_price === '' || formData.selling_price === null ? null : Number(formData.selling_price),
-      selling_price_2: formData.selling_price_2 === '' || formData.selling_price_2 === null ? null : Number(formData.selling_price_2),
-      selling_price_3: formData.selling_price_3 === '' || formData.selling_price_3 === null ? null : Number(formData.selling_price_3),
       available_stock: formData.available_stock === '' || formData.available_stock === null ? null : Number(formData.available_stock),
       selling_days: formData.selling_days === '' || formData.selling_days === null || formData.selling_days === undefined ? 7 : Number(formData.selling_days),
     };
@@ -671,7 +657,7 @@ const ManageProductsPage = ({ url }) => {
                 <Thead>
                   <Tr>
                     <Th>Image</Th><Th>ID</Th><Th>Paper Type</Th><Th>GSM</Th>
-                    <Th isNumeric>Price/Slot</Th><Th isNumeric>Selling Price 1</Th><Th isNumeric>Selling Price 2</Th><Th isNumeric>Selling Price 3</Th><Th isNumeric>Profit</Th><Th isNumeric>Stock</Th>
+                    <Th isNumeric>Price/Slot</Th><Th isNumeric>Selling Price</Th><Th isNumeric>Profit</Th><Th isNumeric>Stock</Th>
                     <Th>Status</Th><Th isNumeric>Margin %</Th><Th isNumeric>Selling Days</Th><Th>Last Updated</Th><Th>Actions</Th>
                   </Tr>
                 </Thead>
@@ -692,8 +678,6 @@ const ManageProductsPage = ({ url }) => {
                         <Td>{p.gsm}</Td>
                         <Td isNumeric>₹{pricePerSlot.toFixed(2)}</Td>
                         <Td isNumeric>₹{sellingPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</Td>
-                        <Td isNumeric>₹{!isNaN(parseFloat(p.selling_price_2)) ? parseFloat(p.selling_price_2).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : 'N/A'}</Td>
-                        <Td isNumeric>₹{!isNaN(parseFloat(p.selling_price_3)) ? parseFloat(p.selling_price_3).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : 'N/A'}</Td>
                         <Td isNumeric color={profit > 0 ? 'green.500' : profit < 0 ? 'red.500' : 'inherit'}>
                            ₹{profit !== null ? profit.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : 'N/A'}
                         </Td>
@@ -754,9 +738,7 @@ const ManageProductsPage = ({ url }) => {
 
                     <Stack spacing={2.5}>
                        <CardDataRow label="Price/Slot">₹{pricePerSlot.toFixed(2)}</CardDataRow>
-                       <CardDataRow label="Selling Price 1">₹{sellingPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</CardDataRow>
-                       <CardDataRow label="Selling Price 2">₹{!isNaN(parseFloat(p.selling_price_2)) ? parseFloat(p.selling_price_2).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : 'N/A'}</CardDataRow>
-                       <CardDataRow label="Selling Price 3">₹{!isNaN(parseFloat(p.selling_price_3)) ? parseFloat(p.selling_price_3).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : 'N/A'}</CardDataRow>
+                       <CardDataRow label="Selling Price">₹{sellingPrice.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</CardDataRow>
                        <CardDataRow label="Profit">
                          <Text as="span" color={profit > 0 ? 'green.500' : profit < 0 ? 'red.500' : 'inherit'}>
                            ₹{profit !== null ? profit.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : 'N/A'}

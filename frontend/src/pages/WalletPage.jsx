@@ -716,8 +716,6 @@ const WalletPage = ({ url }) => {
       isOpen: true,
       trade: tradeToSell,
       currentPrice: parseFloat(tradeToSell.current_selling_price || tradeToSell.purchase_price || 0),
-      currentPrice2: parseFloat(tradeToSell.current_selling_price_2 || tradeToSell.current_selling_price || tradeToSell.purchase_price || 0),
-      currentPrice3: parseFloat(tradeToSell.current_selling_price_3 || tradeToSell.current_selling_price || tradeToSell.purchase_price || 0),
       productName: tradeToSell.paper_type,
       stockCount: tradeToSell.no_of_stock_bought
     });
@@ -1014,11 +1012,9 @@ const WalletPage = ({ url }) => {
       {/* Sell Offers Modal */}
       <SellOffersModal
         isOpen={sellOffersModal.isOpen}
-        onClose={() => setSellOffersModal({ isOpen: false, trade: null, currentPrice: 0, currentPrice2: 0, currentPrice3: 0, productName: '', stockCount: 0 })}
+        onClose={() => setSellOffersModal({ ...sellOffersModal, isOpen: false })}
         onAcceptOffer={handleAcceptOffer}
         currentPrice={sellOffersModal.currentPrice}
-        currentPrice2={sellOffersModal.currentPrice2}
-        currentPrice3={sellOffersModal.currentPrice3}
         productName={sellOffersModal.productName}
         stockCount={sellOffersModal.stockCount}
       />

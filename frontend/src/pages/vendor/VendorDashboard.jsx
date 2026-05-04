@@ -8,7 +8,6 @@ import { useAuth } from '../../AppContext';
 import DashboardOverview from '../../components/vendordashboard/DashboardOverview';
 import VendorTradingSection from '../../components/vendordashboard/VendorTradingSection';
 import ReferralTree from '../../components/dashboard/ReferralTree';
-import TrustedCompanies from '../../components/vendordashboard/TrustedCompanies';
 
 
 const DESKTOP_SIDEBAR_WIDTH = '200px';
@@ -111,7 +110,6 @@ const VendorDashboard = ({ url }) => {
         {/* <Box mt={{ base: 8, md: 12 }}>
           <ReferralTree url={url} />
         </Box> */}
-        <Box mt={{ base: 8, md: 12 }}><TrustedCompanies /></Box>
       </Box>
     </Flex>
   );

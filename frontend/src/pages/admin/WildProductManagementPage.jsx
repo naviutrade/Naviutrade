@@ -17,8 +17,6 @@ const WildProductModal = ({ isOpen, onClose, onSave, wildProduct, isEditing }) =
     product_name: '',
     base_price: '',
     selling_price: '',
-    selling_price_2: '',
-    selling_price_3: '',
     gst_percentage: 18.00,
     available_stock: '',
     selling_date_count: 30
@@ -35,8 +33,6 @@ const WildProductModal = ({ isOpen, onClose, onSave, wildProduct, isEditing }) =
           product_name: wildProduct.product_name || '',
           base_price: wildProduct.base_price || '',
           selling_price: wildProduct.selling_price || '',
-          selling_price_2: wildProduct.selling_price_2 || '',
-          selling_price_3: wildProduct.selling_price_3 || '',
           gst_percentage: wildProduct.gst_percentage || 18.00,
           available_stock: wildProduct.available_stock || '',
           selling_date_count: wildProduct.selling_date_count || 30
@@ -121,38 +117,14 @@ const WildProductModal = ({ isOpen, onClose, onSave, wildProduct, isEditing }) =
           </FormControl>
 
           <FormControl mt={4} isRequired>
-            <FormLabel fontWeight="bold">Selling Price 1 (Primary) (₹)</FormLabel>
+            <FormLabel fontWeight="bold">Selling Price (₹)</FormLabel>
             <NumberInput 
               value={formData.selling_price || ''} 
               onChange={(value) => handleNumberChange(value, 'selling_price')}
               min={0}
               precision={2}
             >
-              <NumberInputField fontWeight="bold" placeholder="Enter primary selling price" />
-            </NumberInput>
-          </FormControl>
-
-          <FormControl mt={4}>
-            <FormLabel fontWeight="bold">Selling Price 2 (Secondary) (₹)</FormLabel>
-            <NumberInput 
-              value={formData.selling_price_2 || ''} 
-              onChange={(value) => handleNumberChange(value, 'selling_price_2')}
-              min={0}
-              precision={2}
-            >
-              <NumberInputField fontWeight="bold" placeholder="Enter secondary selling price" />
-            </NumberInput>
-          </FormControl>
-
-          <FormControl mt={4}>
-            <FormLabel fontWeight="bold">Selling Price 3 (Tertiary) (₹)</FormLabel>
-            <NumberInput 
-              value={formData.selling_price_3 || ''} 
-              onChange={(value) => handleNumberChange(value, 'selling_price_3')}
-              min={0}
-              precision={2}
-            >
-              <NumberInputField fontWeight="bold" placeholder="Enter tertiary selling price" />
+              <NumberInputField fontWeight="bold" placeholder="Enter selling price" />
             </NumberInput>
           </FormControl>
 
@@ -261,8 +233,6 @@ const WildProductManagementPage = ({ url }) => {
       ...formData,
       base_price: formData.base_price === '' || formData.base_price === null ? null : Number(formData.base_price),
       selling_price: formData.selling_price === '' || formData.selling_price === null ? null : Number(formData.selling_price),
-      selling_price_2: formData.selling_price_2 === '' || formData.selling_price_2 === null ? null : Number(formData.selling_price_2),
-      selling_price_3: formData.selling_price_3 === '' || formData.selling_price_3 === null ? null : Number(formData.selling_price_3),
       gst_percentage: formData.gst_percentage === '' || formData.gst_percentage === null ? 18.00 : Number(formData.gst_percentage),
       available_stock: formData.available_stock === '' || formData.available_stock === null ? null : Number(formData.available_stock),
       selling_date_count: formData.selling_date_count === '' || formData.selling_date_count === null ? 30 : Number(formData.selling_date_count),
@@ -431,9 +401,7 @@ const WildProductManagementPage = ({ url }) => {
                     <Th>ID</Th>
                     <Th>Product Name</Th>
                     <Th>Base Price</Th>
-                    <Th>Selling Price 1</Th>
-                    <Th>Selling Price 2</Th>
-                    <Th>Selling Price 3</Th>
+                    <Th>Selling Price</Th>
                     <Th>GST %</Th>
                     <Th>Final Price</Th>
                     <Th>Profit</Th>
@@ -469,8 +437,6 @@ const WildProductManagementPage = ({ url }) => {
                       <Td fontWeight="medium">{wildProduct.product_name}</Td>
                       <Td>₹{wildProduct.base_price}</Td>
                       <Td>₹{wildProduct.selling_price}</Td>
-                      <Td>₹{wildProduct.selling_price_2 || 'N/A'}</Td>
-                      <Td>₹{wildProduct.selling_price_3 || 'N/A'}</Td>
                       <Td>{wildProduct.gst_percentage}%</Td>
                       <Td fontWeight="bold" color="green.500">
                         ₹{wildProduct.final_price}

@@ -39,7 +39,7 @@ const getNextProductId = async (client) => {
  * CREATE: Add a new product and upload its image to Cloudflare R2.
  */
 exports.addProduct = async (req, res) => {
-    const { paper_type, size, gsm, price_per_slot, available_stock, selling_price, selling_price_2, selling_price_3, selling_days } = req.body;
+    const { paper_type, size, gsm, price_per_slot, available_stock, selling_price, selling_days } = req.body;
     const productImageFile = req.file;
 
     if (!paper_type || !price_per_slot || !available_stock || !productImageFile) {
@@ -60,10 +60,10 @@ exports.addProduct = async (req, res) => {
         const stock_status = calculateStockStatus(available_stock);
         
         const query = `
-            INSERT INTO product (product_id, paper_type, product_image_url, size, gsm, price_per_slot, selling_price, selling_price_2, selling_price_3, stock_status, available_stock, original_stock, selling_days, last_updated)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW()) RETURNING *;
+            INSERT INTO product (product_id, paper_type, product_image_url, size, gsm, price_per_slot, selling_price, stock_status, available_stock, original_stock, selling_days, last_updated)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW()) RETURNING *;
         `;
-        const params = [product_id, paper_type, product_image_url, size, gsm, price_per_slot, selling_price, selling_price_2 || selling_price, selling_price_3 || selling_price, stock_status, available_stock, available_stock, selling_days || 7];
+        const params = [product_id, paper_type, product_image_url, size, gsm, price_per_slot, selling_price, stock_status, available_stock, available_stock, selling_days || 7];
         const { rows } = await client.query(query, params);
         
         // No more local file system operations needed.
@@ -214,7 +214,7 @@ exports.getAvailableProducts = async (req, res) => {
         const query = `
             SELECT 
                 product_id, product_image_url, paper_type, size, gsm, 
-                price_per_slot, selling_price, selling_price_2, selling_price_3, 
+                price_per_slot, selling_price, 
                 available_stock, original_stock, selling_days
             FROM product 
             WHERE stock_status != 'out_of_stock' 
@@ -398,7 +398,7 @@ exports.getAvailableProducts = async (req, res) => {
  */
 exports.updateProduct = async (req, res) => {
     const { productId } = req.params;
-    const { price_per_slot, available_stock, selling_price, selling_price_2, selling_price_3, selling_days } = req.body;
+    const { price_per_slot, available_stock, selling_price, selling_days } = req.body;
 
     if (price_per_slot === undefined || available_stock === undefined || selling_price === undefined) {
         return res.status(400).json({ message: 'Price, selling price, and available stock are required for an update.' });
@@ -410,11 +410,11 @@ exports.updateProduct = async (req, res) => {
         // Always update original_stock when admin edits stock
         const query = `
             UPDATE product 
-            SET price_per_slot = $1, selling_price = $2, selling_price_2 = $3, selling_price_3 = $4, 
-                stock_status = $5, available_stock = $6, original_stock = $7, selling_days = $8, last_updated = NOW()
-            WHERE product_id = $9 RETURNING *;
+            SET price_per_slot = $1, selling_price = $2, 
+                stock_status = $3, available_stock = $4, original_stock = $5, selling_days = $6, last_updated = NOW()
+            WHERE product_id = $7 RETURNING *;
         `;
-        const params = [price_per_slot, selling_price, selling_price_2 || selling_price, selling_price_3 || selling_price, stock_status, available_stock, available_stock, selling_days || 7, productId];
+        const params = [price_per_slot, selling_price, stock_status, available_stock, available_stock, selling_days || 7, productId];
         
         const { rows } = await db.query(query, params);
 

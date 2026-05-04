@@ -41,7 +41,7 @@ const app = express();
 const allowedOrigins = [
   // 'http://localhost:3000', // Your local frontend dev server
   // 'http://localhost:5000', // The backend itself
-  // 'http://localhost:10000', 
+  'http://localhost:10000', 
   // 'https://naviutrading.onrender.com',
   'https://ese-paper.onrender.com',
   'https://pay.easebuzz.in', // Easebuzz payment gateway

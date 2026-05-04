@@ -681,14 +681,6 @@ const getActiveTrades = async (req, res) => {
                     WHEN t.product_id LIKE 'WP_%' THEN wp.selling_price
                     ELSE p.selling_price
                 END AS current_selling_price,
-                CASE 
-                    WHEN t.product_id LIKE 'WP_%' THEN COALESCE(wp.selling_price_2, wp.selling_price)
-                    ELSE COALESCE(p.selling_price_2, p.selling_price)
-                END AS current_selling_price_2,
-                CASE 
-                    WHEN t.product_id LIKE 'WP_%' THEN COALESCE(wp.selling_price_3, wp.selling_price)
-                    ELSE COALESCE(p.selling_price_3, p.selling_price)
-                END AS current_selling_price_3,
 
                 -- 1. Calculate lock status: use trading.selling_days for regular products, wp.selling_date_count for wild products
                 CASE 
