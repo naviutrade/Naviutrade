@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box, Flex, VStack, SimpleGrid, useColorModeValue, useDisclosure,
   Drawer, DrawerContent, DrawerOverlay, Heading, IconButton,
-  Text, Button, Input, HStack, Spinner, Alert, AlertIcon
+  Text, Button, Input, HStack, Spinner, Alert, AlertIcon, Image
 } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import { FaUsers, FaChartBar, FaCog, FaWallet, FaMoneyBillWave, FaArrowUp, FaArrowDown, FaHandshake, FaFileArchive, FaFileInvoice, FaFileAlt, FaShoppingCart, FaDollarSign } from 'react-icons/fa';
@@ -227,7 +227,7 @@ const AdminDashboard = ({ url }) => {
   const cardBg = useColorModeValue('white', 'gray.800');
   const cardBorder = useColorModeValue('gray.200', 'gray.700');
 
-  document.title = "NAVIU | Admin Dashboard";
+  document.title = "Rouvin | Admin Dashboard";
 
   return (
     <Flex minH="100vh" bg={pageBg}>
@@ -254,11 +254,14 @@ const AdminDashboard = ({ url }) => {
             variant="ghost"
           />
           <Heading as="h1" fontSize="lg" color={headingColor} lineHeight="1.2">
-            Admin Dashboard
+            <Image src="/rouvin.png" alt="Rouvin" h="40px" objectFit="contain" />
           </Heading>
         </Flex>
 
         <VStack spacing={{ base: 4, md: 8 }} align="stretch">
+          <Heading as="h1" fontSize="2xl" color={headingColor} mb={2} display={{ base: 'none', md: 'block' }}>
+            <Image src="/rouvin.png" alt="Rouvin" h="60px" objectFit="contain" />
+          </Heading>
           <DashboardHeader stats={stats} />
           
           {/* First Section - Main Dashboard Boxes */}

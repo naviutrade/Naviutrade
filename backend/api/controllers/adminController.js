@@ -285,7 +285,7 @@ if (decision === 'approved') {
 Your deposit of ₹${amount.toFixed(2)} has been approved and added to your wallet.
 
 Regards,
-ESE Paper Pvt. Ltd.`
+Rouvin`
       ]);
     }
 
@@ -299,7 +299,7 @@ ESE Paper Pvt. Ltd.`
 Your withdrawal of ₹${amount.toFixed(2)} has been approved and is being processed to your registered bank account.
 
 Regards,
-ESE Paper Pvt. Ltd.`
+Rouvin`
       ]);
     }
   }
@@ -328,10 +328,10 @@ We regret to inform you that your recent withdrawal request has been rejected.
 Reason:
 ${comment || 'Not specified'}
 
-Your money remains in your ESE Paper wallet. If you need clarification, reply to this email or call 7075923765.
+Your money remains in your Rouvin wallet. If you need clarification, reply to this email or call 7075923765.
 
 Regards,
-ESE Paper Pvt. Ltd.`
+Rouvin`
         ]);
       } catch (e) {
         console.error('User email failed (withdrawal rejected):', e?.message || e);
@@ -354,7 +354,7 @@ ${comment || 'Not specified'}
 If this was a mistake, please re-submit with correct details (matching UPI ID/Txn ID) or reply to this email for help.
 
 Regards,
-ESE Paper Pvt. Ltd.`
+Rouvin`
         ]);
       } catch (e) {
         console.error('User email failed (deposit rejected):', e?.message || e);
@@ -602,10 +602,10 @@ const approveVendor = async (req, res) => {
         const body =
         `Dear ${rows[0].vendor_name},
 
-        Your ESE Paper account has been approved. You can now set your password and log in.
+        Your Rouvin account has been approved. You can now set your password and log in.
 
         Regards,
-        ESE Paper Pvt. Ltd.`;
+        Rouvin`;
         await runPy('../utils/sendGenericUserEmail.py', [rows[0].email, subject, body]);
         }
 
@@ -682,7 +682,7 @@ We regret to inform you that your application has been rejected.
 For any refund-related queries, please contact 7075923765.
 
 Regards,
-ESE Paper Pvt. Ltd.`
+Rouvin`
 ]);
 
 

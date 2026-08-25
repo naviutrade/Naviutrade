@@ -23,7 +23,7 @@ const QuickRegistrationFormPage = ({ url }) => {
   const textColor = useColorModeValue('gray.700', 'gray.200');
   const pageBg = useColorModeValue('gray.50', 'gray.900');
 
-  document.title = "NAVIU | Quick Registration";
+  document.title = "Rouvin | Quick Registration";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -131,12 +131,12 @@ const QuickRegistrationFormPage = ({ url }) => {
     <Box minH="100vh" bg={pageBg} py={8}>
       <Container maxW="md">
         <VStack spacing={8} align="stretch">
-          {/* NAVIU Logo and Header */}
+          {/* Rouvin Logo and Header */}
           <Center>
             <VStack spacing={4}>
               <Image 
-                src="/naviu.png" 
-                alt="NAVIU" 
+                src="/rouvin.png" 
+                alt="Rouvin" 
                 h="80px" 
                 objectFit="contain"
               />
@@ -274,7 +274,7 @@ const QuickRegistrationFormPage = ({ url }) => {
               color={useColorModeValue('gray.500', 'gray.400')}
               textAlign="center"
             >
-              © 2024 ESE Paper Trading. All rights reserved.
+              © {new Date().getFullYear()} Rouvin. All rights reserved.
             </Text>
           </Center>
         </VStack>

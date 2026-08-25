@@ -1,5 +1,3 @@
-// src/components/ThemeToggle.jsx
-
 import React from 'react';
 import { IconButton, useColorMode } from '@chakra-ui/react';
 import { SunIcon, MoonIcon } from '@chakra-ui/icons';
@@ -7,7 +5,6 @@ import { SunIcon, MoonIcon } from '@chakra-ui/icons';
 const ThemeToggle = () => {
   const { colorMode, toggleColorMode } = useColorMode();
 
-  
   return (
     <IconButton
       aria-label="Toggle color mode"

@@ -450,17 +450,20 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Box, Flex, VStack, SimpleGrid, Heading, Text, Button, Image, useToast, Spinner, Center,
+  Box, VStack, SimpleGrid, Heading, Text, Button, Image, useToast,
   useDisclosure, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton,
   NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Divider,
-  FormControl, FormLabel, Drawer, DrawerOverlay, DrawerContent, DrawerBody, useColorModeValue,
-  IconButton,
+  FormControl, FormLabel, useColorModeValue,
 } from '@chakra-ui/react';
-import { HamburgerIcon, WarningTwoIcon, RepeatIcon, TrendingUpIcon } from '@chakra-ui/icons';
+import { Package } from '@phosphor-icons/react';
 import { useAuth } from '../../AppContext';
-import VendorNavBar from '../../components/layout/VendorNavBar';
-
-const DESKTOP_SIDEBAR_WIDTH = '200px';
+import VendorShell from '../../components/layout/VendorShell';
+import { RV, rvAccentBtn } from '../../theme/rv';
+import Money, { formatMoney } from '../../components/common/Money';
+import StatusTag from '../../components/common/StatusTag';
+import { SkeletonGrid } from '../../components/common/Skeleton';
+import EmptyState from '../../components/common/EmptyState';
+import { requestLedgerRefresh } from '../../context/VendorLedgerContext';
 
 // --- Purchase Modal (updated) ---
 const PurchaseModal = ({ isOpen, onClose, product, onProceed, walletBalance }) => {
@@ -515,25 +518,25 @@ const PurchaseModal = ({ isOpen, onClose, product, onProceed, walletBalance }) =
               </NumberInput>
             </FormControl>
             <Divider my={2} />
-            <Heading size="md" fontWeight="bold">Total Cost: ₹{totalCost.toFixed(2)}</Heading>
-            <Text fontSize="sm" color="gray.500" fontWeight="bold">
-              Your Wallet Balance: ₹{walletBalance.toFixed(2)}
+            <Heading size="md" fontWeight="bold">Total: <Money value={totalCost} /></Heading>
+            <Text fontSize="sm" color="var(--text-3)">
+              Wallet: <Money value={walletBalance} />
             </Text>
             {!hasEnoughFunds && (
-              <Text color="red.500" fontSize="sm" fontWeight="bold">
-                You have insufficient funds in your wallet.
+              <Text color="var(--bad)" fontSize="sm">
+                This purchase costs {formatMoney(totalCost)} and your balance is {formatMoney(walletBalance)}. Add {formatMoney(totalCost - walletBalance)} to continue.
               </Text>
             )}
           </VStack>
         </ModalBody>
         <ModalFooter>
           <Button
-            colorScheme="purple"
+            {...rvAccentBtn}
             onClick={() => onProceed(numericQuantity)}
             isDisabled={!hasEnoughFunds || numericQuantity <= 0}
             w="full"
           >
-            Pay with Wallet
+            Pay {formatMoney(totalCost)} with wallet
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -544,7 +547,6 @@ const PurchaseModal = ({ isOpen, onClose, product, onProceed, walletBalance }) =
 const BuyProduct = ({ url }) => {
   const { token } = useAuth();
   const toast = useToast();
-  const { isOpen: isMobileNavOpen, onOpen: onMobileNavOpen, onClose: onMobileNavClose } = useDisclosure();
 
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -553,13 +555,7 @@ const BuyProduct = ({ url }) => {
   const [walletBalance, setWalletBalance] = useState(0);
   const { isOpen: isPurchaseModalOpen, onOpen: onPurchaseModalOpen, onClose: onPurchaseModalClose } = useDisclosure();
 
-  // Styling
-  const mainBg = useColorModeValue('gray.50', '#181C27');
-  const sidebarBg = '#212734';
-  const sidebarBorder = 'gray.700';
-  const productCardBg = useColorModeValue('white', 'gray.800');
-  const headingColor = useColorModeValue('gray.800', 'gray.200');
-  const iconColor = useColorModeValue('black', 'whiteAlpha.900');
+  const productCardBg = useColorModeValue(RV.white, 'gray.800');
 
   const fetchData = useCallback(async () => {
     if (!token) return;
@@ -594,7 +590,7 @@ const BuyProduct = ({ url }) => {
         console.log('🔍 [FRONTEND BuyProduct] Setting products state:', productsArray);
         setProducts(productsArray);
       }
-      setWalletBalance(walletData.digital_money || 0);
+      setWalletBalance(Number(walletData.digital_money) || 0);
     } catch (error) {
       toast({ title: 'Data Fetch Error', description: error.message, status: 'error', isClosable: true });
     } finally {
@@ -620,6 +616,7 @@ const BuyProduct = ({ url }) => {
       if (!response.ok) throw new Error(data.message || 'Wallet payment failed.');
       toast({ title: 'Success', description: data.message, status: 'success', isClosable: true });
       fetchData();
+      requestLedgerRefresh();
     } catch (error) {
       toast({ title: 'Wallet Payment Error', description: error.message, status: 'error', isClosable: true });
     } finally {
@@ -629,58 +626,17 @@ const BuyProduct = ({ url }) => {
 
   return (
     <>
-      <Flex minH="100vh" bg={mainBg}>
-        {/* Sidebar (desktop only) */}
-        <Box as="nav" pos="fixed" top="0" left="0" zIndex="sticky" h="full" w={DESKTOP_SIDEBAR_WIDTH} bg={sidebarBg} borderRight="1px" borderColor={sidebarBorder} display={{ base: 'none', md: 'block' }}>
-          <VendorNavBar />
-        </Box>
-
-        {/* Drawer (mobile nav) */}
-        <Drawer isOpen={isMobileNavOpen} placement="left" onClose={onMobileNavClose}>
-          <DrawerOverlay />
-          <DrawerContent bg={sidebarBg} w={DESKTOP_SIDEBAR_WIDTH}>
-            <DrawerBody p={0}><VendorNavBar onLinkClick={onMobileNavClose} /></DrawerBody>
-          </DrawerContent>
-        </Drawer>
-
-        {/* Main content */}
-        <Box flex="1" ml={{ base: 0, md: DESKTOP_SIDEBAR_WIDTH }} p={{ base: 4, sm: 6, md: 8 }}>
-                     {/* Header - Visible on all screen sizes */}
-           <Flex align="center" gap={2} mb={4}>
-             <IconButton
-               aria-label="Open menu"
-               icon={<HamburgerIcon w={5} h={5} />}
-               onClick={onMobileNavOpen}
-               size="sm"
-               variant="ghost"
-               color={iconColor}
-               p={1}
-               mt="-1"
-               _hover={{ bg: 'blackAlpha.100', _dark: { bg: 'whiteAlpha.200' } }}
-               display={{ base: 'block', md: 'none' }}
-             />
-             <Heading as="h1" fontSize="lg" color={headingColor} lineHeight="1.2" fontWeight="bold">
-               Available Products
-             </Heading>
-           </Flex>
-
+      <VendorShell title="Products" url={url}>
           {isLoading ? (
-            <Center h="300px"><Spinner size="xl" /></Center>
+            <SkeletonGrid count={6} />
           ) : products.length === 0 ? (
-            <Center flexDirection="column" h="300px" textAlign="center" gap={4}>
-              <WarningTwoIcon w={10} h={10} color="gray.400" />
-              <Text fontSize="lg" fontWeight="bold" color="gray.500">
-                No available products, please try again later!
-              </Text>
-              <Button
-                leftIcon={<RepeatIcon />}
-                colorScheme="blue"
-                variant="solid"
-                onClick={fetchData}
-              >
-                Refresh
-              </Button>
-            </Center>
+            <EmptyState
+              icon={Package}
+              headline="No products available"
+              body="Nothing is listed right now. Refresh to check again."
+              actionLabel="Refresh"
+              onAction={fetchData}
+            />
           ) : (
             <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
               {products.map(product => {
@@ -704,35 +660,49 @@ const BuyProduct = ({ url }) => {
                 });
                 
                 return (
-                  <VStack key={product.product_id} borderWidth="1px" borderRadius="lg" p={4} spacing={4} align="stretch" justify="space-between" bg={productCardBg} boxShadow="md">
+                  <VStack
+                    key={product.product_id}
+                    borderWidth="1px"
+                    borderColor={RV.slate[200]}
+                    borderRadius={RV.radius.md}
+                    p={4}
+                    spacing={4}
+                    align="stretch"
+                    justify="space-between"
+                    bg={productCardBg}
+                  >
                     <Box>
-                      <Image src={product.product_image_url} h="150px" w="full" objectFit="cover" borderRadius="md" fallbackSrc="https://via.placeholder.com/150" />
-                      <Heading size="md" mt={4} fontWeight="bold">{product.paper_type}</Heading>
-                      <Text fontWeight="bold">Size: {product.size}</Text>
-                      <Text fontWeight="bold">Available: {displayUnits} units</Text>
-                      <Text fontWeight="bold" color="green.600" fontSize="sm">
-                        Profit: ₹{product.selling_price && product.price_per_slot ? (product.selling_price - product.price_per_slot).toFixed(2) : 'N/A'}
+                      <Image src={product.product_image_url} h="150px" w="full" objectFit="cover" borderRadius={RV.radius.sm} fallbackSrc="https://via.placeholder.com/150" />
+                      <Heading as="h3" size="md" mt={4} color={RV.ink[800]}>{product.paper_type}</Heading>
+                      <Text fontSize="14px" color={RV.slate[700]}>Size: {product.size}</Text>
+                      <Text fontSize="14px" color={RV.slate[700]} fontVariantNumeric="tabular-nums">Available: {displayUnits} units</Text>
+                      <Text fontWeight="600" color="var(--ok)" fontSize="sm" fontVariantNumeric="tabular-nums">
+                        Profit: <Money value={product.selling_price && product.price_per_slot ? (product.selling_price - product.price_per_slot) : 0} />
                       </Text>
-                      <Text fontWeight="bold" color="orange.500" fontSize="sm">
-                        Selling Days: {sellingDays}
+                      <Text fontWeight="500" color="var(--accent-text)" fontSize="sm">
+                        Selling days: {sellingDays}
                       </Text>
-                      <Heading size="sm" mt={2} fontWeight="bold">₹{product.price_per_slot}</Heading>
-                      <Text fontSize="xs" color="gray.500" textAlign="center">
-                        Buy Price per Slot
+                      <Box mt={2}><Money value={product.price_per_slot} style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text)' }} /></Box>
+                      <Text fontSize="12px" color="var(--text-3)">
+                        Buy price per slot
                       </Text>
                     </Box>
-                    <Button colorScheme="blue" onClick={() => handleBuyClick(product)} isDisabled={displayUnits <= 0 || isSubmitting}>
-                      {displayUnits > 0 ? 'Buy Stock' : 'Out of Stock'}
+                    <StatusTag status={displayUnits > 0 ? 'unlocked' : 'cancelled'}>{displayUnits > 0 ? 'Available' : 'Out of stock'}</StatusTag>
+                    <Button
+                      {...rvAccentBtn}
+                      onClick={() => handleBuyClick(product)}
+                      isDisabled={displayUnits <= 0 || isSubmitting}
+                      w="full"
+                    >
+                      {displayUnits > 0 ? `Buy stock · ${formatMoney(product.price_per_slot)}` : 'Out of stock'}
                     </Button>
                   </VStack>
                 );
               })}
             </SimpleGrid>
           )}
-        </Box>
-      </Flex>
+      </VendorShell>
 
-      {/* Purchase Modal */}
       <PurchaseModal
         isOpen={isPurchaseModalOpen}
         onClose={onPurchaseModalClose}

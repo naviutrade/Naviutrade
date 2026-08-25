@@ -86,13 +86,13 @@ const ActiveTradeItem = ({ item, onSell, isSelling, onRefresh }) => {
         if (!isLockedByApi) {
             return (
                 <Button 
-                    colorScheme="teal" 
+                    variant="rvAccent"
                     onClick={() => onSell(item)} 
-                    isLoading={isSelling === item.trade_id} 
+                    isLoading={Boolean(isSelling)} 
                     loadingText="Selling" 
                     w={{ base: '100%', md: '180px' }}
                 >
-                    Sell Now
+                    Sell now
                 </Button>
             );
         }

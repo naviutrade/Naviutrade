@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Box, Flex, VStack, Heading, Text, Spinner, Alert, AlertIcon, SimpleGrid,
+    Box, VStack, Heading, Text, Spinner, Alert, AlertIcon, SimpleGrid,
     Container, Image, Button, useDisclosure, Modal, ModalOverlay, ModalContent,
-    ModalHeader, ModalBody, ModalFooter, ModalCloseButton, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerBody ,Input, HStack, useToast, FormControl, FormLabel,
+    ModalHeader, ModalBody, ModalFooter, ModalCloseButton, Input, HStack, useToast, FormControl, FormLabel,
     Divider
 } from '@chakra-ui/react';
 import { useAuth } from '../../AppContext';
-import { useNavigate } from 'react-router-dom';
-import { FiMenu } from 'react-icons/fi';
-import VendorNavBar from '../../components/layout/VendorNavBar';
+import VendorShell from '../../components/layout/VendorShell';
+import { RV, rvAccentBtn, rvPrimaryBtn } from '../../theme/rv';
+import { requestLedgerRefresh } from '../../context/VendorLedgerContext';
 
 
 // --- Modal Component for the entire Purchase Flow ---
@@ -85,9 +85,10 @@ const PurchaseModal = ({ isOpen, onClose, product, onSuccess, url }) => {
             const data = await response.json();
             if (!response.ok) throw new Error(data.message);
             
-            toast({ title: 'Submission Successful', description: data.message, status: 'success', isClosable: true });
-            onSuccess(); // This calls the parent's function to refresh the product list.
-            onClose(); // Close the modal.
+            toast({ title: 'Submission successful', description: data.message, status: 'success', isClosable: true });
+            onSuccess();
+            requestLedgerRefresh();
+            onClose();
             
         } catch (err) {
             toast({ title: 'Submission Failed', description: err.message, status: 'error', isClosable: true });
@@ -148,12 +149,12 @@ const PurchaseModal = ({ isOpen, onClose, product, onSuccess, url }) => {
                 <ModalFooter>
                     <Button variant='ghost' mr={3} onClick={onClose}>Cancel</Button>
                     {step === 'quantity' ? (
-                        <Button colorScheme='blue' onClick={handleInitiatePayment} isLoading={isLoading}>
-                            Proceed to Payment
+                        <Button {...rvAccentBtn} onClick={handleInitiatePayment} isLoading={isLoading}>
+                            Proceed to payment
                         </Button>
                     ) : (
-                        <Button colorScheme='cyan' type="submit" isLoading={isLoading}>
-                            Submit and Complete Payment
+                        <Button {...rvPrimaryBtn} type="submit" isLoading={isLoading}>
+                            Submit and complete payment
                         </Button>
                     )}
                 </ModalFooter>
@@ -190,25 +191,24 @@ const ProductCard = ({ product, onBuyClick, url }) => {
     })();
     
     return (
-        <Box borderWidth="1px" borderRadius="lg" overflow="hidden" bg="gray.700">
+        <Box borderWidth="1px" borderColor={RV.slate[200]} borderRadius={RV.radius.md} overflow="hidden" bg={RV.white}>
             <Image src={`${url}${product.product_image_url}`} alt={product.paper_type} h="200px" w="full" objectFit="cover" fallbackSrc='https://via.placeholder.com/300' />
             <Box p={6}>
-                <Heading size="md">{product.paper_type}</Heading>
-                <Text mt={2}>Size: {product.size} | GSM: {product.gsm}</Text>
+                <Heading as="h3" size="md" color={RV.ink[800]}>{product.paper_type}</Heading>
+                <Text mt={2} color={RV.slate[700]}>Size: {product.size} | GSM: {product.gsm}</Text>
                 
-                {/* Display available units */}
-                <Text mt={2}>
-                    Available: <Text as="span" color="green.300" fontWeight="bold">
+                <Text mt={2} color={RV.slate[700]}>
+                    Available: <Text as="span" color={RV.success} fontWeight="600" fontVariantNumeric="tabular-nums">
                         {displayUnits} units
                     </Text>
                 </Text>
 
-                <Text mt={2} color="orange.500" fontWeight="semibold">
-                    Selling Days: {sellingDays}
+                <Text mt={2} color={RV.orange[700]} fontWeight="500">
+                    Selling days: {sellingDays}
                 </Text>
                 
-                <Text fontSize="xl" fontWeight="bold" color="cyan.400" mt={2}>₹{product.price_per_slot} / slot</Text>
-                <Button mt={4} w="full" colorScheme="blue" onClick={() => onBuyClick(product)}>Buy Stock</Button>
+                <Text fontSize="xl" fontWeight="600" color={RV.navy[700]} mt={2} fontVariantNumeric="tabular-nums">₹{product.price_per_slot} / slot</Text>
+                <Button mt={4} w="full" {...rvAccentBtn} onClick={() => onBuyClick(product)}>Buy stock</Button>
             </Box>
         </Box>
     );
@@ -272,38 +272,13 @@ const ProductTradingPage = ({ url }) => {
   };
 
   return (
-  <Flex minH="100vh" bg="gray.100">
-    
-    {/* SIDEBAR: VendorNavBar - Fixed */}
-    <Box
-  w={{ base: '60px', lg: '80px' }}
-  bg="#111827"
-  color="white"
-  minH="100vh"
-  px={2}
-  py={4}
->
-  <VendorNavBar />
-</Box>
-
-
-
-
-    {/* MAIN CONTENT: Adjusted with margin-left */}
-    <Box
-        flex="1"
-  ml={{ base: "60px", lg: "80px" }}  // Good, leaves space for sidebar
-  px={6}
-  py={8}
-  w="100%"
->
+  <VendorShell title="Product trading" url={url}>
       {loading && products.length === 0 ? (
-        <Container centerContent><Spinner size="xl" mt="20" /></Container>
+        <Container centerContent><Spinner size="xl" mt="20" color={RV.navy[700]} /></Container>
       ) : error ? (
-        <Container centerContent><Alert status="error" mt="20"><AlertIcon />{error}</Alert></Container>
+        <Container centerContent><Alert status="error" mt="20" bg={RV.errorBg} borderColor={RV.errorBorder} color={RV.error}><AlertIcon color={RV.error} />{error}</Alert></Container>
       ) : (
-        <Container maxW="container.xl" py={4}>
-          <Heading mb={6}>Available Products for Trading</Heading>
+        <Container maxW="100%" py={4} px={0}>
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8}>
             {products.map(product => (
               <ProductCard
@@ -326,8 +301,7 @@ const ProductTradingPage = ({ url }) => {
           url={url}
         />
       )}
-    </Box>
-  </Flex>
+  </VendorShell>
 );
 
 };

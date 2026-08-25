@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-    Box, Flex, VStack, Heading, Text, Spinner, Alert, AlertIcon, SimpleGrid,
-    Container, Image, Button, useDisclosure, Modal, ModalOverlay, ModalContent,
-    ModalHeader, ModalBody, ModalFooter, ModalCloseButton, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerBody,
+    Box, VStack, Heading, Text, Alert, AlertIcon, SimpleGrid,
+    Image, Button, useDisclosure, Modal, ModalOverlay, ModalContent,
+    ModalHeader, ModalBody, ModalFooter, ModalCloseButton,
     HStack, useToast, FormControl, FormLabel, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
-    Divider, Badge, useColorModeValue, Center
+    Divider, Badge, useColorModeValue
 } from '@chakra-ui/react';
 import { useAuth } from '../../AppContext';
-import { useNavigate } from 'react-router-dom';
-import { HamburgerIcon } from '@chakra-ui/icons';
-import VendorNavBar from '../../components/layout/VendorNavBar';
+import { Package } from '@phosphor-icons/react';
+import VendorShell from '../../components/layout/VendorShell';
+import { RV, rvAccentBtn } from '../../theme/rv';
+import Money, { formatMoney } from '../../components/common/Money';
+import { SkeletonGrid } from '../../components/common/Skeleton';
+import EmptyState from '../../components/common/EmptyState';
+import { requestLedgerRefresh } from '../../context/VendorLedgerContext';
 
 // --- Modal Component for Wild Product Purchase Flow ---
 const WildProductPurchaseModal = ({ isOpen, onClose, wildProduct, onSuccess, url, walletBalance }) => {
@@ -49,8 +53,8 @@ const WildProductPurchaseModal = ({ isOpen, onClose, wildProduct, onSuccess, url
             }
 
             toast({
-                title: 'Purchase Successful!',
-                description: `You have successfully purchased ${numericQuantity} units of ${wildProduct.product_name}`,
+                title: 'Purchase successful',
+                description: `You bought ${numericQuantity} units of ${wildProduct.product_name}`,
                 status: 'success',
                 duration: 5000,
                 isClosable: true,
@@ -125,27 +129,27 @@ const WildProductPurchaseModal = ({ isOpen, onClose, wildProduct, onSuccess, url
                         </FormControl>
                         
                         <Divider my={2} />
-                        <Heading size="md" fontWeight="bold">Total Cost: ₹{totalCost.toFixed(2)}</Heading>
-                        <Text fontSize="sm" color="gray.500" fontWeight="bold">
-                            Your Wallet Balance: ₹{walletBalance.toFixed(2)}
+                        <Heading size="md" fontWeight="bold">Total: <Money value={totalCost} /></Heading>
+                        <Text fontSize="sm" color="var(--text-3)">
+                            Wallet: <Money value={walletBalance} />
                         </Text>
                         {!hasEnoughFunds && (
-                            <Text color="red.500" fontSize="sm" fontWeight="bold">
-                                You have insufficient funds in your wallet.
+                            <Text color="var(--bad)" fontSize="sm">
+                                This purchase costs {formatMoney(totalCost)} and your balance is {formatMoney(walletBalance)}. Add {formatMoney(totalCost - walletBalance)} to continue.
                             </Text>
                         )}
                     </VStack>
                 </ModalBody>
                 <ModalFooter>
                     <Button
-                        colorScheme="purple"
+                        {...rvAccentBtn}
                         onClick={handlePurchase}
                         isLoading={isLoading}
                         loadingText="Processing..."
                         isDisabled={!hasEnoughFunds || numericQuantity <= 0}
                         w="full"
                     >
-                        Pay with Wallet
+                        Pay {formatMoney(totalCost)} with wallet
                     </Button>
                 </ModalFooter>
             </ModalContent>
@@ -155,18 +159,17 @@ const WildProductPurchaseModal = ({ isOpen, onClose, wildProduct, onSuccess, url
 
 // --- Wild Product Card Component ---
 const WildProductCard = ({ wildProduct, onBuyClick, url }) => {
-    const cardBg = useColorModeValue('white', 'gray.800');
-    const borderColor = useColorModeValue('gray.200', 'gray.600');
+    const cardBg = useColorModeValue(RV.white, 'gray.800');
 
     return (
         <Box 
             borderWidth="1px" 
-            borderRadius="lg" 
+            borderRadius={RV.radius.md}
             overflow="hidden" 
             bg={cardBg}
-            borderColor={borderColor}
-            _hover={{ shadow: 'md', transform: 'translateY(-2px)' }}
-            transition="all 0.2s"
+            borderColor={RV.slate[200]}
+            _hover={{ boxShadow: RV.elev[1] }}
+            transition="box-shadow 100ms cubic-bezier(.4,0,.2,1)"
         >
             <Image 
                 src={wildProduct.product_image_url} 
@@ -213,23 +216,21 @@ const WildProductCard = ({ wildProduct, onBuyClick, url }) => {
 
                 <HStack justify="space-between" mb={4}>
                     <Text fontSize="sm">Selling Days:</Text>
-                    <Badge colorScheme="blue">{wildProduct.selling_date_count || 30} days</Badge>
+                    <Badge colorScheme="orange" variant="subtle">{wildProduct.selling_date_count || 30} days</Badge>
                 </HStack>
 
                 <Button 
                     w="full" 
-                    colorScheme="blue" 
+                    {...rvAccentBtn}
                     onClick={() => onBuyClick(wildProduct)}
                     isDisabled={wildProduct.available_stock === 0}
                 >
-                    {wildProduct.available_stock === 0 ? 'Out of Stock' : 'Buy Now'}
+                    {wildProduct.available_stock === 0 ? 'Out of stock' : `Buy stock · ${formatMoney(wildProduct.final_price)}`}
                 </Button>
             </Box>
         </Box>
     );
 };
-
-const DESKTOP_SIDEBAR_WIDTH = '200px';
 
 // --- Main Wild Product Trading Page Component ---
 const WildProductTradingPage = ({ url }) => {
@@ -240,15 +241,7 @@ const WildProductTradingPage = ({ url }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [walletBalance, setWalletBalance] = useState(0);
-    const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose } = useDisclosure();
     const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure();
-
-    // Color mode values
-    const mainBg = useColorModeValue('gray.50', '#181C27');
-    const sidebarBg = '#212734';
-    const sidebarBorder = 'gray.700';
-    const headingColor = useColorModeValue('gray.800', 'gray.200');
-    const iconColor = useColorModeValue('black', 'whiteAlpha.900');
 
     const fetchWildProducts = useCallback(async () => {
         setLoading(true);
@@ -282,7 +275,7 @@ const WildProductTradingPage = ({ url }) => {
                 // Wild products available - extract from new response structure
                 setWildProducts(wildProductsData.products || wildProductsData || []);
             }
-            setWalletBalance(walletData.digital_money || 0);
+            setWalletBalance(Number(walletData.digital_money) || 0);
         } catch (err) { 
             setError(err.message); 
         } finally { 
@@ -301,99 +294,26 @@ const WildProductTradingPage = ({ url }) => {
     };
 
     return (
-        <Flex minH="100vh" bg={mainBg}>
-            {/* Sidebar (desktop only) */}
-            <Box 
-                as="nav" 
-                pos="fixed" 
-                top="0" 
-                left="0" 
-                zIndex="sticky" 
-                h="full" 
-                w={DESKTOP_SIDEBAR_WIDTH} 
-                bg={sidebarBg} 
-                borderRight="1px" 
-                borderColor={sidebarBorder} 
-                display={{ base: 'none', md: 'block' }}
-            >
-                <VendorNavBar />
-            </Box>
-
-            {/* Drawer (mobile nav) */}
-            <Drawer isOpen={isDrawerOpen} placement="left" onClose={onDrawerClose}>
-                <DrawerOverlay />
-                <DrawerContent bg={sidebarBg} w={DESKTOP_SIDEBAR_WIDTH}>
-                    <DrawerBody p={0}>
-                        <VendorNavBar onLinkClick={onDrawerClose} />
-                    </DrawerBody>
-                </DrawerContent>
-            </Drawer>
-
-            {/* Main content */}
-            <Box flex="1" ml={{ base: 0, md: DESKTOP_SIDEBAR_WIDTH }} p={{ base: 4, sm: 6, md: 8 }}>
-                {/* Mobile header */}
-                <Flex align="center" gap={2} mb={4} display={{ base: 'flex', md: 'none' }}>
-                    <IconButton
-                        aria-label="Open menu"
-                        icon={<HamburgerIcon w={5} h={5} />}
-                        onClick={onDrawerOpen}
-                        size="sm"
-                        variant="ghost"
-                        color={iconColor}
-                        p={1}
-                        mt="-1"
-                        _hover={{ bg: 'blackAlpha.100', _dark: { bg: 'whiteAlpha.200' } }}
-                    />
-                    <Heading as="h1" fontSize="lg" color={headingColor} lineHeight="1.2">
-                        Wild Products
-                    </Heading>
-                </Flex>
-
-                {/* Desktop title */}
-                <Heading as="h1" fontSize="2xl" color={headingColor} mb={6} display={{ base: 'none', md: 'block' }}>
-                    Wild Products Trading
-                </Heading>
-
+        <VendorShell title="Wild products" url={url}>
                 {loading && wildProducts.length === 0 ? (
-                    <Center py={20}>
-                        <Spinner size="xl" />
-                    </Center>
+                    <SkeletonGrid count={6} />
                 ) : error ? (
-                    <Container centerContent>
-                        <Alert status="error" mt="20">
-                            <AlertIcon />
-                            {error}
-                        </Alert>
-                    </Container>
+                    <Alert status="error" borderRadius="var(--r-structure)" bg="var(--bad-bg)" border="1px solid" borderColor="var(--bad-bd)" color="var(--bad)">
+                        <AlertIcon color="var(--bad)" />
+                        {error}
+                    </Alert>
                 ) : wildProducts.length === 0 ? (
-                    <Container centerContent py={20}>
-                        <VStack spacing={6} textAlign="center">
-                            <Box fontSize="6xl">📦</Box>
-                            <VStack spacing={3}>
-                                <Heading size="lg" color={headingColor}>
-                                    No Wild Products Available
-                                </Heading>
-                                <Text color="gray.600" fontSize="lg">
-                                    Coming Soon! Please try again later.
-                                </Text>
-                                <Text color="gray.500" fontSize="sm">
-                                    We're working on adding exciting new wild products for you.
-                                </Text>
-                            </VStack>
-                            <Button 
-                                colorScheme="blue" 
-                                variant="outline" 
-                                onClick={fetchWildProducts}
-                                isLoading={loading}
-                            >
-                                Refresh
-                            </Button>
-                        </VStack>
-                    </Container>
+                    <EmptyState
+                      icon={Package}
+                      headline="No wild products available"
+                      body="Nothing is listed right now. Refresh to check again."
+                      actionLabel="Refresh"
+                      onAction={fetchWildProducts}
+                    />
                 ) : (
-                    <Container maxW="container.xl" py={4}>
-                        <Text mb={6} color="gray.600">
-                            Discover our exclusive wild products with automatic GST calculation and wallet-only payments.
+                    <Box>
+                        <Text mb={6} color={RV.slate[700]}>
+                            Exclusive wild products with GST included. Pay from wallet.
                         </Text>
                         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8}>
                             {wildProducts.map(wildProduct => (
@@ -405,7 +325,7 @@ const WildProductTradingPage = ({ url }) => {
                                 />
                             ))}
                         </SimpleGrid>
-                    </Container>
+                    </Box>
                 )}
 
                 {selectedWildProduct && (
@@ -413,13 +333,15 @@ const WildProductTradingPage = ({ url }) => {
                         isOpen={isModalOpen}
                         onClose={onModalClose}
                         wildProduct={selectedWildProduct}
-                        onSuccess={fetchWildProducts}
+                        onSuccess={() => {
+                            fetchWildProducts();
+                            requestLedgerRefresh();
+                        }}
                         url={url}
                         walletBalance={walletBalance}
                     />
                 )}
-            </Box>
-        </Flex>
+        </VendorShell>
     );
 };
 

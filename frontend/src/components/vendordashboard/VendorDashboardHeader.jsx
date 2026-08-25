@@ -18,17 +18,15 @@ import {
     useClipboard,
     Button,
     Avatar,
-    Heading,
     Grid,
     GridItem,
-    Icon, // Import Icon component
-    Image,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { FaWallet, FaUserPlus, FaWhatsapp, FaShoppingCart } from 'react-icons/fa';
+import { Wallet, UserPlus, MessageCircle, ShoppingCart } from 'lucide-react';
 import { useAuth } from '../../AppContext';
 import axios from 'axios';
 import ProductRequestModal from '../vendor/ProductRequestModal';
+import { RV, rvAccentBtn, rvSecondaryBtn } from '../../theme/rv';
 
 // AddMemberModal component (no changes)
 const AddMemberModal = ({ isOpen, onClose, referralLink, onRegisterAndLogout }) => {
@@ -51,19 +49,19 @@ const AddMemberModal = ({ isOpen, onClose, referralLink, onRegisterAndLogout }) 
                                 <Text fontFamily="monospace" fontSize="sm" noOfLines={1} title={referralLink} w="80%">
                                     {referralLink}
                                 </Text>
-                                <Button onClick={onCopy} size="sm" colorScheme={hasCopied ? 'green' : 'gray'}>
-                                    {hasCopied ? 'Copied!' : 'Copy'}
+                                <Button onClick={onCopy} size="sm" {...(hasCopied ? rvAccentBtn : rvSecondaryBtn)}>
+                                    {hasCopied ? 'Copied' : 'Copy'}
                                 </Button>
                             </HStack>
                         </Box>
                     </VStack>
                 </ModalBody>
                 <ModalFooter>
-                    <Button variant="ghost" mr={3} onClick={onClose}>
+                    <Button {...rvSecondaryBtn} mr={3} onClick={onClose}>
                         Cancel
                     </Button>
-                    <Button colorScheme="blue" onClick={onRegisterAndLogout}>
-                        Logout & Register
+                    <Button {...rvAccentBtn} onClick={onRegisterAndLogout}>
+                        Log out and register
                     </Button>
                 </ModalFooter>
             </ModalContent>
@@ -190,11 +188,11 @@ const VendorDashboardHeader = ({ url }) => {
                         <HStack spacing={4}>
                             <Avatar size="md" name={user?.vendorName || user?.email} src={photoUrl} />
                             <VStack align="start" spacing={0} maxW="300px">
-                                <Text fontSize={{ base: 'lg', md: 'xl' }} fontWeight="bold" lineHeight="1.2">
-                                    Hello, {user?.vendorName || user?.email?.split('@')[0] || 'Vendor'}!
+                                <Text fontSize={{ base: 'lg', md: 'xl' }} fontWeight={600} lineHeight="1.2" color={RV.ink[800]}>
+                                    Hello, {user?.vendorName || user?.email?.split('@')[0] || 'Vendor'}
                                 </Text>
                                 {user?.id && (
-                                    <Text fontSize="sm" color="gray.500" cursor="pointer" onClick={handleCopyId} _hover={{ color: 'blue.400' }} title="Click to copy ID" fontWeight="bold">
+                                    <Text fontSize="14px" color={RV.slate[600]} cursor="pointer" onClick={handleCopyId} _hover={{ color: RV.navy[600] }} title="Click to copy ID" fontFamily={RV.fontMono} fontVariantNumeric="tabular-nums">
                                         ID: {user.id}
                                     </Text>
                                 )}
@@ -213,28 +211,36 @@ const VendorDashboardHeader = ({ url }) => {
                         borderRadius={{ base: 'lg', md: 0 }}
                     >
                         {/* ✅ FIX: Buttons now stack their content vertically on mobile and share space */}
-                        <Button size="md" variant="ghost" onClick={() => navigate('/vendor/wallet')} flex={1} h="auto" py={2}>
+                        <Button size="md" variant="ghost" onClick={() => navigate('/vendor/wallet')} flex={1} h="auto" py={2} _hover={{ bg: RV.navy[50] }}>
                             <VStack spacing={1}>
-                                <Icon as={FaWallet} />
-                                <Text fontSize="xs">Wallet</Text>
+                                <Flex align="center" justify="center" w="36px" h="36px" borderRadius={RV.radius.md} bg={RV.navy[700]} color="white">
+                                    <Wallet size={16} strokeWidth={1.75} />
+                                </Flex>
+                                <Text fontSize="13px" fontWeight={500} color={RV.ink[800]}>Wallet</Text>
                             </VStack>
                         </Button>
-                        <Button size="md" variant="ghost" onClick={onOpen} flex={1} h="auto" py={2}>
+                        <Button size="md" variant="ghost" onClick={onOpen} flex={1} h="auto" py={2} _hover={{ bg: RV.orange[50] }}>
                              <VStack spacing={1}>
-                                <Icon as={FaUserPlus} />
-                                <Text fontSize="xs">Refer</Text>
+                                <Flex align="center" justify="center" w="36px" h="36px" borderRadius={RV.radius.md} bg={RV.orange[500]} color={RV.ink[900]}>
+                                    <UserPlus size={16} strokeWidth={1.75} />
+                                </Flex>
+                                <Text fontSize="13px" fontWeight={500} color={RV.ink[800]}>Refer</Text>
                             </VStack>
                         </Button>
-                        <Button size="md" variant="ghost" colorScheme="whatsapp" onClick={openWhatsApp} flex={1} h="auto" py={2}>
+                        <Button size="md" variant="ghost" onClick={openWhatsApp} flex={1} h="auto" py={2} _hover={{ bg: RV.slate[100] }}>
                              <VStack spacing={1}>
-                                <Icon as={FaWhatsapp} />
-                                <Text fontSize="xs">Chat</Text>
+                                <Flex align="center" justify="center" w="36px" h="36px" borderRadius={RV.radius.md} bg={RV.slate[100]} color={RV.navy[700]}>
+                                    <MessageCircle size={16} strokeWidth={1.75} />
+                                </Flex>
+                                <Text fontSize="13px" fontWeight={500} color={RV.ink[800]}>Chat</Text>
                             </VStack>
                         </Button>
-                         <Button size="md" variant="ghost" colorScheme="blue" onClick={onProductRequestOpen} flex={1} h="auto" py={2}>
+                         <Button size="md" variant="ghost" onClick={onProductRequestOpen} flex={1} h="auto" py={2} _hover={{ bg: RV.slate[100] }}>
                              <VStack spacing={1}>
-                                 <Icon as={FaShoppingCart} />
-                                 <Text fontSize="xs">Request</Text>
+                                <Flex align="center" justify="center" w="36px" h="36px" borderRadius={RV.radius.md} bg={RV.slate[100]} color={RV.navy[700]}>
+                                    <ShoppingCart size={16} strokeWidth={1.75} />
+                                </Flex>
+                                 <Text fontSize="13px" fontWeight={500} color={RV.ink[800]}>Request</Text>
                              </VStack>
                          </Button>
                     </HStack>

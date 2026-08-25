@@ -514,35 +514,23 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { formatISTDate } from '../../utils/dateUtils';
 import {
-  Box, VStack, Heading, Text, Spinner, Alert, AlertIcon,
-  Container, Image, Badge, Flex, Divider, Input,
-  useColorModeValue, Table, Thead, Tbody, Tr, Th, Td, TableContainer,
-  Center, HStack, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerBody,
-  IconButton,
+  Box, Input,
 } from '@chakra-ui/react';
-import { HamburgerIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../AppContext';
-import VendorNavBar from '../../components/layout/VendorNavBar';
-
-const DESKTOP_SIDEBAR_WIDTH = '200px';
+import VendorShell from '../../components/layout/VendorShell';
+import LedgerTable from '../../components/common/LedgerTable';
+import Money from '../../components/common/Money';
+import StatusTag from '../../components/common/StatusTag';
+import Alert from '../../components/common/Alert';
+import { Receipt } from '@phosphor-icons/react';
 
 const PurchaseHistoryPage = ({ url }) => {
   const { token } = useAuth();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [allPurchases, setAllPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-
-  const pageBg = useColorModeValue('gray.50', '#181C27');
-  const sidebarBg = '#212734';
-  const sidebarBorder = 'gray.700';
-  const cardBg = useColorModeValue('white', 'gray.800');
-  const textColor = useColorModeValue('gray.600', 'gray.400');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
-  const headingColor = useColorModeValue('gray.800', 'gray.200');
-  const iconColor = useColorModeValue('black', 'whiteAlpha.900');
 
   const fetchHistory = useCallback(async () => {
     if (!token) { setError('Authentication token not found. Please log in.'); setLoading(false); return; }
@@ -575,129 +563,67 @@ const PurchaseHistoryPage = ({ url }) => {
   }, [allPurchases, searchTerm]);
 
   if (error) {
-    return <Container centerContent py={20}><Alert status="error"><AlertIcon />{error}</Alert></Container>;
+    return (
+      <VendorShell title="Purchase history" url={url}>
+        <Alert tone="bad">{error}</Alert>
+      </VendorShell>
+    );
   }
 
+  const columns = [
+    {
+      key: 'paper_type',
+      header: 'Product',
+      render: (p) => p.paper_type,
+    },
+    {
+      key: 'qty',
+      header: 'Qty',
+      numeric: true,
+      sortValue: (p) => Number(p.no_of_stock_bought) || 0,
+      render: (p) => p.no_of_stock_bought,
+    },
+    {
+      key: 'date',
+      header: 'Date',
+      mono: true,
+      sortValue: (p) => p.date || '',
+      render: (p) => (p.date ? `${formatISTDate(p.date, true, true)} · IST` : '—'),
+    },
+    {
+      key: 'total_amount_paid',
+      header: 'Total paid',
+      numeric: true,
+      sortValue: (p) => Number(p.total_amount_paid) || 0,
+      render: (p) => <Money value={p.total_amount_paid} />,
+    },
+    {
+      key: 'is_approved',
+      header: 'Status',
+      render: (p) => <StatusTag status={p.is_approved || 'pending'} />,
+    },
+  ];
+
   return (
-    <Flex minH="100vh" bg={pageBg}>
-      {/* Sidebar (desktop) */}
-      <Box as="nav" pos="fixed" top="0" left="0" zIndex="sticky" h="full" w={DESKTOP_SIDEBAR_WIDTH} bg={sidebarBg} borderRight="1px" borderColor={sidebarBorder} display={{ base: 'none', md: 'block' }}>
-        <VendorNavBar />
+    <VendorShell title="Purchase history" url={url}>
+      <Box bg="var(--panel)" p="var(--pad-panel)" borderRadius="var(--r-structure)" border="1px solid" borderColor="var(--border)">
+        <Input
+          placeholder="Search by product, status, amount, date"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          mb={4}
+        />
+        <LedgerTable
+          columns={columns}
+          rows={filteredPurchases}
+          loading={loading}
+          getRowId={(p) => p.trade_id}
+          emptyIcon={Receipt}
+          emptyHeadline={searchTerm ? 'No matching purchases' : 'No purchases yet'}
+          emptyBody={searchTerm ? 'Try a different search.' : 'Bought stock will be listed here after approval.'}
+        />
       </Box>
-
-      {/* Drawer (mobile nav) */}
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-        <DrawerOverlay />
-        <DrawerContent bg={sidebarBg} w={DESKTOP_SIDEBAR_WIDTH}>
-          <DrawerBody p={0}><VendorNavBar onLinkClick={onClose} /></DrawerBody>
-        </DrawerContent>
-      </Drawer>
-
-      {/* Main content */}
-      <Box flex="1" ml={{ base: 0, md: DESKTOP_SIDEBAR_WIDTH }} p={{ base: 4, sm: 6, md: 8 }}>
-        {/* Consistent mobile header */}
-        <Flex align="center" gap={2} mb={4} display={{ base: 'flex', md: 'none' }}>
-          <IconButton
-            aria-label="Open menu"
-            icon={<HamburgerIcon w={5} h={5} />}
-            onClick={onOpen}
-            size="sm"
-            variant="ghost"
-            color={iconColor}
-            p={1}
-            mt="-1"
-            _hover={{ bg: 'blackAlpha.100', _dark: { bg: 'whiteAlpha.200' } }}
-          />
-          <Heading as="h1" fontSize="lg" color={headingColor} lineHeight="1.2">
-            My Transaction Log
-          </Heading>
-        </Flex>
-
-        <Box bg={cardBg} p={{ base: 4, md: 6 }} borderRadius="lg" boxShadow="lg" w={{ base: '100%', lg: '80%' }} mx="auto">
-          <VStack spacing={6} align="stretch">
-            <Heading as="h1" size="xl" color={headingColor} display={{ base: 'none', md: 'block' }}>
-              My Transaction Log
-            </Heading>
-
-            <Box>
-              <Input placeholder="Search by product, status, amount, date..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-            </Box>
-
-            <Divider />
-
-            {loading ? (
-              <Center p={20}><Spinner size="xl" /></Center>
-            ) : filteredPurchases.length === 0 ? (
-              <Alert status="info" borderRadius="md"><AlertIcon />{searchTerm ? 'No purchases match your search.' : 'You have no purchase history.'}</Alert>
-            ) : (
-              <>
-                {/* Desktop table */}
-                <TableContainer display={{ base: 'none', md: 'block' }}>
-                  <Table variant="simple">
-                    <Thead><Tr><Th>Product</Th><Th>Details</Th><Th isNumeric>Total Paid</Th><Th>Status</Th></Tr></Thead>
-                    <Tbody>
-                      {filteredPurchases.map(p => {
-                        const status = p.is_approved === 'approved' ? { color: 'green', text: 'Approved' }
-                          : p.is_approved === 'rejected' ? { color: 'red', text: 'Rejected' }
-                          : { color: 'yellow', text: 'Pending' };
-                        return (
-                          <Tr key={p.trade_id}>
-                            <Td>
-                              <HStack>
-                                <Image src={p.product_image_url} boxSize="50px" borderRadius="md" fallbackSrc="https://via.placeholder.com/50" />
-                                <Text fontWeight="bold">{p.paper_type}</Text>
-                              </HStack>
-                            </Td>
-                            <Td>
-                              <Text>Qty: <strong>{p.no_of_stock_bought}</strong></Text>
-                              <Text fontSize="sm" color={textColor}>On: {formatISTDate(p.date, true, true)}</Text>
-                            </Td>
-                            <Td isNumeric fontWeight="bold">₹{parseFloat(p.total_amount_paid).toFixed(2)}</Td>
-                            <Td><Badge colorScheme={status.color}>{status.text}</Badge></Td>
-                          </Tr>
-                        );
-                      })}
-                    </Tbody>
-                  </Table>
-                </TableContainer>
-
-                {/* Mobile cards */}
-                <VStack spacing={4} align="stretch" display={{ base: 'flex', md: 'none' }}>
-                  {filteredPurchases.map(p => {
-                    const status = p.is_approved === 'approved' ? { color: 'green', text: 'Approved' }
-                      : p.is_approved === 'rejected' ? { color: 'red', text: 'Rejected' }
-                      : { color: 'yellow', text: 'Pending' };
-                    return (
-                      <Box key={p.trade_id} p={4} borderWidth="1px" borderColor={borderColor} borderRadius="lg">
-                        <VStack align="stretch" spacing={3}>
-                          <Flex align="center" justify="space-between">
-                            <HStack>
-                              <Image src={p.product_image_url} boxSize="60px" borderRadius="md" fallbackSrc="https://via.placeholder.com/60" />
-                              <VStack align="start" spacing={0}>
-                                <Text fontWeight="bold">{p.paper_type}</Text>
-                                <Text fontSize="xs" color={textColor}>Qty: {p.no_of_stock_bought}</Text>
-                              </VStack>
-                            </HStack>
-                            <Badge colorScheme={status.color}>{status.text}</Badge>
-                          </Flex>
-                          {p.is_approved === 'rejected' && p.comment && (
-                            <Alert status="error" size="sm" borderRadius="md"><AlertIcon boxSize="16px" /><Text fontSize="xs"><strong>Admin:</strong> {p.comment}</Text></Alert>
-                          )}
-                          <Flex align="center" justify="space-between" pt={2} borderTop="1px" borderColor={borderColor}>
-                            <Text fontSize="sm" color={textColor}>{p.date ? formatISTDate(p.date, true, true) : p.date}</Text>
-                            <Text fontWeight="bold" fontSize="lg">₹{parseFloat(p.total_amount_paid).toFixed(2)}</Text>
-                          </Flex>
-                        </VStack>
-                      </Box>
-                    );
-                  })}
-                </VStack>
-              </>
-            )}
-          </VStack>
-        </Box>
-      </Box>
-    </Flex>
+    </VendorShell>
   );
 };
 

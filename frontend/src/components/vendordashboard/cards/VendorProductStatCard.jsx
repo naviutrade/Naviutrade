@@ -86,13 +86,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Flex, Box, Text, Heading, Button, useColorModeValue, Icon } from '@chakra-ui/react';
-import { BsBoxSeam } from 'react-icons/bs';
+import { ShoppingBag } from 'lucide-react';
 
 const VendorProductStatCard = ({ value }) => {
     const cardBg = useColorModeValue('white', 'gray.700');
     const valueColor = useColorModeValue('gray.900', 'white');
-    const iconBg = useColorModeValue('blue.100', 'blue.800');
-    const iconColor = useColorModeValue('blue.500', 'blue.300');
+    const iconBg = useColorModeValue('#FFE8D6', '#7A2E00');
+    const iconColor = useColorModeValue('#FF6600', '#FFB27A');
     const navigate = useNavigate();
     
     return (
@@ -121,11 +121,11 @@ const VendorProductStatCard = ({ value }) => {
                     w="48px"
                     h="48px"
                 >
-                    <Icon as={BsBoxSeam} color={iconColor} w={6} h={6} />
+                    <Icon as={ShoppingBag} color={iconColor} w={6} h={6} />
                 </Flex>
             </Flex>
             
-            <Button colorScheme="blue" w="full" mt={4} onClick={() => navigate('/vendor/products')}>
+            <Button colorScheme="orange" w="full" mt={4} onClick={() => navigate('/vendor/products')}>
                 View Products
             </Button>
         </Flex>

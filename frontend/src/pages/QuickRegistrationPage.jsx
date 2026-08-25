@@ -28,7 +28,7 @@ const QuickRegistrationPage = ({ url }) => {
   const navBg = useColorModeValue('white', 'gray.800');
   const navBorder = useColorModeValue('gray.200', 'gray.700');
 
-  document.title = "NAVIU | Quick Registration";
+  document.title = "Rouvin | Quick Registration";
 
   const validatePhoneNumber = (phone) => /^\d{10}$/.test(phone);
 
@@ -137,10 +137,7 @@ const QuickRegistrationPage = ({ url }) => {
       >
         <Flex justify="space-between" align="center" maxW="7xl" mx="auto">
           <Flex align="center" gap={3}>
-            <Image src="/naviu.png" alt="NAVIU" h="40px" objectFit="contain" />
-            <Heading size="md" color={textColor}>
-              NAVIU
-            </Heading>
+            <Image src="/rouvin.png" alt="Rouvin" h="40px" objectFit="contain" />
           </Flex>
           <Flex gap={2}>
             <Button

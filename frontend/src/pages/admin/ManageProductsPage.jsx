@@ -615,7 +615,7 @@ const ManageProductsPage = ({ url }) => {
   const cardBg = useColorModeValue('white', 'gray.800');
   const cardBorder = useColorModeValue('gray.200', 'gray.700');
 
-  document.title = "NAVIU | Manage Products";
+  document.title = "Rouvin | Manage Products";
 
   // NEW: A component to render a single product's data row in a card
   const CardDataRow = ({ label, children, labelColor = 'gray.500' }) => (

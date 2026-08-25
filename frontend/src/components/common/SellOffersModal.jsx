@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -11,44 +11,18 @@ import {
   VStack,
   HStack,
   Button,
-  useColorModeValue,
-  Badge,
-  FormControl,
-  FormLabel,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Divider
+  Divider,
 } from '@chakra-ui/react';
+import Money from './Money';
 
 const SellOffersModal = ({ isOpen, onClose, onAcceptOffer, currentPrice, productName, stockCount }) => {
-  const [step, setStep] = useState(2); // 1: Company selection, 2: Confirmation
   const [selectedOffer, setSelectedOffer] = useState(null);
-  
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const textColor = useColorModeValue('gray.800', 'white');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
-  
+
   useEffect(() => {
     if (isOpen) {
-      setStep(2);
-      const offer = { 
-        price: currentPrice || 0 
-      };
-      setSelectedOffer(offer);
+      setSelectedOffer({ price: currentPrice || 0 });
     }
   }, [isOpen, currentPrice]);
-
-  const generateOffers = () => {
-    // No longer needed
-  };
-
-  const handleOfferSelection = (offer) => {
-    setSelectedOffer(offer);
-    setStep(2);
-  };
 
   const handleConfirmSell = () => {
     if (selectedOffer) {
@@ -57,103 +31,49 @@ const SellOffersModal = ({ isOpen, onClose, onAcceptOffer, currentPrice, product
     }
   };
 
-  const handleBack = () => {
-    if (step === 2) {
-      setStep(1);
-    }
-  };
-
-  const renderStepContent = () => {
-    return (
-      <VStack spacing={4}>
-        <Box textAlign="center">
-          <Text fontSize="lg" fontWeight="bold" color={textColor} mb={1}>
-            Confirm Sale
-          </Text>
-          <Text fontSize="sm" color="gray.500">
-            Review your transaction details
-          </Text>
-        </Box>
-        
-        <Box
-          bg="gray.50"
-          border="1px solid"
-          borderColor="gray.200"
-          p={4}
-          borderRadius="md"
-          w="full"
-        >
-          <VStack spacing={3} w="full">
-            <Text fontWeight="bold" color="gray.800" fontSize="md" mb={2}>
-              Sale Summary
-            </Text>
-            
-            <HStack justify="space-between" w="full" flexWrap="wrap">
-              <Text fontSize="sm" color="gray.600">Product:</Text>
-              <Text fontSize="sm" fontWeight="bold" color="gray.800" textAlign="right" flex="1">{productName}</Text>
-            </HStack>
-            
-            <HStack justify="space-between" w="full" flexWrap="wrap">
-              <Text fontSize="sm" color="gray.600">Quantity:</Text>
-              <Text fontSize="sm" fontWeight="bold" color="gray.800" textAlign="right" flex="1">{stockCount} units</Text>
-            </HStack>
-            
-            <HStack justify="space-between" w="full" flexWrap="wrap">
-              <Text fontSize="sm" color="gray.600">Price per unit:</Text>
-              <Text fontSize="sm" fontWeight="bold" color="green.600" textAlign="right" flex="1">₹{selectedOffer?.price}</Text>
-            </HStack>
-            
-            <Divider />
-            
-            <HStack justify="space-between" w="full" p={3} bg="green.50" borderRadius="md" flexWrap="wrap">
-              <Text fontSize={{ base: "sm", md: "md" }} fontWeight="bold" color="green.700">Total Amount:</Text>
-              <Text fontSize={{ base: "md", md: "lg" }} fontWeight="bold" color="green.600" textAlign="right" flex="1">
-                ₹{(selectedOffer?.price * stockCount).toFixed(2)}
-              </Text>
-            </HStack>
-          </VStack>
-        </Box>
-      </VStack>
-    );
-  };
+  const total = (selectedOffer?.price || 0) * (stockCount || 0);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered size={{ base: "sm", md: "md" }}>
-      <ModalOverlay bg="blackAlpha.600" />
-      <ModalContent 
-        bg={bgColor} 
-        borderRadius="md" 
-        mx={4}
-        maxW={{ base: "95%", md: "500px" }}
-      >
-        <ModalHeader textAlign="center" borderBottom="1px solid" borderColor={borderColor}>
-          <VStack spacing={2}>
-            <Text fontSize="lg" fontWeight="bold" color={textColor}>
-              Confirm Sale
-            </Text>
-          </VStack>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered size={{ base: 'sm', md: 'md' }}>
+      <ModalOverlay />
+      <ModalContent className="rv-cut-lg" mx={4} maxW={{ base: '95%', md: '500px' }}>
+        <ModalHeader borderBottom="1px solid" borderColor="var(--hairline)">
+          <Text fontFamily="var(--f-display)" fontWeight={600} fontSize="20px">
+            Sell now
+          </Text>
         </ModalHeader>
-        
         <ModalBody py={6}>
-          {renderStepContent()}
+          <VStack spacing={4}>
+            <Text fontSize="13.5px" color="var(--text-3)">
+              Review the sale before it is booked
+            </Text>
+            <Box bg="var(--panel)" border="1px solid" borderColor="var(--border)" p={4} borderRadius="var(--r-structure)" w="full">
+              <VStack spacing={3} w="full">
+                <HStack justify="space-between" w="full">
+                  <Text fontSize="13.5px" color="var(--text-3)">Product</Text>
+                  <Text fontSize="13.5px" fontWeight={600}>{productName}</Text>
+                </HStack>
+                <HStack justify="space-between" w="full">
+                  <Text fontSize="13.5px" color="var(--text-3)">Quantity</Text>
+                  <Text fontFamily="var(--f-num)" fontSize="13.5px">{stockCount} units</Text>
+                </HStack>
+                <HStack justify="space-between" w="full">
+                  <Text fontSize="13.5px" color="var(--text-3)">Price per unit</Text>
+                  <Money value={selectedOffer?.price} />
+                </HStack>
+                <Divider borderColor="var(--hairline)" />
+                <HStack justify="space-between" w="full">
+                  <Text fontSize="14px" fontWeight={600}>Total</Text>
+                  <Money value={total} style={{ fontSize: '20px', fontWeight: 700 }} />
+                </HStack>
+              </VStack>
+            </Box>
+          </VStack>
         </ModalBody>
-        
         <ModalFooter>
           <HStack spacing={3} w="full">
-            <Button
-              colorScheme="green"
-              onClick={handleConfirmSell}
-              flex="1"
-            >
-              Confirm Sell
-            </Button>
-            <Button
-              colorScheme="gray"
-              variant="ghost"
-              onClick={onClose}
-            >
-              Cancel
-            </Button>
+            <Button variant="rvQuiet" onClick={onClose} flex="1">Cancel</Button>
+            <Button variant="rvAccent" onClick={handleConfirmSell} flex="1">Sell now</Button>
           </HStack>
         </ModalFooter>
       </ModalContent>

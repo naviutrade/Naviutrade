@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rouvin v2 — Mobile navigation for 8 destinations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --panel:#F4F7FC; --panel-2:#EAF0F9;
+  --hairline:#DCE3F0; --border:#C9D4E8; --control-border:#7A88A3;
+  --text:#0B1424; --text-2:#3D4B68; --text-3:#5A6883;
+  --brand:#0A3681; --brand-hover:#072B67; --brand-on:#FFFFFF;
+  --accent:#FF5F03; --accent-hover:#EE5800; --accent-on:#0B1424; --accent-text:#D24E00;
+  --ok:#0B7350; --ok-bg:#E4F4EC; --ok-bd:#A8DCC6;
+  --warn:#8A5205; --warn-bg:#FBF1DC; --warn-bd:#EBCF9A;
+  --bad:#B8112F; --bad-bg:#FCEAEE; --bad-bd:#F3B7C2;
+  --note:#14479C; --note-bg:#E6EDFB; --note-bd:#BBD0F4;
+  --rail:#05204F;
+  --shadow-pop:0 12px 32px rgba(11,20,36,.16);
+  --f-display:"Archivo",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-num:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --r-s:4px; --r-c:8px; --r-t:999px;
+  --ease:cubic-bezier(.32,.72,.28,1);
+}
+[data-theme="dark"]{
+  --bg:#070C18; --panel:#0E1626; --panel-2:#16203A;
+  --hairline:#1E2A45; --border:#22304F; --control-border:#5A6C90;
+  --text:#E8EDF7; --text-2:#C3CDE2; --text-3:#9AA9C4;
+  --brand:#2E63D8; --brand-hover:#3B6FE0; --brand-on:#FFFFFF;
+  --accent:#FF6A1F; --accent-hover:#FF8038; --accent-on:#0B1424; --accent-text:#FF8038;
+  --ok:#3ECF9A; --ok-bg:rgba(62,207,154,.10); --ok-bd:rgba(62,207,154,.34);
+  --warn:#F2C14E; --warn-bg:rgba(242,193,78,.10); --warn-bd:rgba(242,193,78,.32);
+  --bad:#FF6B7A; --bad-bg:rgba(255,107,122,.10); --bad-bd:rgba(255,107,122,.32);
+  --note:#7BA5F5; --note-bg:rgba(123,165,245,.10); --note-bd:rgba(123,165,245,.30);
+  --rail:#050912;
+  --shadow-pop:0 12px 36px rgba(0,0,0,.6);
+}
+*,*::before,*::after{box-sizing:border-box}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--f-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background 220ms var(--ease),color 220ms var(--ease)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--r-c)}
+code{font-family:var(--f-num);font-size:.85em;background:var(--panel-2);padding:2px 6px;border-radius:3px;color:var(--text-2)}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+
+.wrap{max-width:1240px;margin:0 auto;padding:34px 26px 90px}
+.head{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:26px}
+.kick{font-family:var(--f-num);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-text);margin:0 0 8px}
+h1{font-family:var(--f-display);font-weight:700;font-size:30px;letter-spacing:-.025em;margin:0 0 8px;line-height:1.12}
+.lede{color:var(--text-2);max-width:74ch;margin:0}
+h2{font-family:var(--f-display);font-weight:700;font-size:21px;letter-spacing:-.02em;margin:0 0 12px}
+h3{font-family:var(--f-display);font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;margin:22px 0 10px}
+h3:first-child{margin-top:0}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-s);padding:20px}
+.panel+.panel{margin-top:18px}
+.hint{font-size:13px;color:var(--text-3);margin:10px 0 0;max-width:78ch}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--f-body);font-size:14px;font-weight:600;height:38px;padding:0 16px;border-radius:var(--r-c);border:1px solid transparent;cursor:pointer;box-shadow:0 2px 0 0 var(--sh,rgba(11,20,36,.28));transition:transform 90ms var(--ease),box-shadow 90ms var(--ease),background-color 90ms var(--ease)}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn svg{width:17px;height:17px}
+.b-solid{background:var(--brand);color:var(--brand-on);border-color:var(--brand)}
+.b-quiet{--sh:var(--border);background:var(--bg);color:var(--text);border-color:var(--control-border)}
+.b-accent{--sh:rgba(122,44,0,.42);background:var(--accent);color:var(--accent-on);border-color:var(--accent)}
+
+/* ---------- layout ---------- */
+.split{display:grid;grid-template-columns:430px 1fr;gap:30px;align-items:start}
+.sticky{position:sticky;top:24px}
+
+/* ---------- pattern picker ---------- */
+.picker{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.pk{display:flex;align-items:flex-start;gap:12px;text-align:left;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-s);background:var(--panel);color:var(--text);cursor:pointer;font-family:var(--f-body);transition:border-color 90ms var(--ease),background 90ms var(--ease)}
+.pk:hover{background:var(--panel-2)}
+.pk.on{border-color:var(--accent);background:var(--panel-2)}
+.pk .n{font-family:var(--f-num);font-size:11px;font-weight:700;color:var(--accent-text);flex:0 0 auto;margin-top:2px}
+.pk b{display:block;font-size:14.5px;font-weight:600}
+.pk small{display:block;font-size:12.5px;color:var(--text-3);line-height:1.45}
+.verdict{display:inline-block;font-family:var(--f-num);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:var(--r-t);border:1px solid;margin-top:6px}
+.v-best{background:var(--ok-bg);color:var(--ok);border-color:var(--ok-bd)}
+.v-ok{background:var(--note-bg);color:var(--note);border-color:var(--note-bd)}
+.v-no{background:var(--bad-bg);color:var(--bad);border-color:var(--bad-bd)}
+
+/* ---------- phone ---------- */
+.phonewrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.phone{
+  width:390px;height:750px;border-radius:38px;border:1px solid var(--border);
+  background:var(--bg);box-shadow:var(--shadow-pop);overflow:hidden;position:relative;
+  display:flex;flex-direction:column;
+}
+.notch{height:26px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-family:var(--f-num);font-size:10.5px;color:var(--text-3);flex:0 0 26px;margin-top:8px}
+.phead{padding:8px 16px 10px;border-bottom:1px solid var(--hairline);display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.phead .tt{flex:1;min-width:0}
+.phead h4{font-family:var(--f-display);font-weight:700;font-size:19px;margin:0;letter-spacing:-.02em}
+.phead .sub{font-size:11.5px;color:var(--text-3)}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--rail);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--f-num);font-size:12px;font-weight:700;border:0;cursor:pointer;flex:0 0 34px}
+.ib{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:0;background:transparent;color:var(--text-3);border-radius:var(--r-c);cursor:pointer;flex:0 0 34px}
+.ib svg{width:19px;height:19px}
+.ib:hover{background:var(--panel-2);color:var(--text)}
+
+.pbody{flex:1;overflow-y:auto;padding:14px 16px 20px;background:var(--bg)}
+.pbody::-webkit-scrollbar{width:0}
+
+.balrow{display:flex;gap:10px;padding:12px 14px;background:var(--panel);border:1px solid var(--border);border-radius:var(--r-s);margin-bottom:14px;position:relative;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%)}
+.balrow::after{content:"";position:absolute;top:0;right:0;width:16px;height:16px;background:linear-gradient(45deg,transparent 50%,var(--accent) 50%)}
+.balrow .lab{font-family:var(--f-num);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);display:block}
+.balrow .val{font-family:var(--f-num);font-weight:700;font-size:15px;display:block;letter-spacing:-.02em}
+.pos{color:var(--ok)}
+.sepv{width:1px;background:var(--border)}
+
+.seg{display:flex;background:var(--panel-2);border:1px solid var(--border);border-radius:var(--r-c);padding:3px;margin-bottom:14px}
+.seg button{flex:1;height:34px;border:0;background:transparent;color:var(--text-3);font-family:var(--f-body);font-size:13.5px;font-weight:600;border-radius:6px;cursor:pointer;transition:background 90ms var(--ease),color 90ms var(--ease)}
+.seg button.on{background:var(--bg);color:var(--text);box-shadow:0 1px 2px rgba(11,20,36,.10)}
+
+.crd{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-s);padding:13px;margin-bottom:10px}
+.crd .t{font-size:13.5px;font-weight:600;margin-bottom:3px}
+.crd .m{font-family:var(--f-num);font-size:12px;color:var(--text-3)}
+.tag{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 8px;border-radius:var(--r-t);font-family:var(--f-num);font-size:9.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border:1px solid}
+.tag svg{width:11px;height:11px}
+.t-ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok-bd)}
+.t-note{background:var(--note-bg);color:var(--note);border-color:var(--note-bd)}
+
+/* ---------- bottom bar ---------- */
+.bbar{
+  flex:0 0 auto;border-top:1px solid var(--hairline);background:var(--bg);
+  display:flex;padding:6px 4px 14px;position:relative;
+}
+.bbar.scrollx{overflow-x:auto;scroll-snap-type:x proximity;padding-left:8px;padding-right:8px}
+.bbar.scrollx::-webkit-scrollbar{display:none}
+.bt{
+  flex:1 0 auto;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;border:0;background:transparent;color:var(--text-3);cursor:pointer;
+  padding:6px 2px;border-radius:var(--r-c);font-family:var(--f-body);position:relative;
+  transition:color 90ms var(--ease);
+}
+.bt svg{width:22px;height:22px}
+.bt span{font-size:10.5px;font-weight:500;line-height:1.1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.bt.on{color:var(--text)}
+.bt.on::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:22px;height:3px;background:var(--accent);border-radius:0 0 3px 3px}
+.bt:active{background:var(--panel-2)}
+.bt .dot{position:absolute;top:5px;right:calc(50% - 16px);width:7px;height:7px;border-radius:50%;background:var(--accent);border:1.5px solid var(--bg)}
+.bbar.eight .bt{flex:1 1 0;min-width:0}
+.bbar.eight .bt span{font-size:8.5px;letter-spacing:-.02em}
+.bbar.eight .bt svg{width:19px;height:19px}
+
+/* centre action variant */
+.fab{
+  width:52px;height:52px;border-radius:16px;background:var(--accent);color:var(--accent-on);
+  border:0;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  margin-top:-18px;box-shadow:0 4px 12px rgba(255,95,3,.36);flex:0 0 52px;
+}
+.fab svg{width:24px;height:24px}
+.fabslot{flex:1 0 auto;display:flex;justify-content:center;align-items:flex-start}
+
+/* ---------- sheet ---------- */
+.scrim{position:absolute;inset:0;background:rgba(6,11,22,.52);opacity:0;pointer-events:none;transition:opacity 220ms var(--ease);z-index:5}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;background:var(--bg);
+  border-top:1px solid var(--border);border-radius:18px 18px 0 0;
+  transform:translateY(102%);transition:transform 220ms var(--ease);z-index:6;
+  padding:10px 14px 22px;max-height:78%;overflow-y:auto;
+}
+.sheet.open{transform:translateY(0)}
+.grab{width:38px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 12px}
+.sheet h5{font-family:var(--f-display);font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);margin:0 0 10px}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sitem{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  min-height:80px;border:1px solid var(--border);border-radius:var(--r-s);background:var(--panel);
+  color:var(--text);cursor:pointer;font-family:var(--f-body);font-size:12px;font-weight:500;padding:10px 6px;
+}
+.sitem svg{width:23px;height:23px;color:var(--text-2)}
+.sitem:active{background:var(--panel-2)}
+.slist{display:flex;flex-direction:column;gap:2px;margin-top:12px}
+.srow{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 8px;border:0;background:transparent;color:var(--text);cursor:pointer;font-family:var(--f-body);font-size:14px;border-radius:var(--r-c);text-align:left}
+.srow svg{width:20px;height:20px;color:var(--text-3);flex:0 0 20px}
+.srow:active{background:var(--panel-2)}
+.srow .ch{margin-left:auto;color:var(--text-3)}
+.srow.danger{color:var(--bad)}
+.srow.danger svg{color:var(--bad)}
+
+/* ---------- target ruler ---------- */
+.ruler{display:flex;gap:2px;margin:10px 0 4px}
+.rs{height:36px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:var(--f-num);font-size:9px;color:#fff;flex:1}
+.rs.bad{background:var(--bad)}
+.rs.good{background:var(--ok)}
+.rlab{font-family:var(--f-num);font-size:11px;color:var(--text-3)}
+
+table.t{width:100%;border-collapse:collapse;font-size:13.5px}
+table.t th{text-align:left;font-family:var(--f-num);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--text-3);background:var(--panel-2);padding:8px 12px;border-bottom:1px solid var(--border)}
+table.t td{padding:9px 12px;border-bottom:1px solid var(--hairline);vertical-align:top;line-height:1.45}
+table.t tr:last-child td{border-bottom:0}
+.yes{color:var(--ok);font-weight:600}
+.no{color:var(--bad);font-weight:600}
+.mid{color:var(--warn);font-weight:600}
+
+.al{display:flex;gap:11px;padding:13px 15px;border-radius:var(--r-s);border:1px solid;border-left-width:3px;margin-bottom:11px}
+.al svg{width:19px;height:19px;flex:0 0 19px;margin-top:1px}
+.al b{display:block;font-size:14px;font-weight:600;margin-bottom:2px}
+.al p{margin:0;font-size:13px;color:var(--text-2);line-height:1.5}
+.al-warn{background:var(--warn-bg);border-color:var(--warn-bd);border-left-color:var(--warn)} .al-warn b,.al-warn svg{color:var(--warn)}
+.al-ok{background:var(--ok-bg);border-color:var(--ok-bd);border-left-color:var(--ok)} .al-ok b,.al-ok svg{color:var(--ok)}
+.al-note{background:var(--note-bg);border-color:var(--note-bd);border-left-color:var(--note)} .al-note b,.al-note svg{color:var(--note)}
+
+ul.ck{list-style:none;padding:0;margin:0}
+ul.ck li{display:flex;gap:9px;font-size:13.5px;line-height:1.5;color:var(--text-2);margin-bottom:8px}
+ul.ck li svg{width:16px;height:16px;flex:0 0 16px;margin-top:2px}
+ul.ck li.p svg{color:var(--ok)} ul.ck li.m svg{color:var(--bad)}
+
+pre{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--r-s);padding:14px;overflow-x:auto;font-family:var(--f-num);font-size:12px;line-height:1.6;margin:0}
+
+@media (max-width:1080px){
+  .split{grid-template-columns:1fr}
+  .sticky{position:static}
+  .phone{width:100%;max-width:390px;margin:0 auto}
+}
+@media (max-width:560px){
+  .wrap{padding:22px 14px 70px}
+  h1{font-size:24px}
+  .phone{height:680px;border-radius:26px}
+  .sgrid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="3.2" width="7.4" height="7.4" rx="1.6"/><rect x="13.4" y="3.2" width="7.4" height="7.4" rx="1.6"/><rect x="3.2" y="13.4" width="7.4" height="7.4" rx="1.6"/><rect x="13.4" y="13.4" width="7.4" height="7.4" rx="1.6"/></symbol>
+<symbol id="i-home-f" viewBox="0 0 24 24" fill="currentColor"><rect x="3.2" y="3.2" width="7.4" height="7.4" rx="1.6"/><rect x="13.4" y="3.2" width="7.4" height="7.4" rx="1.6"/><rect x="3.2" y="13.4" width="7.4" height="7.4" rx="1.6"/><rect x="13.4" y="13.4" width="7.4" height="7.4" rx="1.6"/></symbol>
+<symbol id="i-pkg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 7.6v8.8a1.6 1.6 0 0 1-.85 1.42l-6.9 3.7a1.6 1.6 0 0 1-1.5 0l-6.9-3.7a1.6 1.6 0 0 1-.85-1.42V7.6a1.6 1.6 0 0 1 .85-1.42l6.9-3.7a1.6 1.6 0 0 1 1.5 0l6.9 3.7A1.6 1.6 0 0 1 20.5 7.6Z"/><path d="m3.9 6.7 8.1 4.4 8.1-4.4M12 21v-9.9"/></symbol>
+<symbol id="i-pkg-f" viewBox="0 0 24 24" fill="currentColor"><path d="M20.7 6.9 12.6 2.5a1.5 1.5 0 0 0-1.2 0L3.3 6.9a1 1 0 0 0-.5.9v8.4a1.6 1.6 0 0 0 .85 1.42l7.6 4.1a1.5 1.5 0 0 0 1.5 0l7.6-4.1a1.6 1.6 0 0 0 .85-1.42V7.8a1 1 0 0 0-.5-.9Z"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c0-8 4.5-14 16-14 0 9-4.8 13.5-11 13.5A5 5 0 0 1 4 20Z"/><path d="M4.6 19.4C9 15 12.5 12.2 17 10.6"/></symbol>
+<symbol id="i-rcpt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.6v18.8l2.3-1.5 2.4 1.5 2.3-1.5 2.3 1.5 2.4-1.5 2.3 1.5V2.6l-2.3 1.5-2.4-1.5L12 4.1 9.7 2.6 7.3 4.1Z"/><path d="M9 9h6M9 13h6"/></symbol>
+<symbol id="i-rcpt-f" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 1.7a1 1 0 0 0-1 .05l-1.9 1.2-1.9-1.2a1 1 0 0 0-1.1 0L11.9 3 10 1.75a1 1 0 0 0-1.1 0L7 3 5.1 1.75A1 1 0 0 0 3.6 2.6v18.8a1 1 0 0 0 1.5.85L7 21l1.9 1.25a1 1 0 0 0 1.1 0L11.9 21l1.9 1.25a1 1 0 0 0 1.1 0L16.8 21l1.9 1.25a1 1 0 0 0 1.5-.85V2.6a1 1 0 0 0-.7-.9ZM15 14H9a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2Zm0-4H9a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2Z"/></symbol>
+<symbol id="i-wal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 7.4A1.8 1.8 0 0 1 5 5.6h13.2a1.6 1.6 0 0 1 1.6 1.6V9"/><path d="M3.2 7.4v9.4a1.8 1.8 0 0 0 1.8 1.8h14a1.6 1.6 0 0 0 1.6-1.6V9.4a1.6 1.6 0 0 0-1.6-1.6"/><circle cx="16.6" cy="13" r="1.3" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-wal-f" viewBox="0 0 24 24" fill="currentColor"><path d="M20.4 7.6H5.4a.6.6 0 0 1 0-1.2h13.4a1 1 0 0 0 0-2H5.4A2.6 2.6 0 0 0 2.8 7v10a2.8 2.8 0 0 0 2.8 2.8h14.8a1.4 1.4 0 0 0 1.4-1.4V9a1.4 1.4 0 0 0-1.4-1.4ZM17 14.6a1.6 1.6 0 1 1 1.6-1.6 1.6 1.6 0 0 1-1.6 1.6Z"/></symbol>
+<symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.8" y="8.2" width="18.4" height="4.6" rx="1.2"/><path d="M4.6 12.8v7a1.2 1.2 0 0 0 1.2 1.2h12.4a1.2 1.2 0 0 0 1.2-1.2v-7M12 8.2V21"/><path d="M12 8.2S10.8 3 8.4 3a2.6 2.6 0 0 0 0 5.2ZM12 8.2S13.2 3 15.6 3a2.6 2.6 0 0 1 0 5.2Z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.6"/><path d="M2.8 19a6.6 6.6 0 0 1 12.4 0"/><path d="M16.4 4.8a3.6 3.6 0 0 1 0 6.9M18 13.6a6.6 6.6 0 0 1 3.2 5.4"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><circle cx="12" cy="10" r="3.4"/><path d="M5.6 18.6a8 8 0 0 1 12.8 0"/></symbol>
+<symbol id="i-coins" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="6.2" rx="6" ry="2.8"/><path d="M3 6.2v4.2c0 1.55 2.7 2.8 6 2.8s6-1.25 6-2.8"/><ellipse cx="15" cy="16.4" rx="6" ry="2.8"/><path d="M9 13.2v4.4c0 1.55 2.7 2.8 6 2.8s6-1.25 6-2.8v-1.2"/></symbol>
+<symbol id="i-more" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="1.7"/><circle cx="12" cy="6" r="1.7"/><circle cx="18" cy="6" r="1.7"/><circle cx="6" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="6" cy="18" r="1.7"/><circle cx="12" cy="18" r="1.7"/><circle cx="18" cy="18" r="1.7"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="7"/><path d="m16 16 5 5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6v14.8M4.6 12h14.8"/></symbol>
+<symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17.5 9.4 11l3.8 3.8L21 7"/><path d="M15.4 7H21v5.6"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 9.4 12 3.6l9.4 5.8M4.6 9.8v8.4M9.4 9.8v8.4M14.6 9.8v8.4M19.4 9.8v8.4M2.6 20.4h18.8"/></symbol>
+<symbol id="i-hour" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 21h12"/><path d="M7.4 3v3.2a4.6 4.6 0 0 0 2 3.8l2.6 2 2.6-2a4.6 4.6 0 0 0 2-3.8V3"/><path d="M7.4 21v-3.2a4.6 4.6 0 0 1 2-3.8l2.6-2 2.6 2a4.6 4.6 0 0 1 2 3.8V21"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M9.4 20.4H5.2a1.6 1.6 0 0 1-1.6-1.6V5.2a1.6 1.6 0 0 1 1.6-1.6h4.2"/><path d="M15.6 16.4 20 12l-4.4-4.4M20 12H9.2"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9.4 5.4 7 6.6-7 6.6"/></symbol>
+<symbol id="i-check-f" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.4A9.6 9.6 0 1 0 21.6 12 9.61 9.61 0 0 0 12 2.4Zm4.5 7.6-5.2 6a1 1 0 0 1-1.47.05L7.4 13.6a1 1 0 0 1 1.4-1.42l1.66 1.63 4.5-5.2A1 1 0 0 1 16.5 10Z"/></symbol>
+<symbol id="i-warn-f" viewBox="0 0 24 24" fill="currentColor"><path d="M21.4 18.1 13.7 3.6a2 2 0 0 0-3.4 0L2.6 18.1A1.9 1.9 0 0 0 4.3 21h15.4a1.9 1.9 0 0 0 1.7-2.9ZM11 9.4a1 1 0 0 1 2 0v4.2a1 1 0 0 1-2 0Zm1 8.6a1.3 1.3 0 1 1 1.3-1.3A1.3 1.3 0 0 1 12 18Z"/></symbol>
+<symbol id="i-x-f" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.4A9.6 9.6 0 1 0 21.6 12 9.61 9.61 0 0 0 12 2.4Zm3.5 11.7a1 1 0 0 1-1.42 1.42L12 13.4l-2.1 2.12a1 1 0 0 1-1.42-1.42L10.6 12 8.5 9.9a1 1 0 1 1 1.42-1.42L12 10.6l2.1-2.12a1 1 0 0 1 1.42 1.42L13.4 12Z"/></symbol>
+<symbol id="i-info-f" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.4A9.6 9.6 0 1 0 21.6 12 9.61 9.61 0 0 0 12 2.4Zm-.4 4a1.3 1.3 0 1 1-1.3 1.3 1.3 1.3 0 0 1 1.3-1.3ZM13.4 17.4h-1.6a1.4 1.4 0 0 1-1.4-1.4v-4a.6.6 0 0 0-.6-.6 1 1 0 0 1 0-2h1.2a1.4 1.4 0 0 1 1.4 1.4v4a.6.6 0 0 0 .6.6 1 1 0 0 1 0 2Z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.8V5M12 19v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.8 12H5M19 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 14.4A8.8 8.8 0 0 1 9.6 3.6a8.8 8.8 0 1 0 10.8 10.8Z"/></symbol>
+</svg>
+
+<div class="wrap">
+
+  <div class="head">
+    <div>
+      <p class="kick">Rouvin DS v2 · mobile navigation</p>
+      <h1>Eight destinations, five slots</h1>
+      <p class="lede">A bottom bar physically holds four or five items. You have eight. Below are the four honest ways out, live on a phone frame — switch between them, tap the bars, open the sheets. My recommendation and the code changes are at the bottom.</p>
+    </div>
+    <button class="btn b-quiet" id="theme" style="margin-left:auto"><svg id="ticon"><use href="#i-moon"/></svg><span id="tlabel">Dark</span></button>
+  </div>
+
+  <div class="panel" style="margin-bottom:24px">
+    <h3>Why five, and not eight</h3>
+    <p style="margin:0 0 4px;font-size:14px;color:var(--text-2)">A touch target must be at least 44 × 44px, and WCAG 2.2 requires the layout to stay usable down to <b>320px</b> wide. Divide the bar and the answer is arithmetic:</p>
+    <div class="ruler" id="ruler8"></div>
+    <p class="rlab" style="margin:0 0 14px">8 tabs at 320px = <b class="no">40px each</b> — below the minimum. At 360px (most Android phones) = 45px, which technically passes but leaves no room for a legible label. “Wild products” becomes “Wild pr…”.</p>
+    <div class="ruler" id="ruler4"></div>
+    <p class="rlab" style="margin:0">4 tabs at 320px = <b class="yes">80px each</b> — comfortable target, full label, room for the thumb.</p>
+    <p class="hint">There is a second reason beyond pixels: people don't scan eight icons. They scan three or four and then stop. Eight equal-weight tabs means every destination is equally unimportant.</p>
+  </div>
+
+  <div class="split">
+
+    <!-- ============ LEFT: PHONE ============ -->
+    <div class="sticky">
+      <div class="picker">
+        <button class="pk on" data-p="a">
+          <span class="n">A</span>
+          <span><b>4 + More sheet</b><small>Four fixed tabs, fifth slot opens a sheet with the rest. The safe, familiar default.</small><span class="verdict v-ok">Safe fallback</span></span>
+        </button>
+        <button class="pk" data-p="b">
+          <span class="n">B</span>
+          <span><b>Consolidate the IA to 4</b><small>Merge related destinations so there are only four real ones. No sheet needed.</small><span class="verdict v-best">Recommended</span></span>
+        </button>
+        <button class="pk" data-p="c">
+          <span class="n">C</span>
+          <span><b>Centre action + 4</b><small>Four tabs around a raised Buy button. Good if buying is the money-maker.</small><span class="verdict v-ok">Situational</span></span>
+        </button>
+        <button class="pk" data-p="d">
+          <span class="n">D</span>
+          <span><b>All 8, scrolling</b><small>Cram them in and let the bar scroll sideways.</small><span class="verdict v-no">Don't ship this</span></span>
+        </button>
+      </div>
+
+      <div class="phonewrap">
+        <div class="phone">
+          <div class="notch"><span>14:32</span><span>Rouvin · vendor</span><span class="num">100%</span></div>
+
+          <div class="phead">
+            <div class="tt">
+              <h4 id="pgtitle">Dashboard</h4>
+              <div class="sub" id="pgsub">Tue 25 Aug · 14:32 IST</div>
+            </div>
+            <button class="ib" aria-label="Search"><svg><use href="#i-search"/></svg></button>
+            <button class="avatar" aria-label="Profile and account" id="avbtn">AM</button>
+          </div>
+
+          <div class="pbody" id="pbody"></div>
+
+          <nav class="bbar" id="bbar" aria-label="Main"></nav>
+
+          <div class="scrim" id="scrim"></div>
+          <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="More destinations">
+            <div class="grab"></div>
+            <div id="sheetbody"></div>
+          </div>
+        </div>
+        <p class="rlab" style="text-align:center">390 × 750 · tap the bar, open the sheet, tap the avatar</p>
+      </div>
+    </div>
+
+    <!-- ============ RIGHT: EXPLANATION ============ -->
+    <div id="detail"></div>
+
+  </div>
+
+  <!-- ============ RECOMMENDATION ============ -->
+  <div style="margin-top:34px">
+    <h2>What I'd actually ship</h2>
+    <div class="panel">
+      <div class="al al-ok"><svg><use href="#i-check-f"/></svg><div><b>Pattern B, with A as the safety net</b><p>Consolidate to four real destinations, and keep a “More” entry inside the fourth for the long tail. You get comfortable targets, readable labels, and — the important part — a mobile IA that finally tells the vendor what matters instead of presenting eight equal choices.</p></div></div>
+
+      <h3>The consolidation, item by item</h3>
+      <table class="t">
+        <tr><th>Today (8 rail items)</th><th>Becomes</th><th>Why it's safe</th></tr>
+        <tr><td>Dashboard</td><td><b>Home</b> — tab 1</td><td>Unchanged</td></tr>
+        <tr><td>Products<br>Wild products</td><td><b>Buy</b> — tab 2, with a <code>Regular · Wild</code> segmented control</td><td>Your own report shows the two pages are structurally identical — same card, same modal, same wallet-pay flow. They are one task with two inventories, not two destinations.</td></tr>
+        <tr><td>Wallet<br>Claims<br>Earnings</td><td><b>Wallet</b> — tab 3</td><td>Claims already <i>is</i> a wallet tab — the rail links to <code>/vendor/wallet?view=earnings</code>. It has never been a separate page. Promoting a query string to a top-level destination was the original mistake.</td></tr>
+        <tr><td>Purchases<br>Recent activity<br>Referrals</td><td><b>History</b> — tab 4, three sub-tabs</td><td>All three are read-only ledgers with a search box. Same component, three data sources. This is also how orphaned <code>/vendor/referrals</code> finally gets an entry point.</td></tr>
+        <tr><td>Profile<br>Log out</td><td>Avatar menu in the header</td><td>Account actions belong to the account control, not the navigation. Every banking app on the vendor's phone already works this way.</td></tr>
+      </table>
+      <p class="hint"><b>8 → 4, and nothing was deleted.</b> Every screen is still one or two taps away. What changed is that the phone now says “these are the four things you do here”, which is true, instead of “here are eight equally weighted options”, which was never true.</p>
+
+      <h3>Rules for whichever pattern you pick</h3>
+      <ul class="ck">
+        <li class="p"><svg><use href="#i-check-f"/></svg>Minimum <b>48px</b> touch height on the bar, <b>44px</b> absolute floor. Add <code>env(safe-area-inset-bottom)</code> padding for the iPhone home indicator.</li>
+        <li class="p"><svg><use href="#i-check-f"/></svg><b>Labels always on.</b> Icon-only bottom bars fail badly for infrequent users, and half of your vendors open the app twice a week. If a label doesn't fit, you have too many tabs — that is the signal, not a font-size problem.</li>
+        <li class="p"><svg><use href="#i-check-f"/></svg><b>Never more than five slots</b>, and the fifth is “More”, never a real destination competing with the other four.</li>
+        <li class="p"><svg><use href="#i-check-f"/></svg>Active state uses the <b>filled glyph plus the 3px accent edge</b>, so it reads without colour — the greyscale test still applies.</li>
+        <li class="p"><svg><use href="#i-check-f"/></svg>The <b>balance strip stays</b> above the content on every screen. Vendors check affordability constantly; the bar is not where that lives.</li>
+        <li class="p"><svg><use href="#i-check-f"/></svg>Badge the tab, not the app: an unlocked trade puts a dot on <b>Wallet</b>, a rejected purchase puts one on <b>History</b>.</li>
+        <li class="m"><svg><use href="#i-x-f"/></svg>Never put <b>Log out</b> in a bottom bar. It is one mis-tap from a destination and it costs the vendor their session mid-purchase.</li>
+        <li class="m"><svg><use href="#i-x-f"/></svg>Never hide the bar on scroll. Reappearance is unpredictable and it breaks re-orientation.</li>
+      </ul>
+
+      <h3>Code — where this lands</h3>
+      <pre>frontend/src/components/layout/
+├─ VendorRail.jsx          desktop only — unchanged, keeps all 8
+├─ VendorBottomBar.jsx     NEW — renders TABS_MOBILE (4 + optional More)
+├─ MoreSheet.jsx           NEW — bottom sheet, focus-trapped, Esc/swipe to close
+└─ nav.config.js           NEW — one source of truth for both
+
+// nav.config.js
+export const DESTINATIONS = [ /* all 8, with icon, path, label */ ];
+export const TABS_MOBILE  = ['dashboard','buy','wallet','history'];
+export const MORE_MOBILE  = ['claims','referrals','profile','logout'];</pre>
+      <p class="hint">One config, two renderers. The rail keeps all eight on desktop; the bar reads <code>TABS_MOBILE</code>. Add a destination later and you edit one array, not two components. Render the bar below <code>md</code> only — <code>useBreakpointValue({ base: true, md: false })</code> in Chakra.</p>
+
+      <div class="al al-note" style="margin-top:18px"><svg><use href="#i-info-f"/></svg><div><b>If the client insists on all eight visible</b><p>Ship pattern A, not D. A “More” sheet with a 3-across grid shows all four remaining destinations at once, with 80px targets — arguably <i>more</i> visible than eight 40px tabs nobody can hit. Frame it that way and the objection usually dissolves.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement, tbtn=document.getElementById('theme'),
+      ticon=document.getElementById('ticon'), tlabel=document.getElementById('tlabel');
+  function paint(t){root.setAttribute('data-theme',t);var d=t==='dark';
+    tlabel.textContent=d?'Light':'Dark';ticon.innerHTML='<use href="'+(d?'#i-sun':'#i-moon')+'"/>';}
+  paint(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  tbtn.addEventListener('click',function(){paint(root.getAttribute('data-theme')==='dark'?'light':'dark');});
+
+  // ---- target-size rulers ----
+  function ruler(el,n,cls,w){
+    var h='';for(var i=0;i<n;i++){h+='<div class="rs '+cls+'">'+Math.round(w/n)+'</div>';}
+    document.getElementById(el).innerHTML=h;
+  }
+  ruler('ruler8',8,'bad',320); ruler('ruler4',4,'good',320);
+
+  // ---- content blocks ----
+  var BAL='<div class="balrow"><div><span class="lab">Wallet</span><span class="val">₹ 48,250.00</span></div><div class="sepv"></div><div><span class="lab">Unrealised</span><span class="val pos">+₹ 6,140.00</span></div></div>';
+  var HOME=BAL+
+    '<div class="crd"><div class="t">Needs you today</div><div class="m" style="margin-bottom:8px">3 items</div>'+
+    '<div style="display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid var(--hairline)"><svg style="width:17px;height:17px;color:var(--ok)"><use href="#i-check-f"/></svg><div style="flex:1;font-size:13px">2 trades unlocked<div class="m">₹ 4,400.00 available</div></div></div>'+
+    '<div style="display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid var(--hairline)"><svg style="width:17px;height:17px;color:var(--warn)"><use href="#i-warn-f"/></svg><div style="flex:1;font-size:13px">Withdrawal pending<div class="m">₹ 5,000.00 · 24 Aug</div></div></div></div>'+
+    '<div class="crd"><div class="t">Your position</div><div class="val" style="font-family:var(--f-num);font-weight:700;font-size:23px;letter-spacing:-.03em">₹ 1,40,650.00</div><div class="m">Wallet ₹ 48,250 · Held ₹ 92,400</div></div>';
+  var BUYSEG='<div class="seg" id="buyseg"><button class="on" data-s="reg">Regular</button><button data-s="wild">Wild</button></div>';
+  var BUYCARDS='<div class="crd"><div class="t">80 GSM kraft</div><div class="m">₹ 1,240.00 / unit · 42 available</div><div style="margin-top:8px"><span class="tag t-ok"><svg><use href="#i-trend"/></svg>+9.6% in 3 days</span></div></div>'+
+    '<div class="crd"><div class="t">120 GSM art</div><div class="m">₹ 1,550.00 / unit · 18 available</div><div style="margin-top:8px"><span class="tag t-ok"><svg><use href="#i-trend"/></svg>+7.1% in 4 days</span></div></div>';
+  var WILDCARDS='<div class="crd"><div class="t">Teak offcut</div><div class="m">₹ 2,400.00 / unit · GST incl. · 9 available</div><div style="margin-top:8px"><span class="tag t-ok"><svg><use href="#i-trend"/></svg>+6.7% in 5 days</span></div></div>'+
+    '<div class="crd"><div class="t">Rosewood</div><div class="m">₹ 9,200.00 / unit · GST incl. · 3 available</div></div>';
+  var WALLET=BAL+
+    '<div class="seg"><button class="on">Held</button><button>Claims</button><button>Earnings</button></div>'+
+    '<div class="crd"><div class="t">80 GSM kraft · 12 units</div><div class="m">Paid ₹ 14,880.00 → now ₹ 16,080.00</div><div style="margin-top:8px;display:flex;gap:8px;align-items:center"><span class="tag t-ok"><svg><use href="#i-trend"/></svg>Unlocked</span><button class="btn b-accent" style="height:30px;font-size:12.5px;padding:0 12px;margin-left:auto">Sell now</button></div></div>'+
+    '<div class="crd"><div class="t">Teak offcut · 4 units</div><div class="m">Paid ₹ 9,600.00 → now ₹ 10,240.00</div><div style="margin-top:8px"><span class="tag t-note"><svg><use href="#i-hour"/></svg>04:12:38</span></div></div>';
+  var HIST='<div class="seg"><button class="on">Purchases</button><button>Activity</button><button>Referrals</button></div>'+
+    '<div class="crd"><div class="t">80 GSM kraft · 12 units</div><div class="m">₹ 14,880.00 · 24 Aug, 11:04 IST</div><div style="margin-top:8px"><span class="tag t-ok"><svg><use href="#i-check-f"/></svg>Approved</span></div></div>'+
+    '<div class="crd"><div class="t">Rosewood · 2 units</div><div class="m">₹ 18,400.00 · 22 Aug, 16:40 IST</div><div style="margin-top:8px"><span class="tag t-note"><svg><use href="#i-hour"/></svg>Pending</span></div></div>';
+
+  var PAGES={
+    dashboard:{t:'Dashboard',s:'Tue 25 Aug · 14:32 IST',b:HOME},
+    buy:{t:'Buy',s:'Regular and wild stock',b:BUYSEG+BUYCARDS},
+    products:{t:'Products',s:'18 available',b:BUYCARDS},
+    wild:{t:'Wild products',s:'6 available',b:WILDCARDS},
+    wallet:{t:'Wallet',s:'7 trades held',b:WALLET},
+    history:{t:'History',s:'Purchases, activity, referrals',b:HIST},
+    purchases:{t:'Purchases',s:'41 approved',b:HIST},
+    claims:{t:'Claims',s:'Referral bonuses',b:'<div class="crd"><div class="t">R. Kulkarni</div><div class="m">Joined 18 Aug · bonus ₹ 500.00</div><div style="margin-top:8px"><button class="btn b-accent" style="height:30px;font-size:12.5px;padding:0 12px">Claim bonus</button></div></div>'},
+    referrals:{t:'Referrals',s:'14 total',b:'<div class="crd"><div class="t">S. Iyer</div><div class="m">₹ 62,400 spent · 8 purchases</div></div><div class="crd"><div class="t">D. Fernandes</div><div class="m">₹ 21,050 spent · 3 purchases</div></div>'},
+    profile:{t:'Profile',s:'KYC and bank details',b:'<div class="crd"><div class="t">A. Mehra</div><div class="m">RVN-VD-4821 · verified</div></div>'}
+  };
+
+  // ---- nav definitions per pattern ----
+  var ICON={dashboard:'i-home',products:'i-pkg',wild:'i-leaf',purchases:'i-rcpt',wallet:'i-wal',
+            claims:'i-gift',referrals:'i-users',profile:'i-user',buy:'i-pkg',history:'i-rcpt',earnings:'i-coins'};
+  var FILL={dashboard:'i-home-f',buy:'i-pkg-f',products:'i-pkg-f',wallet:'i-wal-f',history:'i-rcpt-f',purchases:'i-rcpt-f'};
+  var LABEL={dashboard:'Home',products:'Products',wild:'Wild',purchases:'Purchases',wallet:'Wallet',
+             claims:'Claims',referrals:'Referrals',profile:'Profile',buy:'Buy',history:'History'};
+
+  var PATTERNS={
+    a:{tabs:['dashboard','products','wallet','purchases'],more:['wild','claims','referrals','profile'],sheet:'grid'},
+    b:{tabs:['dashboard','buy','wallet','history'],more:null},
+    c:{tabs:['dashboard','wallet','__fab__','purchases','profile'],more:['products','wild','claims','referrals'],sheet:'grid',fab:'buy'},
+    d:{tabs:['dashboard','products','wild','purchases','wallet','claims','referrals','profile'],more:null,eight:true}
+  };
+
+  var DETAIL={
+    a:{h:'A · Four tabs plus a More sheet',
+       body:'<p style="margin:0 0 14px;color:var(--text-2)">The pattern every phone user already knows. Four fixed destinations, and the fifth slot opens a bottom sheet holding the rest as a 3-across grid with large targets.</p>'+
+       '<ul class="ck"><li class="p"><svg><use href="#i-check-f"/></svg>Nothing is removed and no IA decisions are needed — the fastest thing to build.</li>'+
+       '<li class="p"><svg><use href="#i-check-f"/></svg>Targets in the sheet are ~110px wide, far bigger than any tab.</li>'+
+       '<li class="p"><svg><use href="#i-check-f"/></svg>Profile and Log out live in the sheet, safely away from mis-taps.</li>'+
+       '<li class="m"><svg><use href="#i-x-f"/></svg>Everything behind “More” gets measurably less use. Whatever you put there, you are choosing to de-prioritise.</li>'+
+       '<li class="m"><svg><use href="#i-x-f"/></svg>Two taps to reach four of your eight destinations.</li></ul>'+
+       '<p class="hint"><b>Pick this if</b> the client will not accept any IA change, or you need something shippable this sprint.</p>'},
+    b:{h:'B · Consolidate to four real destinations',
+       body:'<p style="margin:0 0 14px;color:var(--text-2)">Instead of hiding four items, notice that four of them were never separate destinations. Products and Wild products are one task with two inventories. Claims is literally a wallet query string. Purchases, Activity and Referrals are three read-only ledgers with a search box.</p>'+
+       '<ul class="ck"><li class="p"><svg><use href="#i-check-f"/></svg>Four tabs, 80px targets at 320px, every label fully readable.</li>'+
+       '<li class="p"><svg><use href="#i-check-f"/></svg>No “More” sheet, so nothing is buried and nothing is two taps away.</li>'+
+       '<li class="p"><svg><use href="#i-check-f"/></svg>Fixes the orphaned <code>/vendor/referrals</code> route from your report — it becomes a History sub-tab.</li>'+
+       '<li class="p"><svg><use href="#i-check-f"/></svg>The same four map cleanly back onto desktop, so mobile and desktop stop diverging.</li>'+
+       '<li class="m"><svg><use href="#i-x-f"/></svg>Requires a real IA decision and a client conversation — it is not a pure CSS change.</li>'+
+       '<li class="m"><svg><use href="#i-x-f"/></svg>Segmented controls add one tap for a vendor who only ever buys wild stock. Remember the last-used segment to neutralise that.</li></ul>'+
+       '<p class="hint"><b>Pick this if</b> you can spend a day on IA. It is the only option that makes the phone experience genuinely better rather than merely legal.</p>'},
+    c:{h:'C · Centre action with four tabs around it',
+       body:'<p style="margin:0 0 14px;color:var(--text-2)">Four destinations flanking a raised accent button for the single action that makes the business money. On Rouvin that is buying stock.</p>'+
+       '<ul class="ck"><li class="p"><svg><use href="#i-check-f"/></svg>Puts the revenue action under the thumb, permanently.</li>'+
+       '<li class="p"><svg><use href="#i-check-f"/></svg>Reads as a deliberately designed app rather than a shrunken desktop one — clients respond to it.</li>'+
+       '<li class="m"><svg><use href="#i-x-f"/></svg>Spends a whole slot on one action, so the remaining four still cannot cover eight destinations without a sheet behind one of them.</li>'+
+       '<li class="m"><svg><use href="#i-x-f"/></svg>The raised button is a navigation-shaped thing that is not navigation. Some users tap it expecting a page.</li></ul>'+
+       '<p class="hint"><b>Pick this if</b> buy-conversion is the metric the client is judged on. Otherwise it is decoration with a cost.</p>'},
+    d:{h:'D · All eight in a scrolling bar',
+       body:'<div class="al al-warn"><svg><use href="#i-warn-f"/></svg><div><b>Shown so you can see why not</b><p>Look at the bar below. The labels are 8.5px and clipped, the icons have shrunk, and items seven and eight are off-screen with no indication they exist.</p></div></div>'+
+       '<ul class="ck"><li class="m"><svg><use href="#i-x-f"/></svg><b>40px targets at 320px</b> — a WCAG 2.5.8 failure, not a preference.</li>'+
+       '<li class="m"><svg><use href="#i-x-f"/></svg>A horizontally scrolling bottom bar has almost no discoverability. Users do not swipe navigation bars; they assume what they see is all there is.</li>'+
+       '<li class="m"><svg><use href="#i-x-f"/></svg>Scroll position persists unpredictably between screens, so the same tab is in a different place each visit.</li>'+
+       '<li class="m"><svg><use href="#i-x-f"/></svg>It collides with the OS back-swipe gesture on both platforms.</li></ul>'+
+       '<p class="hint"><b>Do not ship this.</b> It is included because it is the intuitive first idea, and seeing it usually ends the debate faster than describing it.</p>'}
+  };
+
+  var pattern='a', current='dashboard', segState='reg';
+  var bbar=document.getElementById('bbar'), pbody=document.getElementById('pbody'),
+      sheet=document.getElementById('sheet'), scrim=document.getElementById('scrim'),
+      sheetbody=document.getElementById('sheetbody'), detail=document.getElementById('detail');
+
+  function icon(k,active){ return (active&&FILL[k])?FILL[k]:ICON[k]; }
+
+  function renderBar(){
+    var P=PATTERNS[pattern], html='';
+    bbar.className='bbar'+(P.eight?' eight':'');
+    P.tabs.forEach(function(k){
+      if(k==='__fab__'){
+        html+='<div class="fabslot"><button class="fab" data-go="'+P.fab+'" aria-label="Buy stock"><svg><use href="#i-plus"/></svg></button></div>';
+        return;
+      }
+      var on=(k===current)||(k==='buy'&&(current==='products'||current==='wild'));
+      var dot=(k==='wallet')?'<span class="dot"></span>':'';
+      html+='<button class="bt'+(on?' on':'')+'" data-go="'+k+'"'+(on?' aria-current="page"':'')+'>'+
+            dot+'<svg><use href="#'+icon(k,on)+'"/></svg><span>'+LABEL[k]+'</span></button>';
+    });
+    if(P.more){
+      html+='<button class="bt" data-more="1" aria-haspopup="dialog"><svg><use href="#i-more"/></svg><span>More</span></button>';
+    }
+    bbar.innerHTML=html;
+  }
+
+  function renderSheet(){
+    var P=PATTERNS[pattern]; if(!P.more){sheetbody.innerHTML='';return;}
+    var g='<h5>More</h5><div class="sgrid">';
+    P.more.forEach(function(k){
+      g+='<button class="sitem" data-go="'+k+'"><svg><use href="#'+ICON[k]+'"/></svg>'+LABEL[k]+'</button>';
+    });
+    g+='</div><div class="slist"><button class="srow"><svg><use href="#i-bank"/></svg>Request a withdrawal<svg class="ch"><use href="#i-chev"/></svg></button>'+
+       '<button class="srow danger"><svg><use href="#i-out"/></svg>Log out</button></div>';
+    sheetbody.innerHTML=g;
+  }
+
+  function renderPage(){
+    var key=current;
+    if(current==='buy') key='buy';
+    var pg=PAGES[key]||PAGES.dashboard;
+    document.getElementById('pgtitle').textContent=pg.t;
+    document.getElementById('pgsub').textContent=pg.s;
+    var body=pg.b;
+    if(current==='buy'){
+      body=BUYSEG+(segState==='wild'?WILDCARDS:BUYCARDS);
+      body=body.replace('<button class="on" data-s="reg">','<button'+(segState==='reg'?' class="on"':'')+' data-s="reg">')
+               .replace('<button data-s="wild">','<button'+(segState==='wild'?' class="on"':'')+' data-s="wild">');
+    }
+    pbody.innerHTML=body;
+    pbody.scrollTop=0;
+  }
+
+  function renderDetail(){
+    var d=DETAIL[pattern];
+    detail.innerHTML='<div class="panel"><h2 style="margin-bottom:12px">'+d.h+'</h2>'+d.body+'</div>';
+  }
+
+  function setPattern(p){
+    pattern=p; closeSheet();
+    var P=PATTERNS[p];
+    var first=P.tabs.filter(function(k){return k!=='__fab__';})[0];
+    current=first;
+    renderBar(); renderSheet(); renderPage(); renderDetail();
+    document.querySelectorAll('.pk').forEach(function(b){b.classList.toggle('on',b.dataset.p===p);});
+  }
+
+  function openSheet(){sheet.classList.add('open');scrim.classList.add('open');}
+  function closeSheet(){sheet.classList.remove('open');scrim.classList.remove('open');}
+
+  document.querySelectorAll('.pk').forEach(function(b){
+    b.addEventListener('click',function(){setPattern(b.dataset.p);});
+  });
+
+  document.addEventListener('click',function(e){
+    var go=e.target.closest('[data-go]');
+    if(go){ current=go.dataset.go; if(current==='buy')segState='reg';
+            closeSheet(); renderBar(); renderPage(); return; }
+    if(e.target.closest('[data-more]')){ openSheet(); return; }
+    var seg=e.target.closest('#buyseg button');
+    if(seg){ segState=seg.dataset.s; renderPage(); return; }
+    if(e.target===scrim){ closeSheet(); }
+    if(e.target.closest('#avbtn')){ current='profile'; renderBar(); renderPage(); }
+  });
+
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeSheet(); });
+
+  setPattern('a');
+})();
+</script>
+</body>
+</html>

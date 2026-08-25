@@ -40,9 +40,9 @@ const app = express();
 // --- CORS Setup ---
 const allowedOrigins = [
 
-  // 'http://localhost:10000', 
+  'http://localhost:10000', 
   'https://naviutrade.onrender.com',
-  
+  'http://localhost:3000',
   'https://pay.easebuzz.in', // Easebuzz payment gateway
   // 'https://testpay.easebuzz.in' // Easebuzz test payment gateway
 ];
@@ -57,9 +57,12 @@ app.use(cors({
       console.log('✅ CORS: Allowing request with no/null origin');
       return callback(null, true);
     }
+
+    // Browsers/tools sometimes send a trailing slash; Origin must be scheme+host+port only
+    const normalizedOrigin = origin.replace(/\/+$/, '');
     
     // Allow if the origin is in our list OR if it's an ngrok URL
-    if (allowedOrigins.includes(origin) || origin.endsWith('.ngrok-free.app')) {
+    if (allowedOrigins.includes(normalizedOrigin) || normalizedOrigin.endsWith('.ngrok-free.app')) {
       console.log('✅ CORS: Allowing origin:', origin);
       callback(null, true);
     } else {

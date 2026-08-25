@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box, Button, VStack, Heading,
-  useColorModeValue, Divider, Text, useToast, Alert, AlertIcon
-} from '@chakra-ui/react';
+import { Box, Button, VStack, Text, useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import AuthShell, { authBtnH } from '../../components/layout/AuthShell';
+import Alert from '../../components/common/Alert';
+import Money from '../../components/common/Money';
 
 const PaymentPage = ({ url }) => {
   const toast = useToast();
   const navigate = useNavigate();
-
-  const cardBg = useColorModeValue('white', 'gray.800');
-  const cardBorder = useColorModeValue('gray.200', 'gray.700');
-  const headingColor = useColorModeValue('gray.700', 'white');
-  const backgroundColor = useColorModeValue('gray.5', 'gray.900');
-  const detailsBoxBg = useColorModeValue('gray.50', 'gray.700');
 
   const [email, setEmail] = useState('');
   const [vendorName, setVendorName] = useState('');
@@ -264,86 +258,82 @@ const PaymentPage = ({ url }) => {
   if (!sessionStorage.getItem('registrationData')) return null;
 
   return (
-    <Box
-      minH="100vh"
-      maxW="100vw"
-      overflowX="hidden"
-      overflowY="auto"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      px={4}
-      py={8}
-      bg={backgroundColor}
-    >
-      <VStack spacing={6} w="100%" maxW="700px" mx="auto">
-        <VStack spacing={2} align="flex-start" w="100%">
-          <Heading as="h1" size={{ base: 'lg', md: 'xl' }} color={headingColor}>
-            Final Step: Complete Payment
-          </Heading>
-          <Divider borderColor="red.400" borderWidth="1px" />
-        </VStack>
+    <AuthShell maxW="440px">
+      <Text
+        as="h1"
+        fontFamily="var(--f-display)"
+        fontWeight={700}
+        fontSize="28px"
+        letterSpacing="-0.02em"
+        color="var(--text)"
+        m={0}
+        textAlign="center"
+      >
+        Registration payment
+      </Text>
+      <Text fontSize="14px" color="var(--text-3)" mt={1} mb={7} textAlign="center">
+        One-time fee. You will be sent to the payment gateway to finish.
+      </Text>
 
-          <Box 
-            w="full"
-            maxW="lg"
-            p={{ base: 4, sm: 6, md: 8 }}
-            borderWidth={1} 
-            borderColor={cardBorder} 
-            borderRadius="xl" 
-            boxShadow="lg" 
-            bg={cardBg} 
-          >
-            <VStack spacing={6}>
-                <Heading size="md" color="teal.500">Registration Payment</Heading>
-                
-                <Alert status='info' borderRadius="md" w="full">
-                    <AlertIcon />
-                    <Box>
-                        <Text fontWeight="bold">One-Time Registration Fee:</Text>
-                        <Text fontWeight="bold" fontSize="lg">Total Amount to Pay: ₹{totalAmount.toLocaleString('en-IN')}</Text>
-                    </Box>
-                </Alert>
-
-                {/* Display registration details for verification */}
-                {(email || vendorName || phoneNumber) && (
-                  <Box w="full" p={4} bg={detailsBoxBg} borderRadius="md">
-                    <Text fontSize="sm" fontWeight="bold" mb={2}>Registration Details:</Text>
-                    <VStack align="stretch" spacing={1} fontSize="sm">
-                      {email && <Text>Email: {email}</Text>}
-                      {vendorName && <Text>Name: {vendorName}</Text>}
-                      {phoneNumber && <Text>Phone: {phoneNumber}</Text>}
-                    </VStack>
-                  </Box>
-                )}
-
-                <Text textAlign="center">
-                  Click the button below to proceed with secure payment through our payment gateway.
-                  You will be redirected to complete the payment.
-                </Text>
-
-                {showPaymentButton && (
-                  <Button 
-                    colorScheme="teal" 
-                    w="full" 
-                    size="lg" 
-                    onClick={handlePaymentGateway}
-                    isLoading={isLoading}
-                    loadingText="Processing..."
-                  >
-                    Proceed to Payment Gateway
-                  </Button>
-                )}
-
-                {!showPaymentButton && (
-                  <Text color="blue.500" textAlign="center">
-                    Redirecting to payment gateway...
-                  </Text>
-                )}
-            </VStack>
+      <VStack spacing={5} align="stretch">
+        <Box
+          className="rv-cut"
+          bg="var(--panel)"
+          border="1px solid"
+          borderColor="var(--border)"
+          borderRadius="var(--r-structure)"
+          px={4}
+          py={3}
+        >
+          <Text fontSize="10px" fontWeight={600} letterSpacing="0.14em" textTransform="uppercase" color="var(--text-3)">
+            Amount due
+          </Text>
+          <Money value={totalAmount} style={{ fontSize: '28px', fontWeight: 700, color: 'var(--text)' }} />
         </Box>
+
+        {(email || vendorName || phoneNumber) && (
+          <Box
+            bg="var(--panel)"
+            border="1px solid"
+            borderColor="var(--border)"
+            borderRadius="var(--r-structure)"
+            p={4}
+          >
+            <Text fontSize="12px" fontWeight={600} letterSpacing="0.08em" textTransform="uppercase" color="var(--text-3)" mb={2}>
+              Registration details
+            </Text>
+            <VStack align="stretch" spacing={1} fontSize="14px" color="var(--text-2)">
+              {vendorName && <Text>{vendorName}</Text>}
+              {email && <Text>{email}</Text>}
+              {phoneNumber && <Text fontFamily="var(--f-num)">{phoneNumber}</Text>}
+            </VStack>
+          </Box>
+        )}
+
+        <Alert tone="note">
+          You will leave Rouvin briefly to pay, then return here.
+        </Alert>
+
+        {showPaymentButton && (
+          <Button
+            variant="rvAccent"
+            w="full"
+            h={authBtnH}
+            onClick={handlePaymentGateway}
+            isLoading={isLoading}
+            loadingText="Opening gateway"
+          >
+            Pay now
+          </Button>
+        )}
+
+        {!showPaymentButton && (
+          <Text color="var(--text-3)" textAlign="center">
+            Redirecting to the payment gateway…
+          </Text>
+        )}
       </VStack>
-    </Box>
+    </AuthShell>
   );
 };
 

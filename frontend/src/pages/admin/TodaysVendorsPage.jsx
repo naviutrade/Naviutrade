@@ -41,7 +41,7 @@ const TodaysVendorsPage = ({ url }) => {
   const tableHeaderBg = useColorModeValue('gray.50', 'gray.700');
   const tableRowHoverBg = useColorModeValue('gray.50', 'gray.700');
 
-  document.title = "NAVIU | Today's Vendors";
+  document.title = "Rouvin | Today's Vendors";
 
   // Fetch today's vendors with dedicated logic
   const fetchTodaysVendors = useCallback(async (page = 1, search = '', sort = 'created_at', order = 'DESC') => {

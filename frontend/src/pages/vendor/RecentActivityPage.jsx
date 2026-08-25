@@ -1,49 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { formatISTDate } from '../../utils/dateUtils';
-import {
-  Box,
-  Heading,
-  VStack,
-  HStack,
-  Text,
-  Tag,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  useColorModeValue,
-  Spinner,
-  Center,
-  Button,
-} from '@chakra-ui/react';
-import { Search2Icon } from '@chakra-ui/icons';
+import { Box, Input } from '@chakra-ui/react';
 import { useAuth } from '../../AppContext';
-
-const formatCurrency = (value) =>
-  new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    minimumFractionDigits: 0,
-  }).format(value);
-
-const getTagColor = (type) => {
-  switch (type) {
-    case 'sale':
-    case 'deposit':
-    case 'commission_claim':
-    case 'referral_bonus':
-      return 'green';
-    case 'purchase':
-    case 'withdrawal':
-      return 'red';
-    default:
-      return 'gray';
-  }
-};
+import VendorShell from '../../components/layout/VendorShell';
+import LedgerTable from '../../components/common/LedgerTable';
+import Money from '../../components/common/Money';
+import Alert from '../../components/common/Alert';
+import { ClockCountdown } from '@phosphor-icons/react';
 
 const RecentActivityPage = ({ url }) => {
   const { token } = useAuth();
-  const hoverBg = useColorModeValue('gray.100', 'gray.700');
-
   const [data, setData] = useState([]);
   const [q, setQ] = useState('');
   const [loading, setLoading] = useState(true);
@@ -55,16 +21,14 @@ const RecentActivityPage = ({ url }) => {
       setLoading(true);
       setErr('');
       try {
-        // Ask for more (backend may ignore query params; that's fine)
         const res = await fetch(`${url}/api/vendor/dashboard/recent-activity?limit=500`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const json = await res.json();
-        if (!res.ok) throw new Error(json?.message || 'Failed to fetch activity');
-        // If backend doesn’t support limit, we still get what it returns
+        if (!res.ok) throw new Error(json?.message || 'Could not load activity');
         setData(Array.isArray(json) ? json : []);
       } catch (e) {
-        setErr(e.message || 'Failed to fetch activity');
+        setErr(e.message || 'Could not load activity');
       } finally {
         setLoading(false);
       }
@@ -80,82 +44,64 @@ const RecentActivityPage = ({ url }) => {
       const desc = String(tx.description || '').toLowerCase();
       const id = String(tx.trans_id || '').toLowerCase();
       const date = tx.created_at ? formatISTDate(tx.created_at, true, true).toLowerCase() : '';
-      const amount = (tx.amount != null ? String(tx.amount) : '').toLowerCase();
+      const amount = tx.amount != null ? String(tx.amount) : '';
       const upi = String(tx.upi_transaction_id || '').toLowerCase();
-      return (
-        type.includes(term) ||
-        desc.includes(term) ||
-        id.includes(term) ||
-        date.includes(term) ||
-        amount.includes(term) ||
-        upi.includes(term)
-      );
+      return type.includes(term) || desc.includes(term) || id.includes(term) || date.includes(term) || amount.includes(term) || upi.includes(term);
     });
   }, [data, q]);
 
+  const columns = [
+    {
+      key: 'transaction_type',
+      header: 'Type',
+      render: (tx) => String(tx.transaction_type || '').replace(/_/g, ' '),
+    },
+    {
+      key: 'created_at',
+      header: 'Date',
+      mono: true,
+      sortValue: (tx) => tx.created_at || '',
+      render: (tx) => (tx.created_at ? `${formatISTDate(tx.created_at, true, true)} · IST` : '—'),
+    },
+    {
+      key: 'description',
+      header: 'Detail',
+      render: (tx) => tx.description || tx.upi_transaction_id || '—',
+    },
+    {
+      key: 'amount',
+      header: 'Amount',
+      numeric: true,
+      sortValue: (tx) => Number(tx.amount) || 0,
+      render: (tx) => <Money value={tx.amount} signed />,
+    },
+  ];
+
   return (
-    <Box p={{ base: 4, md: 6 }}>
-      <Heading size="lg" mb={4}>
-        Recent Activity
-      </Heading>
-
-      <InputGroup maxW="420px" mb={4}>
-        <InputLeftElement pointerEvents="none">
-          <Search2Icon color="gray.400" />
-        </InputLeftElement>
-        <Input
-          placeholder="Search by type, amount, date, UPI ID or description…"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          variant="filled"
-        />
-      </InputGroup>
-
-      {loading ? (
-        <Center py={16}>
-          <Spinner size="xl" />
-        </Center>
-      ) : err ? (
-        <Center py={8}>
-          <Text color="red.500">{err}</Text>
-        </Center>
-      ) : filtered.length === 0 ? (
-        <Center py={8}>
-          <Text>No matching activity.</Text>
-        </Center>
+    <VendorShell title="Recent activity" url={url}>
+      <Input
+        maxW="420px"
+        mb={4}
+        placeholder="Search by type, amount, date or description"
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+      />
+      {err ? (
+        <Alert tone="bad">{err}</Alert>
       ) : (
-        <VStack spacing={3} align="stretch">
-          {filtered.map((tx) => (
-            <HStack
-              key={tx.trans_id}
-              justify="space-between"
-              p={3}
-              borderRadius="md"
-              _hover={{ bg: hoverBg }}
-            >
-              <Box>
-                <HStack spacing={2}>
-                  <Tag colorScheme={getTagColor(tx.transaction_type)} size="sm">
-                    {String(tx.transaction_type || '').replace(/_/g, ' ').toUpperCase()}
-                  </Tag>
-                  <Text fontSize="sm" color="gray.500">
-                    {tx.created_at ? formatISTDate(tx.created_at, true, true) : '—'}
-                  </Text>
-                </HStack>
-                {tx.description && (
-                  <Text mt={1} fontSize="sm" color="gray.600">
-                    {tx.description}
-                  </Text>
-                )}
-              </Box>
-              <Text fontWeight="bold" color={tx.amount > 0 ? 'green.500' : 'red.500'}>
-                {formatCurrency(tx.amount || 0)}
-              </Text>
-            </HStack>
-          ))}
-        </VStack>
+        <Box bg="var(--panel)" p="var(--pad-panel)" borderRadius="var(--r-structure)" border="1px solid" borderColor="var(--border)">
+          <LedgerTable
+            columns={columns}
+            rows={filtered}
+            loading={loading}
+            getRowId={(tx) => tx.trans_id}
+            emptyIcon={ClockCountdown}
+            emptyHeadline={q ? 'No matching activity' : 'No activity yet'}
+            emptyBody="Wallet, trades and claims will appear here as they happen."
+          />
+        </Box>
       )}
-    </Box>
+    </VendorShell>
   );
 };
 

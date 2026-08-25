@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-density="comfortable">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rouvin DS v2 “Ledger” — Vendor Console UI/UX Specification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ROUVIN DS v2 — "LEDGER"
+   Dual-mode token set. Every colour resolves through a semantic
+   variable, so light and dark are one codebase, not two.
+   ============================================================ */
+:root{
+  /* --- brand constants (from logo artwork, unchanged from v1) --- */
+  --rv-navy:#0A3681;
+  --rv-orange:#FF5F03;
+
+  /* --- LIGHT MODE (default) --- */
+  --bg:#FFFFFF;
+  --panel:#F4F7FC;
+  --panel-2:#EAF0F9;
+  --panel-inv:#0B1424;
+  --hairline:#DCE3F0;
+  --border:#C9D4E8;
+  --control-border:#7A88A3;
+  --text:#0B1424;
+  --text-2:#3D4B68;
+  --text-3:#5A6883;
+  --brand:#0A3681;
+  --brand-hover:#072B67;
+  --brand-on:#FFFFFF;
+  --accent:#FF5F03;
+  --accent-hover:#EE5800;
+  --accent-on:#0B1424;
+  --accent-text:#D24E00;
+  --ok:#0B7350;      --ok-bg:#E4F4EC;   --ok-bd:#A8DCC6;
+  --warn:#8A5205;    --warn-bg:#FBF1DC; --warn-bd:#EBCF9A;
+  --bad:#B8112F;     --bad-bg:#FCEAEE;  --bad-bd:#F3B7C2;
+  --note:#14479C;    --note-bg:#E6EDFB; --note-bd:#BBD0F4;
+  --rail:#05204F;
+  --rail-text:#C7D5EE;
+  --shadow-pop:0 12px 32px rgba(11,20,36,.14);
+  --skel:linear-gradient(90deg,#EAF0F9 25%,#F4F7FC 50%,#EAF0F9 75%);
+}
+[data-theme="dark"]{
+  --bg:#070C18;
+  --panel:#0E1626;
+  --panel-2:#16203A;
+  --panel-inv:#E8EDF7;
+  --hairline:#1E2A45;
+  --border:#22304F;
+  --control-border:#5A6C90;
+  --text:#E8EDF7;
+  --text-2:#C3CDE2;
+  --text-3:#9AA9C4;
+  --brand:#2E63D8;
+  --brand-hover:#3B6FE0;
+  --brand-on:#FFFFFF;
+  --accent:#FF6A1F;
+  --accent-hover:#FF8038;
+  --accent-on:#0B1424;
+  --accent-text:#FF8038;
+  --ok:#3ECF9A;      --ok-bg:rgba(62,207,154,.10);  --ok-bd:rgba(62,207,154,.34);
+  --warn:#F2C14E;    --warn-bg:rgba(242,193,78,.10); --warn-bd:rgba(242,193,78,.32);
+  --bad:#FF6B7A;     --bad-bg:rgba(255,107,122,.10); --bad-bd:rgba(255,107,122,.32);
+  --note:#7BA5F5;    --note-bg:rgba(123,165,245,.10);--note-bd:rgba(123,165,245,.30);
+  --rail:#050912;
+  --rail-text:#9AA9C4;
+  --shadow-pop:0 12px 36px rgba(0,0,0,.55);
+  --skel:linear-gradient(90deg,#16203A 25%,#1E2A45 50%,#16203A 75%);
+}
+
+:root{
+  --f-display:"Archivo",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-num:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r-structure:4px;
+  --r-control:8px;
+  --r-tag:999px;
+  --rail-w:72px;
+  --row-h:48px;
+  --pad-panel:22px;
+  --gap-block:22px;
+  --dur-1:90ms; --dur-2:150ms; --dur-3:220ms;
+  --ease:cubic-bezier(.32,.72,.28,1);
+}
+[data-density="compact"]{ --row-h:36px; --pad-panel:14px; --gap-block:14px; }
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:var(--f-body);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  transition:background var(--dur-3) var(--ease),color var(--dur-3) var(--ease);
+}
+a{color:var(--brand)}
+[data-theme="dark"] a{color:var(--note)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--r-control)}
+code,.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+code{font-size:.86em;background:var(--panel-2);padding:2px 6px;border-radius:3px;color:var(--text-2)}
+
+/* ===== SIGNATURE: THE CUT =====
+   A 45° corner slice on any value-bearing surface, taken directly
+   from the diagonal cut through the logo's R. */
+.cut{position:relative;clip-path:polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%)}
+.cut::after{
+  content:"";position:absolute;top:0;right:0;width:18px;height:18px;
+  background:linear-gradient(45deg,transparent 50%,var(--accent) 50%);
+}
+.cut-lg{clip-path:polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%)}
+.cut-lg::after{width:28px;height:28px}
+
+/* ===== SHELL ===== */
+.app{display:flex;min-height:100vh}
+.rail{
+  width:var(--rail-w);flex:0 0 var(--rail-w);background:var(--rail);
+  position:sticky;top:0;height:100vh;display:flex;flex-direction:column;
+  align-items:center;padding:14px 0 18px;gap:4px;border-right:1px solid var(--hairline);
+}
+.rail-logo{width:36px;height:36px;margin-bottom:14px;display:block}
+.rail-btn{
+  width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+  border:0;background:transparent;color:var(--rail-text);border-radius:var(--r-control);
+  cursor:pointer;position:relative;transition:background var(--dur-1) var(--ease),color var(--dur-1) var(--ease);
+}
+.rail-btn svg{width:23px;height:23px}
+.rail-btn:hover{background:rgba(255,255,255,.09);color:#fff}
+.rail-btn.on{background:rgba(255,255,255,.13);color:#fff}
+.rail-btn.on::before{
+  content:"";position:absolute;left:-1px;top:12px;bottom:12px;width:3px;
+  background:var(--accent);border-radius:0 2px 2px 0;
+}
+.rail-spacer{flex:1}
+.content{flex:1;min-width:0}
+
+/* ===== CONTEXT HEADER ===== */
+.ctx{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  border-bottom:1px solid var(--hairline);padding:18px 34px 0;
+}
+.ctx-top{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:14px}
+.ctx-title{font-family:var(--f-display);font-weight:700;font-size:26px;letter-spacing:-.02em;margin:0;line-height:1.1}
+.ctx-sub{font-size:13px;color:var(--text-3);margin:2px 0 0}
+.ctx-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tabstrip{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabstrip::-webkit-scrollbar{display:none}
+.tab{
+  border:0;background:transparent;color:var(--text-3);font-family:var(--f-body);
+  font-size:14px;font-weight:500;padding:10px 14px 12px;cursor:pointer;white-space:nowrap;
+  border-bottom:2px solid transparent;transition:color var(--dur-1) var(--ease),border-color var(--dur-1) var(--ease);
+}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--text);border-bottom-color:var(--accent);font-weight:600}
+
+/* balance strip — money is always on screen */
+.balstrip{
+  display:flex;align-items:center;gap:14px;padding:8px 16px;
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--r-structure);
+}
+.balstrip .lab{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);display:block}
+.balstrip .val{font-family:var(--f-num);font-weight:700;font-size:17px;letter-spacing:-.02em;display:block}
+.balstrip .sep{width:1px;align-self:stretch;background:var(--border)}
+.pos{color:var(--ok)} .neg{color:var(--bad)}
+
+/* ===== PAGE / SECTIONS ===== */
+.page{padding:30px 34px 90px;max-width:1280px}
+.sec{margin-bottom:52px;scroll-margin-top:120px}
+.kicker{
+  font-family:var(--f-num);font-size:11px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent-text);margin:0 0 8px;
+}
+.sec h2{font-family:var(--f-display);font-weight:700;font-size:30px;letter-spacing:-.025em;margin:0 0 10px;line-height:1.14}
+.sec-lede{color:var(--text-2);font-size:16px;max-width:74ch;margin:0 0 24px}
+h3.h{font-family:var(--f-display);font-weight:600;font-size:17px;letter-spacing:-.01em;margin:30px 0 12px;text-transform:uppercase;letter-spacing:.06em}
+h3.h:first-child{margin-top:0}
+.hint{font-size:13.5px;color:var(--text-3);max-width:78ch;margin:12px 0 0}
+
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-structure);padding:var(--pad-panel)}
+.panel + .panel{margin-top:var(--gap-block)}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap-block)}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap-block)}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap-block)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* ===== KEYCAP BUTTONS (v2 anatomy) ===== */
+.btn{
+  --shelf:rgba(11,20,36,.28);
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--f-body);font-size:14px;font-weight:600;line-height:1;
+  height:38px;padding:0 16px;border-radius:var(--r-control);
+  border:1px solid transparent;cursor:pointer;text-decoration:none;
+  box-shadow:0 2px 0 0 var(--shelf);
+  transition:transform var(--dur-1) var(--ease),box-shadow var(--dur-1) var(--ease),
+             background-color var(--dur-1) var(--ease),border-color var(--dur-1) var(--ease);
+}
+.btn svg{width:17px;height:17px}
+.btn:active{transform:translateY(2px);box-shadow:0 0 0 0 var(--shelf)}
+.btn-solid{background:var(--brand);color:var(--brand-on);border-color:var(--brand)}
+.btn-solid:hover{background:var(--brand-hover);border-color:var(--brand-hover)}
+.btn-accent{--shelf:rgba(122,44,0,.42);background:var(--accent);color:var(--accent-on);border-color:var(--accent)}
+.btn-accent:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn-quiet{--shelf:var(--border);background:var(--bg);color:var(--text);border-color:var(--control-border)}
+.btn-quiet:hover{background:var(--panel-2)}
+.btn-ghost{--shelf:transparent;background:transparent;color:var(--text-2);border-color:transparent;box-shadow:none}
+.btn-ghost:hover{background:var(--panel-2);color:var(--text)}
+.btn-ghost:active{transform:none}
+.btn-danger{--shelf:rgba(120,8,26,.42);background:var(--bad);color:#fff;border-color:var(--bad)}
+[data-theme="dark"] .btn-danger{color:#2A0710}
+.btn-danger:hover{filter:brightness(1.08)}
+.btn[disabled]{background:var(--panel-2);color:var(--text-3);border-color:var(--border);box-shadow:none;cursor:not-allowed;opacity:.75}
+.btn-xs{height:30px;padding:0 12px;font-size:13px}
+.btn-lg{height:46px;padding:0 22px;font-size:15px}
+.btn-wide{width:100%}
+.kbd{
+  font-family:var(--f-num);font-size:11px;padding:2px 6px;border-radius:4px;
+  background:rgba(125,140,168,.20);border:1px solid var(--border);color:var(--text-3);
+}
+.spin{width:15px;height:15px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;opacity:.9}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ===== ICON BUTTON ===== */
+.ib{
+  width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid transparent;background:transparent;color:var(--text-3);
+  border-radius:var(--r-control);cursor:pointer;transition:background var(--dur-1) var(--ease),color var(--dur-1) var(--ease);
+}
+.ib svg{width:19px;height:19px}
+.ib:hover{background:var(--panel-2);color:var(--text)}
+.ib-bordered{border-color:var(--control-border)}
+
+/* ===== SWATCHES ===== */
+.swgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.swc{border:1px solid var(--border);border-radius:var(--r-structure);overflow:hidden;background:var(--bg)}
+.swc .band{height:52px;display:flex;align-items:flex-end;justify-content:flex-end;padding:6px}
+.swc .r{font-family:var(--f-num);font-size:10px;padding:1px 5px;border-radius:3px;background:rgba(255,255,255,.9);color:#0B1424}
+.swc .r.d{background:rgba(6,11,22,.78);color:#fff}
+.swc .m{padding:8px 10px;border-top:1px solid var(--hairline)}
+.swc .m b{display:block;font-size:11.5px;font-weight:600}
+.swc .m span{font-family:var(--f-num);font-size:10px;color:var(--text-3)}
+
+/* ===== TABLES ===== */
+.tw{border:1px solid var(--border);border-radius:var(--r-structure);overflow:hidden;background:var(--bg)}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th{
+  text-align:left;font-family:var(--f-num);font-size:10.5px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-3);background:var(--panel);padding:9px 16px;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+table.t td{padding:0 16px;height:var(--row-h);border-bottom:1px solid var(--hairline);vertical-align:middle}
+table.t tbody tr:last-child td{border-bottom:0}
+table.t tbody tr:hover{background:var(--panel)}
+table.t tbody tr.on{background:var(--panel-2);box-shadow:inset 3px 0 0 var(--accent)}
+.right{text-align:right}
+.idl{font-family:var(--f-num);font-size:12.5px;color:var(--brand);text-decoration:none;font-weight:500}
+[data-theme="dark"] .idl{color:var(--note)}
+.idl:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* ===== TAGS ===== */
+.tag{
+  display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;
+  border-radius:var(--r-tag);font-family:var(--f-num);font-size:10.5px;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;border:1px solid;
+}
+.tag svg{width:12px;height:12px}
+.t-ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok-bd)}
+.t-warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-bd)}
+.t-bad{background:var(--bad-bg);color:var(--bad);border-color:var(--bad-bd)}
+.t-note{background:var(--note-bg);color:var(--note);border-color:var(--note-bd)}
+.t-mute{background:var(--panel-2);color:var(--text-3);border-color:var(--border)}
+
+/* ===== ALERTS ===== */
+.al{display:flex;gap:11px;padding:13px 15px;border-radius:var(--r-structure);border:1px solid;border-left-width:3px;margin-bottom:11px}
+.al svg{width:19px;height:19px;flex:0 0 19px;margin-top:1px}
+.al b{display:block;font-size:14px;font-weight:600;margin-bottom:2px}
+.al p{margin:0;font-size:13px;color:var(--text-2);line-height:1.5}
+.al-ok{background:var(--ok-bg);border-color:var(--ok-bd);border-left-color:var(--ok)} .al-ok b,.al-ok svg{color:var(--ok)}
+.al-warn{background:var(--warn-bg);border-color:var(--warn-bd);border-left-color:var(--warn)} .al-warn b,.al-warn svg{color:var(--warn)}
+.al-bad{background:var(--bad-bg);border-color:var(--bad-bd);border-left-color:var(--bad)} .al-bad b,.al-bad svg{color:var(--bad)}
+.al-note{background:var(--note-bg);border-color:var(--note-bd);border-left-color:var(--note)} .al-note b,.al-note svg{color:var(--note)}
+
+/* ===== FORMS ===== */
+.fld{margin-bottom:16px;max-width:330px}
+.fld label{display:block;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+.inp{
+  width:100%;height:40px;padding:0 12px;background:var(--bg);color:var(--text);
+  border:1px solid var(--control-border);border-radius:var(--r-control);
+  font-family:var(--f-body);font-size:15px;
+  transition:border-color var(--dur-1) var(--ease),box-shadow var(--dur-1) var(--ease);
+}
+.inp::placeholder{color:var(--text-3);opacity:.8}
+.inp:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.inp.money{font-family:var(--f-num);font-weight:500;font-size:16px;text-align:right}
+.inp.bad{border-color:var(--bad)}
+.fld .hp{display:block;font-size:12px;color:var(--text-3);margin-top:6px}
+.fld .er{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--bad);margin-top:6px}
+.fld .er svg{width:14px;height:14px;flex:0 0 14px}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--control-border);border-radius:var(--r-control);overflow:hidden}
+.stepper button{width:38px;height:40px;border:0;background:var(--panel);color:var(--text);cursor:pointer;font-size:18px;line-height:1}
+.stepper button:hover{background:var(--panel-2)}
+.stepper input{width:64px;height:40px;border:0;border-left:1px solid var(--border);border-right:1px solid var(--border);background:var(--bg);color:var(--text);text-align:center;font-family:var(--f-num);font-weight:500;font-size:15px}
+.stepper input:focus{outline:none}
+
+/* ===== MONEY / SKELETON ===== */
+.money-panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r-structure);padding:18px 20px}
+.money-panel .k{font-family:var(--f-num);font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+.money-panel .v{font-family:var(--f-num);font-weight:700;font-size:28px;letter-spacing:-.03em;line-height:1}
+.money-panel .d{font-size:12.5px;color:var(--text-3);margin-top:8px;display:flex;align-items:center;gap:5px}
+.money-panel .d svg{width:13px;height:13px}
+.sk{background:var(--skel);background-size:200% 100%;animation:shim 1.3s linear infinite;border-radius:3px;height:12px}
+@keyframes shim{to{background-position:-200% 0}}
+
+/* ===== ICON GALLERY ===== */
+.ig{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:8px}
+.ic{border:1px solid var(--border);border-radius:var(--r-structure);padding:14px 6px 10px;text-align:center;background:var(--bg)}
+.ic svg{width:24px;height:24px;color:var(--text);display:block;margin:0 auto 9px}
+.ic b{display:block;font-size:11px;font-weight:600}
+.ic span{display:block;font-family:var(--f-num);font-size:9.5px;color:var(--text-3);margin-top:2px;word-break:break-all}
+
+/* ===== TYPE SPECIMENS ===== */
+.tr{display:grid;grid-template-columns:132px 1fr;gap:20px;padding:15px 0;border-bottom:1px solid var(--hairline);align-items:baseline}
+.tr:last-child{border-bottom:0}
+.tm{font-family:var(--f-num);font-size:10.5px;color:var(--text-3);line-height:1.7}
+.tm b{display:block;font-family:var(--f-body);font-size:11.5px;font-weight:600;color:var(--text);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+.ty-d1{font-family:var(--f-display);font-weight:700;font-size:50px;line-height:1.04;letter-spacing:-.035em}
+.ty-d2{font-family:var(--f-display);font-weight:700;font-size:36px;line-height:1.1;letter-spacing:-.03em}
+.ty-h1{font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-.02em}
+.ty-h2{font-family:var(--f-display);font-weight:600;font-size:20px;line-height:1.25;letter-spacing:-.01em}
+.ty-h3{font-family:var(--f-display);font-weight:600;font-size:17px;letter-spacing:.06em;text-transform:uppercase}
+.ty-b{font-size:15px;line-height:1.55}
+.ty-s{font-size:13.5px;line-height:1.5}
+.ty-l{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text-3)}
+.ty-n1{font-family:var(--f-num);font-weight:700;font-size:30px;letter-spacing:-.03em}
+.ty-n2{font-family:var(--f-num);font-weight:500;font-size:15px}
+.ty-n3{font-family:var(--f-num);font-weight:400;font-size:12.5px;color:var(--text-3)}
+
+/* ===== COMPARISON ===== */
+table.cmp{width:100%;border-collapse:collapse;font-size:14px}
+table.cmp th{text-align:left;font-family:var(--f-num);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);background:var(--panel);padding:9px 14px;border-bottom:1px solid var(--border)}
+table.cmp td{padding:11px 14px;border-bottom:1px solid var(--hairline);vertical-align:top;line-height:1.5}
+table.cmp tr:last-child td{border-bottom:0}
+table.cmp td.old{color:var(--text-3)}
+.arrow{color:var(--accent-text);font-family:var(--f-num);font-weight:700}
+
+/* before/after block diagram */
+.ba{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:start}
+.blk{padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-structure);font-size:12.5px;margin-bottom:7px;background:var(--panel)}
+.blk.dim{opacity:.5;text-decoration:line-through}
+.blk.new{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--panel))}
+.ba-mid{align-self:center;font-family:var(--f-num);font-size:22px;color:var(--accent-text)}
+.ba h4{font-family:var(--f-num);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin:0 0 10px}
+
+/* ===== MOCKUP ===== */
+.mk{border:1px solid var(--border);border-radius:var(--r-structure);overflow:hidden;background:var(--bg);box-shadow:var(--shadow-pop)}
+.mk-body{display:flex;min-height:420px}
+.mk-rail{width:56px;flex:0 0 56px;background:var(--rail);padding:10px 0;display:flex;flex-direction:column;align-items:center;gap:3px}
+.mk-rail .rail-btn{width:40px;height:40px}
+.mk-rail .rail-btn svg{width:19px;height:19px}
+.mk-main{flex:1;min-width:0;display:flex;flex-direction:column}
+.mk-ctx{padding:14px 18px 0;border-bottom:1px solid var(--hairline);background:var(--bg)}
+.mk-page{padding:18px;background:var(--bg);flex:1}
+.q-item{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--hairline)}
+.q-item:last-child{border-bottom:0}
+.q-item svg{width:18px;height:18px;flex:0 0 18px}
+.q-item .qt{flex:1;min-width:0;font-size:13.5px}
+.q-item .qt small{display:block;color:var(--text-3);font-size:12px}
+
+/* ===== PALETTE / CMD ===== */
+.cmdk{border:1px solid var(--border);border-radius:var(--r-structure);background:var(--bg);box-shadow:var(--shadow-pop);max-width:520px;overflow:hidden}
+.cmdk-in{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--hairline)}
+.cmdk-in svg{width:19px;height:19px;color:var(--text-3)}
+.cmdk-in span{color:var(--text-3);font-size:15px}
+.cmdk-sec{font-family:var(--f-num);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);padding:10px 16px 4px}
+.cmdk-row{display:flex;align-items:center;gap:11px;padding:9px 16px;font-size:14px}
+.cmdk-row svg{width:17px;height:17px;color:var(--text-3)}
+.cmdk-row.on{background:var(--panel-2)}
+.cmdk-row .kbd{margin-left:auto}
+
+/* ===== FOOT / MISC ===== */
+.foot{padding:26px 34px 60px;border-top:1px solid var(--hairline);color:var(--text-3);font-size:13px;display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
+.ck{list-style:none;padding:0;margin:0}
+.ck li{display:flex;gap:9px;font-size:13.5px;line-height:1.5;color:var(--text-2);margin-bottom:9px}
+.ck li svg{width:16px;height:16px;flex:0 0 16px;color:var(--ok);margin-top:2px}
+.ok-txt{color:var(--ok);font-weight:600}
+.bad-txt{color:var(--bad);font-weight:600}
+
+@media (max-width:1080px){ .g4{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:900px){
+  .g2,.g3{grid-template-columns:1fr}
+  .ba{grid-template-columns:1fr}
+  .ba-mid{transform:rotate(90deg);justify-self:start}
+}
+@media (max-width:720px){
+  .rail{display:none}
+  .ctx{padding:14px 16px 0}
+  .page{padding:22px 16px 70px}
+  .foot{padding:22px 16px 50px}
+  .ty-d1{font-size:34px} .ty-d2{font-size:27px} .sec h2{font-size:24px}
+  .tr{grid-template-columns:1fr;gap:6px}
+  .g4{grid-template-columns:1fr}
+  .tw{overflow-x:auto}
+  .mk-rail{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== ICON SPRITE — Phosphor-style, bold weight (2.25), with fill variants ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="p-squares" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="3.2" width="7.4" height="7.4" rx="1.6"/><rect x="13.4" y="3.2" width="7.4" height="7.4" rx="1.6"/><rect x="3.2" y="13.4" width="7.4" height="7.4" rx="1.6"/><rect x="13.4" y="13.4" width="7.4" height="7.4" rx="1.6"/></symbol>
+<symbol id="p-squares-f" viewBox="0 0 24 24" fill="currentColor"><rect x="3.2" y="3.2" width="7.4" height="7.4" rx="1.6"/><rect x="13.4" y="3.2" width="7.4" height="7.4" rx="1.6"/><rect x="3.2" y="13.4" width="7.4" height="7.4" rx="1.6"/><rect x="13.4" y="13.4" width="7.4" height="7.4" rx="1.6"/></symbol>
+<symbol id="p-package" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 7.6v8.8a1.6 1.6 0 0 1-.85 1.42l-6.9 3.7a1.6 1.6 0 0 1-1.5 0l-6.9-3.7a1.6 1.6 0 0 1-.85-1.42V7.6a1.6 1.6 0 0 1 .85-1.42l6.9-3.7a1.6 1.6 0 0 1 1.5 0l6.9 3.7A1.6 1.6 0 0 1 20.5 7.6Z"/><path d="m3.9 6.7 8.1 4.4 8.1-4.4M12 21v-9.9M8 4.4l8 4.35"/></symbol>
+<symbol id="p-package-f" viewBox="0 0 24 24" fill="currentColor"><path d="M20.7 6.9 12.6 2.5a1.5 1.5 0 0 0-1.2 0L3.3 6.9a1 1 0 0 0-.5.9v8.4a1.6 1.6 0 0 0 .85 1.42l7.6 4.1a1.5 1.5 0 0 0 1.5 0l7.6-4.1a1.6 1.6 0 0 0 .85-1.42V7.8a1 1 0 0 0-.5-.9ZM12 4.5l6.2 3.4-2.5 1.35L9.5 5.85Z"/></symbol>
+<symbol id="p-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c0-8 4.5-14 16-14 0 9-4.8 13.5-11 13.5A5 5 0 0 1 4 20Z"/><path d="M4.6 19.4C9 15 12.5 12.2 17 10.6"/></symbol>
+<symbol id="p-leaf-f" viewBox="0 0 24 24" fill="currentColor"><path d="M20 5a1 1 0 0 0-1-1C7.2 4 3 10.4 3 19a1 1 0 0 0 .3.72 6 6 0 0 0 4 1.78c.36 0 .7 0 1-.05C15.4 20.9 20 15.6 20 5Zm-3.7 6.5c-3.9 1.5-7 4-11 8 .5-6 3.8-10.4 11-11.4Z"/></symbol>
+<symbol id="p-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.6v18.8l2.3-1.5 2.4 1.5 2.3-1.5 2.3 1.5 2.4-1.5 2.3 1.5V2.6l-2.3 1.5-2.4-1.5L12 4.1 9.7 2.6 7.3 4.1Z"/><path d="M9 9h6M9 13h6"/></symbol>
+<symbol id="p-receipt-f" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5 1.7a1 1 0 0 0-1 .05l-1.9 1.2-1.9-1.2a1 1 0 0 0-1.1 0L11.9 3 10 1.75a1 1 0 0 0-1.1 0L7 3 5.1 1.75A1 1 0 0 0 3.6 2.6v18.8a1 1 0 0 0 1.5.85L7 21l1.9 1.25a1 1 0 0 0 1.1 0L11.9 21l1.9 1.25a1 1 0 0 0 1.1 0L16.8 21l1.9 1.25a1 1 0 0 0 1.5-.85V2.6a1 1 0 0 0-.7-.9ZM15 14H9a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2Zm0-4H9a1 1 0 0 1 0-2h6a1 1 0 0 1 0 2Z"/></symbol>
+<symbol id="p-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 7.4A1.8 1.8 0 0 1 5 5.6h13.2a1.6 1.6 0 0 1 1.6 1.6V9"/><path d="M3.2 7.4v9.4a1.8 1.8 0 0 0 1.8 1.8h14a1.6 1.6 0 0 0 1.6-1.6V9.4a1.6 1.6 0 0 0-1.6-1.6"/><circle cx="16.6" cy="13" r="1.3" fill="currentColor" stroke="none"/></symbol>
+<symbol id="p-wallet-f" viewBox="0 0 24 24" fill="currentColor"><path d="M20.4 7.6H5.4a.6.6 0 0 1 0-1.2h13.4a1 1 0 0 0 0-2H5.4A2.6 2.6 0 0 0 2.8 7v10a2.8 2.8 0 0 0 2.8 2.8h14.8a1.4 1.4 0 0 0 1.4-1.4V9a1.4 1.4 0 0 0-1.4-1.4ZM17 14.6a1.6 1.6 0 1 1 1.6-1.6 1.6 1.6 0 0 1-1.6 1.6Z"/></symbol>
+<symbol id="p-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><rect x="2.8" y="8.2" width="18.4" height="4.6" rx="1.2"/><path d="M4.6 12.8v7a1.2 1.2 0 0 0 1.2 1.2h12.4a1.2 1.2 0 0 0 1.2-1.2v-7M12 8.2V21"/><path d="M12 8.2S10.8 3 8.4 3a2.6 2.6 0 0 0 0 5.2ZM12 8.2S13.2 3 15.6 3a2.6 2.6 0 0 1 0 5.2Z"/></symbol>
+<symbol id="p-gift-f" viewBox="0 0 24 24" fill="currentColor"><path d="M21.2 8.2h-4.4a3.6 3.6 0 0 0 .6-2 3.6 3.6 0 0 0-6.6-2 3.6 3.6 0 0 0-6.6 2 3.6 3.6 0 0 0 .6 2H2.8a1 1 0 0 0-1 1v3.2a1 1 0 0 0 1 1H11V8.2h2v5.2h8.2a1 1 0 0 0 1-1V9.2a1 1 0 0 0-1-1ZM8.4 4.6a1.6 1.6 0 0 1 1.5 1.1 6 6 0 0 1 .4 2.5H8.4a1.8 1.8 0 0 1 0-3.6Zm7.2 3.6h-1.9a6 6 0 0 1 .4-2.5 1.6 1.6 0 1 1 1.5 2.5ZM4.6 15.4v4.4A2.2 2.2 0 0 0 6.8 22H11v-6.6Zm8.4 0V22h4.2a2.2 2.2 0 0 0 2.2-2.2v-4.4Z"/></symbol>
+<symbol id="p-coins" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="6.2" rx="6" ry="2.8"/><path d="M3 6.2v4.2c0 1.55 2.7 2.8 6 2.8s6-1.25 6-2.8"/><path d="M15 10.4v3.2"/><ellipse cx="15" cy="16.4" rx="6" ry="2.8"/><path d="M9 13.2v4.4c0 1.55 2.7 2.8 6 2.8s6-1.25 6-2.8v-1.2"/></symbol>
+<symbol id="p-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><circle cx="12" cy="10" r="3.4"/><path d="M5.6 18.6a8 8 0 0 1 12.8 0"/></symbol>
+<symbol id="p-user-f" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.4A9.6 9.6 0 1 0 21.6 12 9.6 9.6 0 0 0 12 2.4Zm0 4a3.4 3.4 0 1 1-3.4 3.4A3.4 3.4 0 0 1 12 6.4Zm0 13.4a7.6 7.6 0 0 1-5.5-2.35 6.4 6.4 0 0 1 11 0A7.6 7.6 0 0 1 12 19.8Z"/></symbol>
+<symbol id="p-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.6"/><path d="M2.8 19a6.6 6.6 0 0 1 12.4 0"/><path d="M16.4 4.8a3.6 3.6 0 0 1 0 6.9M18 13.6a6.6 6.6 0 0 1 3.2 5.4"/></symbol>
+<symbol id="p-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17.5 9.4 11l3.8 3.8L21 7"/><path d="M15.4 7H21v5.6"/></symbol>
+<symbol id="p-trend-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9.4 13l3.8-3.8L21 17"/><path d="M15.4 17H21v-5.6"/></symbol>
+<symbol id="p-cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 3.4h2.6l2.4 11.2h9.6"/><path d="M7.6 11.4h10.2l1.8-6H6.3"/><circle cx="9" cy="19.4" r="1.6"/><circle cx="17.4" cy="19.4" r="1.6"/></symbol>
+<symbol id="p-bank" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M2.6 9.4 12 3.6l9.4 5.8M4.6 9.8v8.4M9.4 9.8v8.4M14.6 9.8v8.4M19.4 9.8v8.4M2.6 20.4h18.8"/></symbol>
+<symbol id="p-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M12 6.6V12l3.8 2.2"/></symbol>
+<symbol id="p-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="7"/><path d="m16 16 5 5"/></symbol>
+<symbol id="p-cmd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M8.6 3.4a2.6 2.6 0 1 0 2.6 2.6v12a2.6 2.6 0 1 0 2.6-2.6h-12a2.6 2.6 0 1 0 2.6 2.6v-12A2.6 2.6 0 0 0 8.6 3.4Z"/></symbol>
+<symbol id="p-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 9.6a5.8 5.8 0 0 1 11.6 0c0 6 2.4 7.4 2.4 7.4H3.8s2.4-1.4 2.4-7.4Z"/><path d="M9.8 20.4a2.6 2.6 0 0 0 4.4 0"/></symbol>
+<symbol id="p-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.6v14.8M4.6 12h14.8"/></symbol>
+<symbol id="p-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><rect x="8.4" y="8.4" width="12.2" height="12.2" rx="2"/><path d="M15.6 5.4a2 2 0 0 0-2-2H5.4a2 2 0 0 0-2 2v8.2a2 2 0 0 0 2 2"/></symbol>
+<symbol id="p-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6v11.6M7.4 10.8 12 15.4l4.6-4.6"/><path d="M3.6 15.6v3.2a1.6 1.6 0 0 0 1.6 1.6h13.6a1.6 1.6 0 0 0 1.6-1.6v-3.2"/></symbol>
+<symbol id="p-funnel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 5.4h17.2l-6.6 7.6v6l-4 2.2v-8.2Z"/></symbol>
+<symbol id="p-dots" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></symbol>
+<symbol id="p-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9.4 5.4 7 6.6-7 6.6"/></symbol>
+<symbol id="p-caretd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5.4 9.4 6.6 7 6.6-7"/></symbol>
+<symbol id="p-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 5.6 5.6 18.4M5.6 5.6l12.8 12.8"/></symbol>
+<symbol id="p-check-f" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.4A9.6 9.6 0 1 0 21.6 12 9.61 9.61 0 0 0 12 2.4Zm4.5 7.6-5.2 6a1 1 0 0 1-1.47.05L7.4 13.6a1 1 0 0 1 1.4-1.42l1.66 1.63 4.5-5.2A1 1 0 0 1 16.5 10Z"/></symbol>
+<symbol id="p-warn-f" viewBox="0 0 24 24" fill="currentColor"><path d="M21.4 18.1 13.7 3.6a2 2 0 0 0-3.4 0L2.6 18.1A1.9 1.9 0 0 0 4.3 21h15.4a1.9 1.9 0 0 0 1.7-2.9ZM11 9.4a1 1 0 0 1 2 0v4.2a1 1 0 0 1-2 0Zm1 8.6a1.3 1.3 0 1 1 1.3-1.3A1.3 1.3 0 0 1 12 18Z"/></symbol>
+<symbol id="p-x-f" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.4A9.6 9.6 0 1 0 21.6 12 9.61 9.61 0 0 0 12 2.4Zm3.5 11.7a1 1 0 0 1-1.42 1.42L12 13.4l-2.1 2.12a1 1 0 0 1-1.42-1.42L10.6 12 8.5 9.9a1 1 0 1 1 1.42-1.42L12 10.6l2.1-2.12a1 1 0 0 1 1.42 1.42L13.4 12Z"/></symbol>
+<symbol id="p-info-f" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.4A9.6 9.6 0 1 0 21.6 12 9.61 9.61 0 0 0 12 2.4Zm-.4 4a1.3 1.3 0 1 1-1.3 1.3 1.3 1.3 0 0 1 1.3-1.3ZM13.4 17.4h-1.6a1.4 1.4 0 0 1-1.4-1.4v-4a.6.6 0 0 0-.6-.6 1 1 0 0 1 0-2h1.2a1.4 1.4 0 0 1 1.4 1.4v4a.6.6 0 0 0 .6.6 1 1 0 0 1 0 2Z"/></symbol>
+<symbol id="p-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.8v2.2M12 19v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.8 12H5M19 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></symbol>
+<symbol id="p-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 14.4A8.8 8.8 0 0 1 9.6 3.6a8.8 8.8 0 1 0 10.8 10.8Z"/></symbol>
+<symbol id="p-rows" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="4.2" width="17.6" height="5.2" rx="1.4"/><rect x="3.2" y="14.6" width="17.6" height="5.2" rx="1.4"/></symbol>
+<symbol id="p-signout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M9.4 20.4H5.2a1.6 1.6 0 0 1-1.6-1.6V5.2a1.6 1.6 0 0 1 1.6-1.6h4.2"/><path d="M15.6 16.4 20 12l-4.4-4.4M20 12H9.2"/></symbol>
+<symbol id="p-arrow-ur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 17.4 17.4 6.6M8.4 6.6h9v9"/></symbol>
+<symbol id="p-hourglass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 21h12"/><path d="M7.4 3v3.2a4.6 4.6 0 0 0 2 3.8l2.6 2 2.6-2a4.6 4.6 0 0 0 2-3.8V3"/><path d="M7.4 21v-3.2a4.6 4.6 0 0 1 2-3.8l2.6-2 2.6 2a4.6 4.6 0 0 1 2 3.8V21"/></symbol>
+</svg>
+
+<div class="app">
+
+  <!-- ===== ICON RAIL ===== -->
+  <nav class="rail" aria-label="Vendor sections">
+    <img class="rail-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJcAAACgCAYAAAAB4P5sAABXKElEQVR42u19eZwcZbX2c877VvU++0wSCISwY9iUgLskKqLXBUUTcUPhKl5UxH3lmgSXq6LiVVzABVFQScQNFP1cknsVFwT1IqCyy5ZtMkvvXVXve74/qqq7uqd7JtHIJEjnV790T3dXv1V16izPOec5hC6PjRs36k1YAWzahJ16rMCe+dj0T1z7ps7vrmi+XBE+sQSIACAiwSMPYM2aNfzIWdi9jxPXrNEXX3yDs3HjRi0i9K9y3NQpWOvWrbO3bpbn/Px/bx0bH98iIpYAhoIKP8SAiT6vALAK/64UA7OIpbEWrW9G32ZEe42eGMDAwlqAGVBgQIVvGBP+PbmPeFUmWguY23/PmK5rsUgsVSmozu8ljy/xnk0eh4m/ruA4DgYKBQwNFbBowZB91OE57gOuB3A7Qs3VaBO2E9fo179+maxatUqIyD7shWv9+vVq9erV5vPf+PVbfvr7zR+/+bbNsCaAbZ5sAhEDBIiEWp6IQETNPREAQXcLYEW6/DKBmQBQ+C0RCAQEAjGFNiXeX5fdMlFzLb3eExFA2tfVXHOP193eo8T+mvtN/JbraqRTDvJZjcEBF/VKycvnc5MHHbDYVCcqlz/rGcd4Rx85dseijPtjItqS/IlV69fz+oehoFHsY61cuTLYUpWXvecDGy7/8pW/9NXgMMQICWKhiU6ymFDIOsVTIgdjVinuvIjh3pOGgtD8QYhIeHGJuu5ciDqkjmY8o25yOUPQqWNNzdsp+ktCwBNrIaLwphEBJIC10fNAwK6rHdeFwGJoKIORvgwWDRaweCRTPnTJwmsOP6jwrec//Zh70il9Y8Mzbf7uihUrzMPBT9MAUCgUCAAmphqPfXBbTSiTt45DKcUMEg1hC0uhTlGWkTxukda1kdmkC9RFuNC8eBS9HWsaYgqNl6Dn97qomS4CRE2Bba4vumOaGkuSa7HRz8lMz0E4sXtparPwE054hBSqcGnuQMvEdM1un6jKrbdtZ2VNfqDwl9OGh5zTvvmTP+P8izf9+llPP+beoxYXPpHNpK5fuXJlEO2f93ZNRtGBKCIy2+tyyrvWff2qL337RsoMDoItMeDCsgHgg0130ze7UMW/xLMIiW1e7OS+iAihWqMZCi8USPo7D5p6mm80hauLwkysJSlcLbmmGVo5/hqRQDEgQmICMb7vkV9vcH8uTQcvGcWjly2wTztx2a0rn/ioTy1I4zIi8rBqvZL1e6+5TPhcolavJnPdzVveesnX/+eC9df8kZAdtuL6TIGBChQIDYgIrHDzzqZZ/J52eaCZl7ipTaRdk7R9ql0od0qQd9J/6r5Ok1hHh1GVpB/Y8R7JTMtKrUCg7RYRgOObyShT9aqwpq5GBgtYefxhWHH8kr8879mPf9V+/fRbAFi1ar3a8K3VBrKXClcUIisA/UWDM/7rop++86Jv/u+IRy5cYogvsCQgseFp3cWL3M26ddMgMwSsQ3M1/bA5BGi2z86+dttT0Ht+Nw4YKDqmhE/WI7qJ3hMwAlgGLDtijCNeuSoDeUcdd/S+eOGzl68/+/nH/JiIvpwMuvZKKCK285OT5Uf3DeRedt6F1zz2a1f932MfKHsqlSUmj8MoDHZGBBWfyG4nlohguwhRt+/NuChdhGuuCK9z/+2mq5s/T13NYrff6/W6lwD2WidFGlDIANAguGH0rYAAxtZqVdp/ZIBWLt8vOGP1iitOPHbBfxLRfRGKYvdG4SIAvGVqy35UqR29YGzpi6/99T0vff26S3D35jLyuQJEFIRUGwwRn8xkiN6pQRA5ut0EYDbt0zJF6Cq0vS5k53531j+TCMDqpQGTx5c87u5rj6OdlmFMBhEChoEGkweGD4YGrIYlC3YEQUNMo+6rIw/cBy9/7qPvP+tVj3v1UIp+bC14/Xqh1avJ7DXClTiZ6QcfBGs9fc7gUO7wG26679nnfWLD6M9veMBm+kZIUZs5bbsI7cIlSAZoM8yNdF9BL+Fq10IzzU83Yesp7LtoFntpqDZhkW7+XRSBQtCGMkcaWQlByIQRORgQhoqiViEGEYtX961jG+q05y7HK0990iX/9uQDXlup1rBGhNftwc4+dwcguX7JJWvrKpO+eqLiP/eYQwYHv/bh18jpz38iixUSEjBL82KwAGw0SDiBgdnEBUmE/FbCG9mGLj5Jp/qMPyMgAcQaECwIFpDWc4JtR9ASAhZusSttIxtkITAQMdHawv8pei9+3gYMzyGIM8HY1hYHKe0BTHLf4e9a8iEAxOowGwkLSzb04YRgrSU3rRSls3Lpt66zb/ngFWd94Cu/2CQij15HZNeskT02Xad6vbFp0ybcfYee7h/mCd+r2eHBVN/JK4+5pDi5fdHNt/5toIoUSDHpIFTuPochECVComTUFXtOrQuPNnQfXa5HL/+t9T3qap7Dt6TpZLcufOvzkhCkzv3PJUS9sLpe3yHiGVo03qzEQY2Ewh3/I47wORtF2ooymRxt3T5lNv7id0szhcFXfe+qL6qTVtKm9evXqw0bNsheYRY7H5OV+vMDUk+ztfL0QN9A/zd/9Ic3nPuBK03Jc1XOdWGMj0D5YKtBoiNNIIkAvBW2d9UEPTztTqe/88KFLk0LHmjTOB3wRq/gYWfglJ2FW3Yl4Ni5C0OQpnBpsGW4rGCsJ5XGJH3gTS/G2acdv3Ywx+t+/vOf6xiA3aMQ+vaTs1ED2wVYZYlIRMQlou/WJienKJ3/96mp6WNWP3MZBtIv5Xd9eD3+vK2EdKEPyhOQhCejU6CSYGTXCxVHdTurJUQSGlASgiXt0Mcszv7O+2B/36NNmCO8flcETpr6PsYUDYQEPghKpyjrLJT3XniVb6xdW6zb2wop+sb3v39D9nnPW17dIzVXZx5ORAibNimsWCGV0vYzcoXRL2ydmrS2UuNCPoVb7qngzR/8Bn590/0o5BciEB+CAEQ6OpFdM3tdtVG3iKvT3+8ZXSa0XxMeSZiqXhqwq4ayEsEtLYCXEkj77EAeuiL0oL/v0hA4CoQsQKGPCGGwaGgoBIptUJ+WU596+N+u+Njp51YqlRtyudx2AHZPyE1yEuMSABJMvEFEThaRAhEJVhQIgP3Lbfdetq06/YYU289n89lauR7IIftncNlH/x0vfPLhqJfuB5EPZtVKhQiBoNqc7W4mo1uVhexExCYJsyrNWKDl/TBzW8lMLzgjmaCmpDaVlmDtZB4t/F6sdZpJ7V334WKHn0BhoASK1iOwYhGIAQc+s5Pl9T++6cDz/vvnV6VzuVOJyGwAWERovmvHODaFRGRFKmeh8uCnp7/2jh/h1h//RkQWEy33iUiOO+64YEFu4DOOodF0JrM9lcvZWrVhhzMBPvVfZ8rrzlhhYaoiINHaAVP3C9sJW8yAMpImgdBRsdDlijK1cNaOTWxv3K3p2EdlPi3sKSHEnZpS5k4vdfp4u54hSHqNQXSYGmQVSDRIFIgc+EwwJNACcjND5mNf/am79qKfvV9Ejpy85EYmIplv7RX6XBu2R4vI/qHyrS82zLWfVP5ffv4oedb470Tk4i3YcgERVadL299vxb5veqoyNDRUuE7qucB4NZvmSfXht7+Yly1divd//mpsbThIp7LghgcLgwAaAQkIAYiDyB8KHVQtBMsWFnHtVWiWmnd8K7afqUNiwZnTeekok4H0vMA0m483i4DN5sh3fq9bAJI0u7FLEZ6CGDIJdUH4XQMlgLCFEQLDUSI5+7krNg7tv2Sfn5111nFPO+m5d5VGC6O1QqGwTURoPgQtVC233BL/8L16cDSVKfRp3nyz9S9720L87+fXjCF3dXUyeGujwUsa2v1JJoWjvFr5zlxfWo/us48WlTXl6R3/96oXnzBx0bpXTOybMX615sGmFIQEIIEmQAuBrQJbFYV6BqIaELZNLRSVq3Ros/hfF02RVFZdoIVkwNA0y7OIY7dIcjYz1ql9d870SQ//kTr2GfqsVgyMmNDkR+BgbIYtGVgxcJXmasPadRdcNvqbW7Z/femipU/70+RkKUrpybyZRaxdJ7J+lQJQNksO+6UuDAASiFMflx2feF3gX/qmlRl320cz2YGSW6t+ihSVs4XBI8qed1Ld2g9zJnO+S86ljVJp8pnHL5n6+ifP9E84zEFxagIBEyAe2NRBEoBFQYkDDQ0wIeCE6eq4mEn0m3qIRFilEW7dTG03MxzXjHXbulWc9tq6gbe9PtdN8No+n7C7Xb8naGr2uJCkuT8WBGSRSud483jDfuLS/3fU5hJe/vj99msAoPnyv7jpD696HRFRJX3o8X91lh5tS3UjgXIoN+Do+k++bLb+90skX7r57L6hhXcUCkNX4J571HBQuyOj1LudYvV7ruO801X6oOly6cDD989mv3D+aTj1qQegVtoG+GE6IyALwwLh0PSROIDkQeT09E2SmqmXjzOXdpmhmdocb/T8jU6/qdfv7UqVRrc0WayBRbDLWpCifKgVQWAVCsOL1IYf/D741Bd/ugLAub/97W9z8+V/JTzu0O/i/P5X4YQXsKk7lCYfVnnI57IqddeNNHXRf5C95UdXiXhvW710qV9k9R+12tSB5YzaD5qChvECI0FQLTUwnFb45LtW4a0vPxG2sQ2BYYCzCNiB1QRhH0wmTPF0miCZ2ywJ9XaMZ0SVs1yw5IXu1BixZrHWzq4FZzGPyfd6RcvoyFy0+YvRxqAoHRZGsYjSQ2IBkTB9ZQEERpAdWsCXfud3uOzqG1792Mc+dundW7cuHB+v7NuElx564VplJWwr+6098Am/zx1wNEsjsFplwdAYUCnKb7lZSl8+m/DHKy9YL/KB/r7Rd5e9+hMGctnvBKa22PM8lUmltXIhARiOF+DdZz0TH33favQ7JcCrwXFSsNAAMYgMiBvNnF7Sx5oVTmJqAyhb6ZNeOT+a1UR1Sy91Np90E8R24aW2vGbSTLZFkJiZsuppQhNaNt6P4iiVFAkXQ4OholxrAIaFUsLjxQYu+/b1j9pSDq46YGysf3g4O/FQO/acOKmCtcuIiCZ44eHn6Ge+AjU41iUBiQ8jPsixlJ++X3Z88uwAP//Eu2Ry8y+0LbxdSmVlfU0uabFWtupsH6mUBVIN8f1JnPn8x+PST56DQ/fT8KuTcDkD2Ays1bDCIWRgbSKim92Rbpo2oJmLi6OrXnLZzZeLtVI3DdRmtnYC64qvWQy79npYsTMENJEq3SmzHpYwxVUWCiTxGTCwEsAEDWTzKfqf3/7N3/Cjm5YA6Cei2iZAiTx0fakdP7TKioiqAw/SY1/wG3XMUxXqNWNUGsYK4NfAsNTHVb3tc28Ngm9/8IkD2HE0Oby94Zsfp93MnRa41VXwXa2Q7RsgR6VRn57AUx69EF+64A148pFjqE7eH6L5zGAxYOODTGgiQ7hQJeq/OMqvc3inCoENgWxsGxObJYgQxADWxk5+u8+OKBcprRqg9ugULayr6/cjkea4+kOAsEAkgCWBIQ1DDgxxE9sXCTW1sMCywESlSGFrlUX4zzTNW2ubJQIGgTiqrEB8QwBiLSgAJAhAKa0u+fqv9R/vKX1WRA5ctn37M4G16YfKNHLH3S0AkCG6Rw3s/2b3GWeYiu4TNh5YKiADiA2zEYVCXpd++llTvOgVxp26e0F+KD86ZcoeibySG/Z1mlOPV5bv5qxrrc7YxlQJB44xPrXuJXj1C5chax5EdeIBNBpVWAbgKIhWEMcFXAdwHMBxAZcAVyAOAAcQRwDXAlogHRvc8DNwAXIJ5ABwBNDtG7kCchFuDqLPhRvFn3cA0gI4tvVdB5BoDdJ8DlhHAKWhwEiJRVoCOBLW8RlyokJAAxYGI0zuC0KcqntYQTNgie7+XCih1LwJW/6qbwi5VJZvvvlO+/9+eetxANLlsnf7+Pi4eqhMY69iQdoEqMfXHrjfXLFuAf/sC1blia1JQVmClgasFgQOQwJBeewxZvgtX1TVkWMuyBG9Q9avV7R6tdmxbcurh0YXfGHbjgljbV1Z3wuvIGfxx7/ch+/8v9/hf6+/DX/b7qHhU9gxzTps4Wqi5LalN6wNpbvpfFH36oo2OL0Hwh6j/004aQbKmcyAR/vmprZr3poxSKvTIGJkNMPhEPQUy7CiIOxF2tUNa7RgIRTAUhBWn6J3KXS3PGvnobdVe8SdUZyBayxKtmSXjg3g6xe84pLjjxz5zqZNv/z5Q9UX2UO4xvu8aXlutdB3RN99N50zdeFp+czE3aScFLE0IKygKYAoBagMAs9IbeAQU3jpmq386JO/etdk9iNDTvnVjMYrUpQ6uFZtiKcl7/u+5YDYBgEcNwV20tg2UcItd0/htrsewOTkJAIbR0DhyZWmzyNdBKA9fdMK6xOdRc1otFUVGye64xxo63Wi9CdC9WPzCBHYZj9l2BEOIiitUCyXzebxHd72yWrmvi0V7Cg2YEQh5aahlEYAC7Ic5VoNAAO0WErmTF93dqzFXelxe117qREgJNA2dCcC10p9okRrX7fCnnf203975513v+LQQw+9K3Lu7XxoLo1isf/Gb95ePPrfl12hfnflqumLzjGDqYoyKtIqNgUmB6I9iKtANR9+djFSz38LGo899X8azsiJaWNQKxa/Z93MESntHCrWoNIoiYDIGkCMD0cDjg59rMACxoROdvOujc6tUipRVhPVPEjoYxG1UkVNgemSLE7WxdoEcCsJtL9XYj2usmg649HmOA6sMZXA4l4v0Efced+E3HTHZtr4u7/guhvuxLZJH24mC6VcGGPAFIRRstWAdaLshPRsWNmpdrjoZmAAlhggi5Tx0OAUwAyvXreH7Z/3r/nsa2/ab9hZ62YKP7TWaiIKHnLhSmZNtpfGzxwtZD9evew/++2mi5BPaSCwsKSjO6cGyxbaOrCekWmPJfecs1g/+5226PU9YHRwXzqT3t+UG6PEfK9OpQ7xTR11v2atddgEGiaowUiAILAIrAWshMUmUTNpe027RL4+wQpmxY16aoHE3R+bROmolGlmMztK/tu4JyLtprVCynEgvkHGdcHaRckDbr1rHFf94Bf41o9+g+mKQqZvAQISCCw0FNi6sGyRZEfo1eSyK/2hJASFGnx2oGwKUAKvMS1f+8gZ/otPOvyy22+//W2HHnpocV7MYnSQCoAUxx84xEsPnj4QTD3J+8o5j+Obvqt1usAqqIP8BsKPKRjlIwBDWUG1ao1d/kIa/PcPN6bzB37GVrcflckXTq5UGx91DJ5BwoemXCdbrJatJbBYC2ssjA03EQtq2kbVNB+tdnmZ4XzM6PUg6nqknSDtbDnFztdW2mo2Qvgk2nUgIsSKYAUiAYQMXDcN4jR+9+et+OTnv4vrbtwMZ3AhrDJgEShRXXvEmsLFveGInqi9EJRxYHQ97PI2aQRKo1rebl/7oifyx9753Gsqxe3vIUrXxsb67yb653UQzaG5wpD1rsnJvn378mc443e+ufjZVy/iv/1WF5QQTNihAkswZBFoApNCigj1qkj1qGfaodec/zdv6JArGw1zOQe82Hiea6z7inRGLcu4tGxyshwE1pLAiACwxiiBkLU2xL+axV0JX6kXuCo9hKnzz9RzDx1+GRIJ5FkuNACJ1mhFoiAEsMZCLJDOZyB+Hp/4wk/wue//CkE6B9doaKPCdBj8yOjqqPIhdPip2Yomc/RadmIpYUVweDMyiBme78sBC3L0zQtfevfhiwdtrezdyhlLzPri/nz/NTGlw0MmXLEGIyJTvufWRWpk39vT03fktnzkpTY9cRun3SxSQR1EBsIcVR8IrEqBnDS8ehVy8OOhnvN2sUc/6yds5bDi9OQPGfrBVDr1CiNU0g4dp0mBwRAIpqamYIwxIkICsFgbRJl9brtrezHfdKRvZvpPvXxomhE1xqUxvTRFpx/X1kqX2I8JfCiVQqowiEuvuh7v/9y18HQeCiqSQz8srRGOLIEFyAfQ6qaagfTTzgC7CbPKCqZRxJc/+BKc+rTDpbSj+iWdkwNE5IrB/pGvxExHu7+ea/YFGhFhAFumxzevpLGj3jr42otWT1z8epuduJ0p5UJEg+BHd50C+xYWJTgpIPjr9TJ937k0cubkM/xHnVzN54efUy5OnZsy9jyk3DMbKvhjqVz9JVv+uYgscl33k9ls1mk0GqhUKhgYGtKe56FcLhsKi/oJQBDnWxIRD0XrjC+AjRK2u1gOM7f/M2s01/7diB/PgQ8PXmUzXrfqeLiOi7d/4juQ3BCcBO9G3PJGzR5HmlNo5hKsliAKvIbgl9ffZZ930hHGkOkjQxWl2ZsXs9hxspiI7N13333A4sX7rNf3/Pr48c+eafqm7mLXyZENLFgsPFIQBHCsBxEGOA2YOoqig+yz36Od5791spHKH3PXpg2Thzz2305tVO0NfSN9t8a/MzEx8ZxMJrNARN5sjFnmed5VRHTA4ODgcdVqFUEQoK+vDyKCIAjgOA4AIAgC1Gq1puOby+XAzDt9l+9Mfdeu7qdUKqFarQRgyyKOKAEhqJrc6OJg7Wd+nPnYlzYi378Q1oRFlUAQQTBRkjoRyFhrd6n6ozP6ZCbUKh6WH77QfvfSM9mpV/7qplLThOA/8vnBP/wzKJt2RbgIAE9Nbdm/Nlmzffvu+8Pc5t8/auLLb0Tmb79DRqcB8WEjAdMBoG0A4wCgNNgKir4ntPI1kj/9/Okq+q+b2LztXdbuf+cBB8DftGkTrVixQmK7f9ttt6UOOOCAYx3H+T8AfrVa/Xff96eVUltTqdRTKpWKFpHDrLW3REJ0aCaTWVGv1yXScN8EULTWEvDQ8sMwM1lrBcDq4eHhZZVGFRw4gGIUy1Nlx/oPIjN26KqzPym/uGkbpbIFWBEYhCkQAoGlnQb0H2lZi5PpQUAYzCr5ziVn0qP2Se0gpb89vm38HUuXLp36ZyS1aRfvYiYiO1EtPjmYrvTl+vrOV9v/enDxynUF50/XYMAxFKZPBcoQYARGA8IqpEJyCLV6IOa4Uyj/kg96tm//X9TKlSv6hu16okUVAJCNGzVWrMDfg8GIiE6c0Hnv4SuVNo9lMgufPT1dfpXmIONZygtkQX8uNVSvAb+66W68/B1fRC3IApSGiXKKTNT0QUE9OqNm8wN7VdOyQqNewpfWvgyrTlrqG0s2sOYb/fn86zds2NDY3Qw6uypcBIDGq9WFOb/+RCX4TEWyNl2+f7h27Yc0/Xo9+sSDYoEJcWk4PkUUQQJFGqQdNHwtlX2X09BrzofZ99jJ226/d9kRR9y8DWgnOot8qPhMqcTz+O/2xhtvVABw3HHHmY7v6htvvHFeul+OO+44ufHGG2n58uV+8u+V4vbnKyf1yaovRoSWskrLGz/yPfr6t39J2dwoAgsIGYQpbw5LxHfBVM/lX5ImlIoTOO9Vz8Z5Zz8O08UqRsdGUK1MPTqfH/zj7jaN/9DJl3r90Kly+Wg3m9sg5W2BXP9trv/wYu6f+gt0llCDRsoTKAnCMJ0ZwgylXAReA9OFfUz2tA+IPuFlt9cqtW8ZqV2fhv6TN8jFAP1mhKj4dwh/WxJ+Ph8x59mGDRtk1apVAkz1NYr+aNnnreTqlwwV+j//w1/eidPedAmMSoGti4AMFAUwSINgwSQzKlQ7i4DaOWWjpDfNNKOKgeliCS846Qhcdv6L0ShVbHYgharXOGF0YPTG3S1c+h84aSCi20Tkb8Xi1Dfyo/u/pPKUVyC16HBMX/1xZG/7GTIksG4Gga1DWwtrXQgJxNTACigUH1CTl7xZBqYnj8ic+NK3+7rvNqlNXerXh6qajQXwxV3BX/Y0ktpoPUnzPBVt2Hr/1j8FaX/q2MP3bRy4ZGToT7dtc9IZJ6ySEG7m1a1tb4OLAI+mDp8BtTTf62wCEYglKJXCfVu2oloPoJlEO1qR55937733vhTAbo0c+e89aVGrvwLg9fcPvrQ4OfnNQJwHykuOs+6rPoPG0/8TE9l9UfcqgBKIQ9BUhwMLlhTEEOA46HcrVLr8bb6+7op0lugnD2wvfm40414y4KovxVAIHiaPsFFiDYuIWrB4wa/uv/vuJ4wOpKtPf+Jh1jZ8IRVXSOio13rORknsSmWWAGClMTlZxVS5AVJE9YYHsThyyf5LamHKdffVevE/eGeaDRs2sIhQw/Pe5BBqjqO4mM4H9G+vg3PmJ1E9bCVqNRe+FwBaYBTDsICVhSKDlLYYGdB6+sdfFu/+P73hkEMOfJ5M3NnfaeYeDo/wplxnY+xw6WGH/dnR5qJjH7Xkr8PDg+Rba1ipsAS8jQNjplmM2/C64W7dm0rCAEGxQrHsYarSACsSUkocpe/fMbXjpQB2a63XP1zyGkUYtHDhwq1oNP4vp7J+f35Y1yUw/iGPQf7MC6Fe8nHs2OdETNcJtlGHL4BAQYFhUYBRCsweNXZs2+p7wedqbuFDaJWgPlwfsnHjRg2oz+wzNPjdseG8GJvIPqB32knQvYCQpItmi0q5443ZolJtYMdUBYpJlYtl6csXVkDki5uiYUm766beXfXUJCLUyPPFwjDGl+sHB0dVIClMO2N+40kvQ/61nwNe8CFUD3wKbHoB6sjCCwL4XgnlcoMaBz4R3tiyBcXpRn/N16chJNMIHs6zcjatWGEBOEsW7/PH0aEsrG+IYUO/lNWcLWtt79tm3inRmyltOFeo2SysAep+AJAFk0KtUrNCsm13H5/eTfux2LRJZU444VbYxlcLWX2ID/6N1ulJx9qFcOTYUr7fpFa8RjvLnw/ZcS9q2+4Bb/8rTHUaeuwI0KP/DdUUp9ygbAuZodz09OQbAHwavahyHgYmcn0YnZVFZNvCBYMkwWbLUDBkwzRalzzlbLhWN2qoNtpzAkgE1goC2zakgQmk90jhipx7kyN6QOSBN9enc/t8uD9319unpxfYdPr5rqs/Kyajy5VaUNZ9ihcdQ2rRUXDsM0EQ+CqFugXI+mDNwppILJV3B1yyJz9Wodmbq1OOCoM1mwKJDesxZ2ux6xQ47hhN0w3zkohtlQxgBRYKJA0IAoglFLCC9kTNFQsYEVEVwB0AsA7YDOBz49vGvUJ/4QO5XGHh1OQEKpWqsUQqiMpBEPhhBzYpIeWQMUGDwb9KBDkPy8cGAKujSm2vYQDjQ2yrQtZKq82uF3g6o4k3PmXS3dkHVLMWzYacqxEjEOxyIn/eoYi5BGzNmjVNfigR0SNjI1+anp5+jOd5VyrtbNl38WKltRal2CgiYWJhVmDFEGuN1jolIksf7poLG8L/bnkQduv4ZEgHJRLypErv8vpdqfSYaVIVHNbIuE5Yd0FM9YZvCn25sanxqafvTrnY7Q2SRCTr1q2Ly10kcsp5bGxscy6XO81a+7QgCL7f19dHw8PDKp3JkOM4BCAgkBQKBafRaFSttbc+3DVXLBR33n5vZqJYDfnMRMI6eHSnHJjLse9FNUBEzeaSlOugP5+BDSyEQMZYcR03JUoW784bmh+iE2ibWmxk5NZMJnNKOp1+MoDvpFKpB5nZX7RokXYch13XvcP3/QuGhobu3bgxJKV7uArWZ27ZRCKCslc9faIcwHFdCfsFGEwyKxfYXFwV3WgJCIBvA2QzDvpyLkwQRJRMDBEDEdmtCL1+CO9QARCsWbOG165dCyL6JYBfishgtVo9AMASx3F2KKV+EWMte0Jlwz/vhABjt24XEcm+45M/WDpR9KB1mkjC/k1qtmfS7IMs0ar16mUik7waxhrkcynkMw6s8QEdTvJoDQ7cQ32unXlEJtOKCEeJ0smxsbE/ENF3+/r6ftEhjA/bx/or16sNG1YbAGObN+94YrXmgbVSya5p2smrPVdlRCsnaRF4dQwO9CGbdZrsPYnokvZKzdXNVCbQ4CYn9sMplzjb45ZbVomI6J/8/v5P3/DHLaLdlA0QKCYdJvmjqqImzXinWaTZNFSnlAhEbDgC3DawZOEocg5QMhaudaFQR9hgzN5erbm6mUsiskQU/KsIlojwunVkAYz96vqb/+2u+7Yj5TKLmIi9QKLhBn+nE9/BIN3qSQ/bAA8+cAxKhfMCVKQfA2MANB36h4dw/Ys+CAB+e+vmd/3of/4Ko1LGWhO26kVsNVb8noHyrJTrMXtOJ0U5ARYMN5PBIQePALBQliNQVZEX+ADsy2I37hHh2ju1lop8zpN/9Ou7zvnNTVtstm9Ah5e+Y+4jMAvrdHfCuq6/iZDjIjAWI4NZHLjfAPwggCIKeyTBXac9PyJce5k5JFoNJshXvv/n8z63/jdI9Y2ShYBJRxMzgrAln1RPs2htd5M52/AIgOB7VRyyXwH7DhZQr/vhwIRoT2GRj2x/RLj2WsEi6zrfMd/95T2f/dRlP3vS+LhnHA1F4oV5P2JAGxATlLQGRVCXLvOeNJwR+w4xR6BpHC0RxKvh0YePYUCnYAxDKMa5rKQdFyR02e6UC/3IZf/nPzZuFB1lKpb93z2lr7z6PV9e/oc7xqU/26+CoAbAB2xomoQjeEAUwvime1FIDBwkZ2o3BS+aNRl3axMEJrDIZh0sP2p/sAkZgixsa5JtyCpEj2iuvci/uvjiG5yVKykQkffecM/k71/z7s8vv+H3fzO5TIYCU4ZYA7EEoSCiptIghEQmIvEUDYKQAiiqUiVuEtfN6GeUqOeR/JC/QgQMB8YPsHRxHx5zyD6o23IIS8ABRwEEMcFa6z5shGtPGH70j64/2XsjImpNyIgdzgMhMq997XK/LPLeH1y/9QOnnfk598abdpj8cL+CrYGkVWsVOtYteiaBJMmcO3hceQYk0cYuHcaC4SBQURClYIyPJz3mMCwYGUBgg2jSb9SNTUy+73lEtDWxi73XLCbbmFatWq9e97pVe5GQbQLQbNylNRs36nUrV5okTqcYEhhZce2v73vH69//vWd963vXG7F5zvUPK2PLofYRB4BBq1On87rOfC5dun6oK12nA5YAwi4asMimLE563KPCVrXYC4tmNafTaTU1NXX/2NiCa3cnFEHzfOcPI2wK2LaXaq6UYmpYAVzNaPhmBYDqLQ/sOGLTDfe98Dc33P7c6264F/c8ULXZQoqJPFhjQVa1BIlmhxzmvICdQiaxdBCUGIjSqDZqeNzhBXzzY2fDQQVWbDNQYGbRWks2m6nU640Vg4ODv99ddEo0HxqLme0fb9/xSidjP20scanoXRv4MtUk+uxcYI/zzlHSKPQfCMlhsT5mzmbsSljbsW/bzW+I9mujD4iARawtZN0nGitbxyerd2yfnjrwrju39W3eXHn0b353J20vG966Y1p0IW8zjlbWBgBMyBfcJN01YFFdnfLIq+8KK3TOy24TLqKwX9va8He0RW1yGz7yrufirFMej+J0EawpFiwopcDMweDggBSLpdMGBwe/LSK7hdJyXjRXPpfGez9y9YOf++b/LBLHIt8/AqV199HA0n2Eb3iTSkKwOhpHpRtJXDwo1LYIdWfOo2173UZtGULnUfUmoVarQusQn5osVVEuE2oVQirtgLRnHM3KGAFQhYgDSCoUMHgIScJVSMLbdfZ2SG/ZbTBDT82FkKBYADgGEK1R8+pYtlBw5WfPRp8rsAZNDtZo2KnNZDLs+96OkZHRkQji2C2kJPPicxEBD4zXyvduFaGCY2V8QlgQljw3tU+cBpE2atL2hoOI1S9Z1ht9n2gmBXf8ypJp+TCdopX4XpMlOmZIlZBSM76+HE4rFSISpTSRYmQGwUaqBIEKAg5ZnDkV3iNkQBRARKBEA+JAmmvZuflEMVt1cgBpS+tG+UUOh0EYEgSBwcte+HTsM5DGZKkCxaqltCPb7LoujAl+Y61VPRez1zj0Auicw5xNU1oTQbFqjQK2bRd0pvqhDjxnZmlKHFVRG6locub0bKOJBb14ViWeOY2O+T/RgE0ggPjSpIsUWFiyCapzG7FP6xBegAmpw6m9U8dK6xzEGrlzuFV88JIwhxTVRlsJiV+8qodlB/XhWU99FGrlIgipcA2tZlvrui7XarUSEZ9ORGbNmjW8bt26vTtatNaEBynhSKQmRSQ65uGg2yiveB8zJ8Um8Z7kZyU5GIjsDJMSX1zpGCBkEzSZVmxC6ONZx9LkRW2KemIfRInjkvZbIWaq7mb2er3udERb6H1oDkkARYKGYvhmGmecsgIL+xjVaQGnbGfhoWSzWSqXyxcODw9P7C5fa96Fy8TDpMDNgQWxMMkutFTNECxpzlcNu2e6CWePZuZZed4F4XjkhHpsOdBzj91LQg0d17erYz4373zy2BKt/2KhiVGs1fCE4xbghSuXIajUAVeBxDbzjNHvceRfXbU7IYh5Fq7uw9F7JV67tVRRN8LdqNRE2iJCmTHWOB7s3ovnKvm7XYfAR+/bWVq92vyk5rSLllPYSebbraE1ue+ZGs22mcR4wggxwbeC4bTg7Wc+HX1pQrWaAukayMb4VlismU6nqdFo3OW67vYOLrS9GaGXjsZN6qk5OkPwnlpGMEPYKDF8vf1v3bVBZzI45lSdsXW5CtZI2HMoBIpr0hMAfnMtFA9ICLVPUtBn+FWYOea4dXtyJ0tX2J6vCI3KOM59+ZOx8ugDUa5VYTWDrBPOZJSmSyDZbJaCILgnn89vDv9EDwfhap+Z2OkbdRvT2627pe28dvon1B1wTAKNXck8ZtGmcwGdrYrtWEPEVN8zYZRwgKn0vHm6raXz0sXZJ7EhCzQzoVyaxAtOWobXvOQpqBWnQQoQrgGioswRJcFTENG3RYQ2bdq022Gp+a2KIGqDHmYasR4aqscI4qSm6fodK+2WuQu/aK8Rxr34GNoFgbqma9o/Lh1Bw+w4VrewNTSz1JRjAqC0QqVSwREHL8R7zjkV1i+FAQgBDAswYJplzbCZTEYVi8U77rrrrkuWL18uUbiLh4Hmikb1RgG5wEZmYuYc6Hi2c/w/ofnR1tbNT2kCsK3S35mQRfcJsckt1ijdfK92QRa0DeJsLs6GJXnSGriZ1G7d9xUJUITmE3FzIi7FzF0UNs8KwsaLhmcwlCWse+NzsU+fwG/UAaVA0GBxwCAo0k3gNJ/Pk+/7H1m+fLkfj+J5mAgXmtxRYmXmmJ4eNeJ/b7kRM+3CsnrPoO5loltggyRmbieEnbr5kDx37iQS0JZwhqZXILBs4FoFhwgNAPDrWPumVXjy0QvQqJahlWoKcUz+Fh2TGRgY4MnJyW+Pjo5+KWo8/qc0xsyfWZSO7gFB29zE1oWYm9h/Lr9oV5PCs7XOzwY1zAYad03X9IAbWjdX5zyiRM2WFYAD+KIhjR1Y+8Z/w4ufcTBqxQk42m1a0s6AIMrtkjHmwxG3xz+tP3TeokUJUdBWkNfLAd8NQtEtEpzts72aHbppsF5r6AWfzJZ4nrleG829Tu4jdBE0uagLYLwi3vsfT8OrX3g0qtMTEHZa8yNnRpq2r6+PpqenbySiv0bwwz+NLmF+HfqmH7NzGmo2PKqXJulNiDZz4Gc8FHMu1LzZqdyDeK2bJuv1embCXbrc+9IMDIgIrBi+7yGFKt7zhpPwqucdjdL0BEhl4YgGYCAkrZxo9Ftaa8PMlpnPGBoaKsadSA9L4aJZBGjusH92LdUtGpvh8HcIHDM3k7+z3xPccw1zwiYz0mCzXFvhxEhtAcGCFKNaLWNBweL8t56K5zzxQDRKDUDnINQAW9X0Z+OIOIqi/eHhYWfHjh1fHxkZ+VPka/1TuTjm1eeSzkHl7dmMnoI2l0nrrTGoK+dVmxmUmXDIrHm+XfClusdjjHj6bbIESBIRNSBRJw+jPD2Fw5YuxAXvehGecGQfqlNTIF2AIwGUVRDlNS8rEUEpBQD+2NiYMz09fc3w8PAZ69evVytWrPind7fPH4gKRNUJ1IQNKNEtHAfrs/lAswpYnGyOevMsJJoy18oHWkgTRG9+hrrTD/USom4wRbeIsy2QSWxkCWwZZCTM/UXiJaRCxcUCpRX8QNCoTOGUEw/G1z5yOo4/pIDi5DSgXIB9EJuIX0KFflkIOQCAGRsbc4rF4g/uuOOOUwH4q1atsg8F0QvPp+aa/Y5GTwyo20WccUGjf51OdBMqoL8D2pAuG2hWhqO5ggOgAaAOUAABA1ZDWYIrPjQcGJ1BqVTHohzhgnOfjQvPOxWjQ3VUK0UopaNMh23CO3FWICpj9guFApdKpWvuuOOOF1x99dVm7dq19FAxCO0JRCRN2eoW1e0qhNAi4+gGecx+wbuZvPb1UJTi4Si9E01jE+qp2TqdTOk4bl8xAnYAOFAWUDaAJgsGw6vWYMsTOPVZh+BrF52OV576aKSDGtgTaK17ZAaaWqs+NjbmBEHwmY9//OOnlEolAUIKq4fq2s5f90+b3zX7HOleAjCnD0SYwce+swLaO7MwM0AI69LCvF3nmmZEqkzNJDtH1N3haw0owMJHuV6B2ADHHjKEs1/xLDz3xEdB/DImpstwlBs2XnAnSNzU0MLMMjo6mvY878fVavULALBixQpZuXLlQ8rSOJ+tZa2Lvoul/Lui2WYjQ5tr3zMd80SVaue4FJKusEdcRcEdxX4iAIPhQkMcQjXw4NfqSJGPEw4dwqnPPgHPPPEoLCgwGpPbQMhCOSkEVIfRAbS4bect8q/EcRykUimUSqXLbrzxxlevXLkynhH+kNNTzR/5W4wIzggVMatWmi3J3IZFzQF1NKFc2ZXoU8IZ1F2c/BnJIElgWLF5bpaxMUgxgiDAVH0KCAwWjPTh8ScsxXNWHo6nLj8MwzkXpWoJ1TKg3BQIdWjRsFbBKNv227Fgua4bZDIZ5XneSwYGBtYn2BvnhVd2PpkFEwKya4PC2wQsIazhhYy7heL+GooIZSlKp4ScLmFpMkUdRDQDfWsJd+J3SUDdIpBmU0icZEaLBIQIAUXcDL6F8XwEfgUS1JArpPC4Ixfi6U84Ek874VAcungArraoeXXsqIYOvXL8cOqb1WBhaBFo60I4hCoiqMESEYaGhpzx8fHTR0dH14uIC8CfT/rPeTSLsXdrmx3ALeay1kUj6a7F4i6XWAJaQVOkLQgwRGDfhy8EazXI1iFMsHDQLAtO1HdRRMohiUBAOrG5BPLdptmoFUFSUyOacH8KcLTCUDaNfRb34eD998exRy7GcccciCOXjCDjMmrVMnxvGl6DQIqhmEPQNHTEWi1uHBYKRjeEERGTy+VcZsb27du/Pjo6enk0jtmfb17ZedRcceg8J1lx78gOrfJeNNMjYRmvjxSEAvTnLLL5NMQiJPzgqHAlwoGYWkVRTNQsXW76SzZR02NVZw16U7MxPCgSuK4Dx1FIpxT6+vMYHihg6dgw9l88iCX7D2LfRQUM9WWQYgdevYFGtYJy3YT6VDutosfIV4tbyeIO6SbOC9iRkRFljFGNRuMnnuddNjY2dkWU0tkjWLD3eAolKxIKAFF3lL9JSBtLaJT380rYd9jBJ975Euy7qA/WBCCygGJo0VAxHJGQ7m45vmRVK0WUQxzxX7UJelSFqrWCUgLFAq0JSgMpDlM5QSCwRtDYUUEdAVgJQBqsVO8O6va/CQCTcl09NDSkJicnvzE4OLhlenr6qgULFlx38803u0Tk7SnXbv6Eq61+XlpqH2ivh2qWoXdz8CUyGU1RRNgMLfADi3zKxWH7DWCoAIhVYE5BSCPkrkpGdPFvtqJXSk6xoJZZohlRSYR/EcNaaatoMEEAGwgC64ZHRQGIBawYBCdy+lv1bHElbQLxFwAmEnqltaaRkRFdLBYnisXi24aGhi6NP7h+/Xp15JFHenuSYph3h77ZuAKZE5CYURFBzX7rqDY+fk0wyoHvavgUwIeCJYCjQUqEAOjRwNacTSjSNLvU7IHkZhDQCVEw+ZH2VKFpFgXmsMBTtIR0lBKAIGAokHUAMKwYgMMJrskuIBERx3FocHBQiwg8z4O1ttJoNL7qed5/j46O/nXjxo16xYoVFAngHseEPe9mcWcL8zpNVTPEp6T3r1ocCMJIcQouO1BwIOSDRYHJQuLoMf5m5Id1ltrMgC1gI2ddEkVorcbcZkcOAeGwxFhQnIi4TQEwoXZSFmKtsArnCUe/I1ppMmKlkM9TvV6vTE9Pf8Naa/r6+r5SrVa35fP5u6Jzoff0CSPzq7mafXy2lakh2SlQs3nRqenWgyRy0hWDjQ/AwliDwDIMQsIzRQYkDBvJpmImK8YqUsSsKVyLdLT3x+tgWCs2XmTo78U2jUDEzbHJIfkFALLQ4kfRsBuVKVsYGKSyLlljYAIDzQqplEs1r2Yy2hVmqiqlThkcHNzUcT5UeNh7/uiaeUxcx9hQsxSirUGjU0u1RUuJFvq4casNwRABC2As4EvEFmMj6gByYEhDp13qL+SJiKWvf4Bz2TwxGMwK3NEQwSGdBcCEQl+Bh0aG1NDIkBoeGVbx88HBAaUUgSNKJ0UMzTrEqsLyBlgNsDZwKZC8m0Lgm/vEYtrJpAwzWdNo3JPPZVVf/4CuVssfHhwc3HTvvfdmRESvX79exUj73jJsa57NokCkO+HI7LTXXf7e7GQWWAtYY2GNhVhpAqYhOQjETadJi51o1Px7sv3D1rquSKMxmMq6B9frnoTMX+00kCIiqXSa6tZeXxf8rRVmctQMKxnKZJ/NRBQSiYS7sCIQMggIMGLhW4MUic3nsiqYrtyiUqqvUCg8YapauVOg/+bXZbxeqXx+eHjsssj01bCXPuZZuNoJ22ZPvXRD9jtRcgkdZIR4lRUTIfAhyzoTQ6c1MfzATfVX3Ixzi1O+7xn+vXc2qDSZYXbgeLVmaQ4l4QoA2nVhG+UFFHhODPkLUWStybVuPiJyiwg/hAESWGXATh8ouw/8/KBNL1ysJquNT0gDP8zk8Um/1LjSaaR/EOQrZ6VymW2l4vYfEeWDqMYdjwjXrtrjJhTQvf58tgRyt3rzdsLZsMczNKdh1QBTiHprpeGJ+V+j+epc/d4Li5e+F6l7f4fAFuFVBWwMhcg62swyMVFDgJTrLtGOXoJELX6Ix1nUK5Wo0iPicpAwFWRJAToLzo+ABxdz4/DHovDoE1/pHnxcpojMiv4M7RARqk/XfyUZ9eN838Avx8fHjwE2VHYXEdu/lHBZAXpVCXYbStkrumwXvPba+bgiM6TWthDAplMZNsXg+4O5+jGVH15q+FdXUSobkNEGfUaRsipM8bSVPQMwUUqn0SrniMEJC4ECoUDEMUwRN68SQupuY6Zg/fugJv6Axt0bUf7N5cNDz3rx2X3HvfQET+RcIrpuqlZa6nn1T+eVc/3w8HAJWLVXjwacf7PYxezNpaXmFKxmLBe3ZkXyQEK1ahXaqo8xsW7c9xfpI48MERxLUNZCSKKpEkkab2m2eDW9/OipjSa6WrTnIpvrJkbAJuSRZw3DAkcFcCv3oXrphwK54ffH5c46/5cNkbO23Hbvz0ZHBioWqh+ZHQVguLQ3m8V5tOnNcHH2KVxzYGRdq1djRD/iAAs7bCjkgbEGvvaDUt2r6MwgBVZEsQstCka7EKUjdD4cHwcrTcY+EbRFkUhGqXHyO0YgKNZbAoIBi4EyAvYF5FkgMMjkU9r54w/M1JpXQP/p2ksGliy4uGHsy52c+XKxJq8FgI0bN+pHhGuXzaIB0PJPksLSaQ53pjhwpvPPYFJQwqBIswgkKORyUGK/IbnBFzuHPfFBfcChZCkQcd0w/aIEogSWCEZU1Dhim2SacZ162PcYZgVIInGTNgAjrDRtgqsI/UBYkDVA4CGoVeGkUir94M0y/pnXS+ZP339yfjD9vHrZ/75sr34R2MArVq40jwjX36O42lXNTCd6rrJk6kE9FE+GaFFhhz9phY0VBCp7FIpbJzKPe+Hl+pT3bSv37StGs4AdKMtga6GkAaI6jAoJPxwbYlf/yHgcaUIlEfcDWdSkAcqlKT15N6qff4crN1xTUMOFhXdbK8AoYS+eMDKPieukMPVO+fTSUiJRzi+ZPI4ogzrbw9BK85Dn+wEgDUVqU7FW07LslJquTnH5e+/DoNRhyYVAgeFDSQBfGJY51DYzuIyojRdsrhupDaaI9JmGBZkAeTdFpnwPSl98Y//QaOaUYw969guIll4qa9bw3hoxzhttJfUqo5kj7dP+maTznojQEhUPtlnHLmBm8ryGcUGL4WjXNw2Q5+dw7IvgTG3B9I8/jRyqsKQgcMASTaGAwDCDRWZ0as+1/k56zWShIQTQFhAVEvmqHKNgN9uJ/zrbFM78wJdFxAFwKcKJZ7y3IPN7gEO/802uvfhCqRm8oZ27y7Y4HSQyQfFrzZzSbnpJxSdj4dgGHJQ8QD3x1VBPeS2qPsO1DbA0wlp1FigYMPSM0xWz9O0S2Jt8nwhWuWFTLgeggMGU4YIdd2pfPtfgd1+6GChdjdvEBUj2NlB1D+hbTGiybu8zdY0Mm72JghAJB3WNHlvmMXxuReAFXpDPp5WbTrOwNtohlJUD/YxzYFecg3GbBpMBkQLIQXJGT5sZtHP3WXZdN5KohoFlG1XQarAfQHGAPimrqU++wcemy0/GQZWrb4e4CCmPeG+Z9DavhLvJ+sowPxddx2S4L90d/VZVRavuvt3PiipGO/6mmKU/n9L1euWvxm9s2Wc4pTQba5SWSacP6rlvAz3pTJRsCso6IEvRkM0Qq5J4ziHihg1pY3Xupr2Sv9/+AQGThTbhLCCLRmiCfQUfDvrS5Ix/7hxffvLpkw7xpr6HMNdo9xb/a34JdxPLIFKIO5njzuZWE8csSBkjQcPdBDoi2mxuVpTGvYPMisrV+iuH+4YPV+BlDc+8r79vmFPaIWXqUrZkMs99kwRPOgsVP4BwHT4rkFEgGwoBRTVhlgmwId9oL11CRGGuiylqrujA8qIaR7JhqTSxQMEHBx6sMRjOwJn44rt9XPPxk1F64OpJkYG//OWGkb1hVuU8EpH0Nik72/M6V3QpHVqPmWCsbQjrawBgYGBgIp3Nv79Yqr4lnUrXtNI0XMirqi6Q+8x3wHvCqzHOOYCdsFbM1sFkIBxqLDIuIBosNgRa5/AVu/FaJOcntoYlhPvjAEDA6M87zsT6D5jGVR86uVDfcvO+Sw97JhEJbrnFeUS45ooa/06N1zlKpZs/R03QEzaTyQIGL7r//vvL8VRXEVEjI4MXbt269UDt4AlW8fdSyPzNy+aFT3mn0GNOQyPwQSwInAx8SoGEocQAbCHKCYefdxH8rsdGO/O51sAVXwew8DGYcVRw7WcDuey9++br4xeKyP505JFeVDz4iHDN1DqyExUOaE+3dKRfesJKNPMzRAxr7Pa4kWHdunWWiIyI8NKlS7f09w//ulqunqfTMqxtwxgnbfqe91axy56Pqhf6dmzCCa/hEhsw7IXVsDsLsMrs2rfp+FMoWCwArAPfMnJpras//bLdcfE7h1F/4P9E5Onx+h8Rrr9Pt6FJUxTRZou0hkrNBnJIEsmPigmZ2eki6FZE6Oabb3ZHRkZurpjgpsLQAt3nFnQlu4j41HdJ7YhnI6jWoKUOSwYBO1A2xMEMG9jEwIzkZiG7pIlbEAYAS1BGQxuGtgECBMj0Z9i5YT0mPvPGAUzddo2InByu/wbnEeHqIQ29qIdiYYpRLdscd6dm0G13N0NhLRdz2Gso0D2v9rJly/xisTjGOv29Sr1+RsWzV9d9MyULDqLsC99jS0c9BxVDUMoiYAVLOiLAVdhpSgKaO71FFOYpHcuwbCBswDBQcEC+Qb5Pk3vjd+zkp96gUfzrDz2pvJFouS833+w+IlxIEpHQrIQhYR7OxrEhuAllJCZ1dd27dLdDejZLTcJcf/xQZvun8pnMV4RL/5nR6kolqT+bpUdx+sXn2/phJ8NvWKRYEDDDQoGtDifISlhiI7HwJNY5G/7VmYkINZiFUAADAiiIqqrDJDw8QT7rcOavP6HSx88kZ+tfPigiTw99sPXqX1y4CEqoJVwxVaW0I+1htadE7JbRmxwR/0eTKZpAK1NEO0mJMteo2iKqiQhxr+6yHKdWcrnR7wEHBCKiarXg9sHBgbPrpdK52tgihpfazOoP2B37PRFBrQ5NDFiFgD2EoZ0Kp1qwCcVKGBTXgTVHIHdcAOauEWV40AwVUVuGIuiDEYBIYIxBOpNi97ZfyfTnX5/H5t9EJnK12VNM5PziXNY2uebbrrkk+Lto9vKbbrX00sVvY2IYa6xSMmdLFhEFRGT23XffKgA1snDhT+rV4vmFgqurw0sl87KPYse+x6Hq1WDSQbR+DaIwoaSNwIDR4BQCUugk+pUuUWI3FmihxI2THIJGYWe2CXyoXD+nb/utLX7iDI37rrtGgvpbiZojV/61fa7WPJy5PtN7uthsAz6j900ul+darfaH22+//cZdJEMTEWHtuj+p1mmCDG3XS45F4aUfk8o+j4FtWChWEHIQKBVWnFpAIYAiP1a07VFxVOnaOQS0czBBktqJE/6l2IhaVyyUX0HKzXLuvr/Q9CdepYPb/2etiDwPG1ZDRPR8Aq3zl/4JC9zbANWZURMleK9o1gkUnfBF8/9mRQRBgMby5cv9XYRMDAAUCkM3Var2woG+wp+pVvaw3zL0n/ZRKY8+Gsb4YHgALHx2IaTBYuCKF07F7tXB3ckcjW7s0F0mcQjARhAwYDiANQ1wJsN6210y8an/yOGBX3wPq77+YSIKsHYt/ctqrl0BTmfTXrNhTARwpVKx2Uzm6K1bJ46JoIedPva1a9dCRHh0OHdBMZgcy4yMun7gWXPYCZQ+7b+wY/hQBNbAlQAsFpZiHghCoBx0Tutom5ZGLcryOI1kE+XfM80nA6xgWUMJI2CCdUKgNZ3K0PDk3bb8oZcY7/pvnyoir8Rz1yp54IHsfBQd7hHC1dXHltkFbFYfTDpDfiY/CJBJp/Ou6wz1sJ49HzED8n333cdC/Km617hGpfKqWK7ewkc8GfkXrJWthYPQMAwtHiwFMNCRQAVoaxyJOeKJZy4gOYS0awFlC8ETFhgmuFagDMKIUmpQ6ZTKTD/A/lfffWD1fy+/BMfh7qDP/e+wouKhdfTnTbhMk7CN0DZgNbaG3QYk9sKEuhQT2rhjJ0RfxdEOVWu1aWuxLfJDdqmygIjs/vvvXx/ODV+yvdY4PePqDaN9g8vK5cCzhz0dQy98HybyB8LakI8ioLApVhsDivoFCAKyIQWikMCiy5hktI4nOYQhzuELJBzSiQBsCWxUFFlz2AoiAVQqRW75bqld/iaNm761r84P/i08huX+Q+mDzV+0mMQEIgfXRpWjoBjwnGlKes1CbDOPrclxTc8r5aTgef5m5vwD3XXjTjv3zpKBgcltO+49m7Q6s6/guhVj4S17JnIvfB8mU/uCjYXRDKM0YLhFThdRg5OE3BW2o+upcygpCaLuo+j/RKkSiQrJnDhsuiUQVERMZ42B0ooG/R20/b/PDvzrvv5+EblicnJyKXCL81Cli/YIsygyCzOz7MRoYnQfm9KaxkpcqZQln88fLlI6JqqH+ruOnYh8EeHFix+1Q2t9ab3R+OjI8ADVTM3Yo5+D1AvejR2qD67nQ5EP0QTDGgE5MOTAsgOhcBiwFoMunBRdo8fZUP+kUFoAATPEAFYrGqRpXbnonAC/v/ylfbngIqIjPWzY8JCU6+wZwgXpYeKiaWLRuJHkDOtuLWjtA6JUaCpiuIwIvu+JiO//o+uNAwIR0QMDA+8slqpfGBneR9U9+HT8i0Q/7zyZ5LwEbBE4odmPFaolhiUNUMRf0Zx9hNa45Oi5jXou5xoWGnO3SqTl3EAAtjAk0BYYSE3r4n+/LvD/3xdOEplcS6tXm6hylx6WwpWszOQe431jjdbT/HXBwJIU34lyGxBBlGIiomN30/pt6NoJG5Naa+q22pexTtkQpZ/2asq9cC1NYwhKQh9MiQ8lHlgMBBwi+VEFrkTNu03Ar5mdmKPyI3EuONoAgSgDFgvH17BGA9BwdE1X1n9Q4brL14hMvo0IEk2KpYe35upiFjvnEM42Saw7TBGmjiAmIgUBWWthjLl1N94gFoCMjuYerNaK/9ZQ2JHJZWzRM1vUk151b/+z34dSIy9WObARCw9H7IS2OZ6o/caIc/S9utDbbGGX2d0CiwACmBTYCog8+ExwLaGffJ646O0efnzxBWLGLxeRLNau/aeZyD3SLLaez3Tom5PHRGYKXNvEA4HjamhHxQRz1tEOlOO8YlehiLlvjjXsZMyfDfjcvlzhKIeDiyWdmfRXnF7Rz3oDjQdZGCcfgcYWYk2oqToaPELzZndqGGjzbx0CRkLQFiHxCgOWDYgCkA2HYA2l4E5/6d0BfviZl8Gf+AWdf74lIpH1uz/hvYfgXG0ubXNrpkqiGvmmIAk1CXbD8mIDgYGlsHtRiQYssGS/EeQLqRDRhmLPb4Bglo+Pj/dFJo12g/YSonW2UFi0bbQwcAUR3er49vueaYxVU5ylk19rsye+ElO+hqiwLJrEAmSaAxY6fchdOGG9FgVLBhAfKiBwoGDYB+BBrEUu5+gd31jn45oLHiOVv70NAGj16t1edDiPietEdBRxh7bKIqQ5gjPmKBXpRINUcqxSs/o05B8hKBPgcccugtINUACwTVnX1WCRP4f0RODd2UUTNUwoEVH5sX1/P1GsPSFr+A/IjhI96y0m9YSXYKpGCOCCCVAQGGJIVMGapOZsBjYdhYdxo0d83khmUMhGeczwdIqE5T+AhY7vU7Igo9GfIqe0/iNGvn/JBSIT3yjW64dHgYp6WGmuXsAoJWiMiGZy0LNQSBhCCixZOAEj5QhKlS04/IA8Tjz+SJSLFRixMOJxYHwYkW9QawjQ7lyzRHylRkTU0kWL7ilXa/8uQWB8p5/UM98ieOzLMOV7sCRgo6Ao7CRqaSxpzkLqRZzeGbzYRNNvt/PXPsuSYMAQVYeyCrlMRhW/+xETXPmh03K6/MuiyBG7s2ya91yBSmilqKy5SeABCyshz2h4B9dBXAeUg/JkGUtG03jvOadiJAtYP+wItBxYViwE97Td7XN1ORYjImrBggV/LFdqp5OwqaYH4Z76VtDxq1HzGJJmCFKQaEi6NHNWHPVE9g5aevGXdT7vVi2iJYCKupUCEqT6oarf+kRQ+sI7hnP+1qsbjcn/WruWEFEJ7M3CJV0d9s6PdOYR4+jSUgNEBpozCAKFwJvE8556MK74+Dl4wpFjQL0MV7kgxQAMKVYEsj9+iA7Obty4US9cOPYNlvqtuZQ2pcyQyb/oPJjHrEK5TiGduFYQ4maFSEcX8CwwTnQB48qSnRrTDNhoA3yowMCpOij0uRr/+2WpfuldB7muvOu97/COJyJfbrst9Y+cgD2DWEy6yXkULZLM0DMcUQBoUYDSKFUqOGAsi3Ne9Sy84OlHIGU9ePUpODrMt1kRSesUV8u1zcaYn0aOvP0na2KJHqo8OXl6ttD3f9VJHyV3wA6sfh9PmQB06wZkU1nYwIZzhdiCJaL0lJ2z3L0CgW5dRRYEAw0lfki1aQMIWdgAKKRdamy8zK9JgMzpH/5oQ+QNRPSnf4QAZd77FhPjc9HKVHNn+qbdZJKAFSEQoDq9A6esXIJLP3EaTnvGMqBSQ6NRh4BhREGUAjNsf76PGvVgy8jIyP3huX9IGGMsEZm6Gbx721Tx7Q5kcqB/kLdnFgb5l6yDt+wFqPsC1k4TsW8SxGHXpuH2Kj+aMUZGDJRhBIpgOKzTtyRAQEgXXId+cbmqfeWdT3Gr92wUkVeGTv7fx264h1AiRoVMbdFi1N4eCZOJZvDoKLosVasYygV4+7nPwOmnPA66UUZ1qhiaQKsAViAVjsdTrBD4tqHJuUFEaO3atQ+VHykAMDKCMlH/x2qT26ag9drCQP++NRaTW/V+5V9RQ/3OnyOtGcaE5LwQG03koJBDoxOF6BzEnuzuph6+GQCyFgqAr1RYUSFheTZIAN2AD410IcOVX19hin5puO/lF3xeRK4lom0iwsRssQsjoOdvPAtTWB8eVUNwVFAnLLBkw5490WACTNT9p5SG8QM0yjvw+GP3x7tf83Qc96glqJSmIGLAOjajBGYBk4DBJl8oqEqt+uDo6OhZ8xSsyM033+xmBse+eP/9939ncLD/Hf0Dfe+YsMbmVv8XV654M9Sdm+C6KYgxICZYUiFNAJID221zUCjiUiW018MJZo6xaRUmhtG1ivfBIU9+OMRYwbEEgwC5vrRq/O4aO10NUv2v/chPReQ0Irp1rzGLHI+dYwI5PqAbYFiwZWijoa2CEiAgAsFFWmVRrftgt4E3v/qp+NoHX4bHHL4Y5XIRjmZoh8GKwIqhtIrH84p2NKfT6Sml1OfXrxcVEdg+5CwxR0at94sXL96RyxXeWSxOfyibz/H0yAFB4SUfRW3xY2F8D+wyhBFROEVdTnF9G4fCYWfUibSXSnf6YZ2ROM1wM0KNZ5SFYYI0BKmsw6mbfxjgqv86ytz9u4+LSEbuvXdoV2CKeamvLuTSOON9V91x0Tf/eFDGZWsQMImFtiHCbqMcGRNCVJsVqqUpHH/ECNac8xw8/qh9UKtMwgsimiQxrcCKFVhpkIhfyOedIAjucRzncfl8fnt4884v/VAUTDARmcmJid/m+3MnTE2VTW7bnar2tXORfeAGpDQB1gvxLhsNr0pMtO2kz2xqrp1gv+6dSgpNa6AAFgufCJoUvFJgvCOeqgZe/4m/YvCgX5BTeI3I3WmipfU916HnuDEDgHXB1oElC8MBjLKwzBCl0KhXYeubccYpB+GrH34ZHn/4GIpTU/ANQZGAYZoEchwWzVkAZnBw0HEcxwRBcE6hUNia9IHmGc8TALJx40ZtRV7kVet3Z7Ti6ujSILv6/aiMHAqv4QFw0eonA7gtgdGe1J6hx3pghr2o2FsQkIXjq3BYOwQIgGw2rVK3/9xULznnMGy+6RQRWU60tL4zzbfz2HHNaGU0fBD7EA7zgwCDrEV9agcOHtO48J2n4v1vfA5cVcGO4nSYhDVolqVErf2itDaDAwM8MjikFPOvqtXS88bGxq6J5j7vMXyi8VqGh4fvMw37dp3KWCGly4uPDrKrz5fpgUPgNbxWYSFHNWGxUFBiEl9cjx/RFXSOR54VQ0y8Z4VgRENgoEyY/CZlYBUj3Z9WfNsvjH/5e0Zx18Yfi8iZYfPt7CyH88rmTNF01HggAJCGZhd+pQxtxvHSZx+DN7z8JCwaG0BpegIpsnBZQTgInfWwK1mIYDKZjM7lcsr3/euMCT6Wy+W+G508tSdOUV25cmUQ5fG+Nz5R/Egm656USQ8cP+WeDOelJJMb3kd947cglc7AiG1xgFFUIm4lETFKK7eK9j7JXqZxRsl4xMNhWaAkAJGCpwGiANrXcAt5JXf+SipfestQ7u1f+pKI+ET0tQimCPYo4ZIggLI+wFGlAGkwuagWJ3DgIoV3nX0Gnvn4wyDeJIL6BLIqFXbOUABQAKvC9q2U69Lg4JD2fX+8Wq1/amho4P2xCbjyyiv3SMFK+F4yPj6epXwm5TBvrU1PXug11IsWLH/+fvWBAev94EJu/Pk6DKAE0gQfTjRXKICKxze3GtNb5lGkrfpohmlso5dqYYfCAdg4sAywMJzAwuogDCSsBaUyxFv+KuPvemEw/NYvfrUi5lgi9VYR0SAyNOt0gYfQoT/zPd+64/Prf3OQyqUt6RRLQ0BeBc956kF4xxueiQOH06jvKMNHAHDrzgypIBhEZFOplHEcp6q1/lSlUvnc2NjY5iiaoT1VqOZ6TExMHO267rUAxqi4hf3ffIfxq8uRGr81FCpW0NZAtI7KopvlJTNMQ/e54TwTNItBjGicYHP2UXMGUhhm+ZQCQ0DVOnbklwaj512msfi4jxDl3tUNyZ83zdUgF77OwCFBeXI7DlyYx7mnn4yXPecxIK+I0tQkbCokWxMb3nEq8imstVZrjeHhYWdycvI/+/v7P70nm8Cd0GIKgNx+++3O0NDQTdu2bXvt6Ojo1VtrWdEnvgJq2VNRu/l/IH/5CZztt0KVJ6CCcqjFYgIgi1aLHlo8P8n/QwtoIDMDzpZ8xRWyUYAqFAYTCoDhGnwD+MRwp+5W4x94RTB41kVvFWlc0S1VNE/CJWBXWRtUEEzvwKlPOQpvOOtZWLZ0AI2pLWCroBQgNmpx52aLuxBRMDQ05NRqtfrExMS5mzdv/kqUwTd7q7ZKrLsR3SDXbN+x422Ksq9FYA+s9u1H/ORXcfoxz4OZvB2N8r3ITE3C1L2QZipolnKHzn8yMpTe4NOMaDKeFRlbCY65WsPqOliC8gM0uA6bckl5OQHnnMbU1CEA/oRNmziZs50X4WJWcM14ZjRTwfte93KcctLhIFtDcWIcmh0wu1DiQtsGoABmHWsrHhsbc0ql0rXGmDeNjY3dhoffwwLAyNDQhaUdk+93BtKqPr5NKGBUnAKCRcdB8TGwoqCazSeUGM7VLkQzkXpCwvdPvKYm+i8xnUA8qJQQjnmwFj4AjTp81hA3S5R1pDJRPAQANs03iCoinHJd+80fXfft/Rbu+4KDFo0EU1ObNYGhmKLyX4A4Yu0jBSIEuVxeB4Ffchzn89dee+15q1ev9m644QZnV4lF9gITSUQkm0sylpLaNZCyw4JjqlVjyEKTNbCwMKrVSNsUAnShOoic+3hMjIA63C1q4oRIBASt+dCh0CkhiE3BsoG2YQWHryw0p2whV+BqtbJ8dHT0xvXr16vVq1ebeRGujRs36pUrVwa+yMna+Fdv2bxVPHJcRkjNGFp3CygrAm01aSxYMKaKxeIfjDHPHxoaujcW0r1tFs6u3oQ3Auo4IJgqVn8x0Jd94ubtm40YxSIwgiBslGt3mZrTa+PoMdZWzWhSEimfaF5Sy0y2Is6mliNAEUXDHhgKPgwiRkWyACgYGh7S5VLp24ODgy+OXBczryDqdGlbwQusk+vLuY4OjGIBKQKUCOtM4HKBRgYGVH9/QXmet25qauppQ0ND94qIE93dD1vBioHW5UQ+APIblVV1z/voYH+fyqSJFgwO6LSTIgYFLCSKGK1/8agIijZutvmr6Hm8aQqtheJW32O8L82h2VUIqQMsaRBXEWgLo1W4D8vCLDQ9NeU7jnPqgw8+uA8RmTVr1vC8QRGx+h8fHz9MKfXmwcHBs7Zu3eqJCGcyGZ3JZFCr16sQ+SkZ85H+4eFf/Stoq9nMJADs2LFjmQvAA16tlDorl8tlp6enYYwJ2pqEwyfULqst9jgRscwsnYPrk+6/iMSdym03MhEpEbHRPnQ6nUahUMDExMSfmfkJAwMDRcx3DjfOrj/wwAMjlUrlRs/zRURkYmJi6/j4+HtEZEEyVJe9eKjl7hCwzmqELVumDiwWi58qlUpFEZEgCMQYI0EQSBAE0mg0pF6vS71el0qlItu2bTPbt28327ZtM+VyWRqNxozNGBNuQSCe50mpVJLJyUmp1+vN/W3bts2Wy2UREZmcnPTHx8f/4HneO8rl8iIAiLXWvGouAEg6f9PT08/JZrPprVu3bly8ePGOpAD+q2mruW5IhFUVAQDUarUD0+n0Y6ampqwxhrXWFASBMPMLUqnUklqtZpl5KJfLLfN9H67rolQq3UpEE9ZaIiKrtSZjTFlELlVKiTEGAFak0+lnBEEwFgTBzwBMp1Kpg1Op1JOKxeKXh4aGrq1Wq/fkcrkb9ui7spvT/6+sqXZBm6md/Kz2PO+Eqamp5Z7nnXDDDTtHAiciuYmJiSXJv01NTR23ffv2Quf+u12veS9zjm1zdKIoAkODR8Rnp85b3GPImza1o0wrVqwQALJhwwaKzuf1nVZj1apVsmHDhqZQjI6OUvL7RFQBUImFeMOGDRgYGLgxFiiEPQL2kev1iJZT69evV7viv3bz9aJ9PGJVHnk88njk8TB9/H/ILiN/1CRqhgAAAABJRU5ErkJggg==" alt="Rouvin">
+    <button class="rail-btn on" aria-label="Dashboard" title="Dashboard"><svg><use href="#p-squares-f"/></svg></button>
+    <button class="rail-btn" aria-label="Products" title="Products"><svg><use href="#p-package"/></svg></button>
+    <button class="rail-btn" aria-label="Wild products" title="Wild products"><svg><use href="#p-leaf"/></svg></button>
+    <button class="rail-btn" aria-label="Purchases" title="Purchases"><svg><use href="#p-receipt"/></svg></button>
+    <button class="rail-btn" aria-label="Wallet" title="Wallet"><svg><use href="#p-wallet"/></svg></button>
+    <button class="rail-btn" aria-label="Claims" title="Claims"><svg><use href="#p-gift"/></svg></button>
+    <button class="rail-btn" aria-label="Referrals" title="Referrals"><svg><use href="#p-users"/></svg></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-btn" aria-label="Profile" title="Profile"><svg><use href="#p-user"/></svg></button>
+    <button class="rail-btn" aria-label="Log out" title="Log out"><svg><use href="#p-signout"/></svg></button>
+  </nav>
+
+  <div class="content">
+
+    <!-- ===== CONTEXT HEADER ===== -->
+    <header class="ctx">
+      <div class="ctx-top">
+        <div>
+          <h1 class="ctx-title">Rouvin DS v2 — “Ledger”</h1>
+          <p class="ctx-sub">Vendor console · full visual rebuild · light + dark</p>
+        </div>
+        <div class="ctx-right">
+          <div class="balstrip">
+            <div><span class="lab">Wallet</span><span class="val num">₹ 48,250.00</span></div>
+            <div class="sep"></div>
+            <div><span class="lab">Unrealised</span><span class="val num pos">+₹ 6,140.00</span></div>
+          </div>
+          <button class="ib ib-bordered" id="density" aria-label="Toggle density" title="Comfortable / compact"><svg><use href="#p-rows"/></svg></button>
+          <button class="btn btn-quiet" id="themebtn" aria-pressed="false">
+            <svg id="themeicon"><use href="#p-moon"/></svg><span id="themelabel">Dark</span>
+          </button>
+        </div>
+      </div>
+      <div class="tabstrip" role="tablist">
+        <button class="tab on" onclick="jump('changed')">What changed</button>
+        <button class="tab" onclick="jump('colour')">Colour</button>
+        <button class="tab" onclick="jump('type')">Type</button>
+        <button class="tab" onclick="jump('cut')">The cut</button>
+        <button class="tab" onclick="jump('buttons')">Buttons</button>
+        <button class="tab" onclick="jump('icons')">Icons</button>
+        <button class="tab" onclick="jump('shell')">Shell</button>
+        <button class="tab" onclick="jump('components')">Components</button>
+        <button class="tab" onclick="jump('dash')">Dashboard</button>
+        <button class="tab" onclick="jump('a11y')">Accessibility</button>
+      </div>
+    </header>
+
+    <main class="page">
+
+      <!-- ===== 0. CORRECTION ===== -->
+      <section class="sec">
+        <div class="al al-warn cut" style="max-width:none">
+          <svg><use href="#p-warn-f"/></svg>
+          <div>
+            <b>First: v1 was written against the wrong product</b>
+            <p>Rouvin DS v1 assumed a logistics and fleet platform, inferred from the logo's chevron. The implementation report shows what Rouvin actually is: a <b>vendor trading and wallet console</b> — buy stock, hold to an unlock time, sell for profit, plus referrals, claims, commissions, deposits and withdrawals, in ₹, with UPI, PAN, Aadhar and IST. Every icon, label and pattern in v2 is rebuilt against that reality. That correction alone changes more of the interface than the restyle does.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 1. WHAT CHANGED ===== -->
+      <section class="sec" id="changed">
+        <p class="kicker">01 — Direction</p>
+        <h2>Every axis moved</h2>
+        <p class="sec-lede">v1 was a clean corporate console: navy sidebar, white cards floating on a tinted page, soft 10px corners, geometric type. v2 is a <b>trading ledger</b>: a dark instrument rail, tinted panels sitting <i>into</i> a white page, sharp 4px structure, a grotesque display face, and money set in a real tabular mono. Nothing carries over except the two brand colours, which are fixed by the logo.</p>
+
+        <div class="panel">
+          <table class="cmp">
+            <tr><th>Axis</th><th>v1 “Route”</th><th></th><th>v2 “Ledger”</th></tr>
+            <tr><td><b>Concept</b></td><td class="old">Logistics wayfinding</td><td class="arrow">→</td><td>Trading ledger / instrument panel</td></tr>
+            <tr><td><b>Shell</b></td><td class="old">264px labelled navy sidebar + 64px top bar</td><td class="arrow">→</td><td>72px icon rail + sticky context header with tab strip and live balance</td></tr>
+            <tr><td><b>Surface logic</b></td><td class="old">White cards on a tinted page, navy shadows</td><td class="arrow">→</td><td><b>Inverted:</b> tinted panels on a white page, zero shadow, hairline rules</td></tr>
+            <tr><td><b>Radius</b></td><td class="old">6 / 10 / 16px, soft throughout</td><td class="arrow">→</td><td>4px structure · 8px controls · full pill for tags — three deliberate registers</td></tr>
+            <tr><td><b>Buttons</b></td><td class="old">Flat fills, 32/40/48</td><td class="arrow">→</td><td><b>Keycap</b> — 1px border, 2px shelf, presses down 2px. 30/38/46</td></tr>
+            <tr><td><b>Display type</b></td><td class="old">Sora (geometric)</td><td class="arrow">→</td><td><b>Archivo</b> (grotesque, tight, industrial)</td></tr>
+            <tr><td><b>UI type</b></td><td class="old">IBM Plex Sans</td><td class="arrow">→</td><td><b>Figtree</b> — warmer, rounder, better at small sizes</td></tr>
+            <tr><td><b>Numerals</b></td><td class="old">IBM Plex Mono, IDs only</td><td class="arrow">→</td><td><b>JetBrains Mono</b> as a first-class UI face — every ₹ figure, quantity and countdown</td></tr>
+            <tr><td><b>Icons</b></td><td class="old">Lucide, 1.75px uniform stroke</td><td class="arrow">→</td><td><b>Phosphor</b> bold 2.25px, with <code>fill</code> variants for active and status</td></tr>
+            <tr><td><b>Signature</b></td><td class="old">Route line (navy → orange hairline)</td><td class="arrow">→</td><td><b>The cut</b> — 45° corner slice on value-bearing panels</td></tr>
+            <tr><td><b>Status</b></td><td class="old">Sentence-case pill badges</td><td class="arrow">→</td><td>Mono uppercase tags, tracked, with filled glyphs</td></tr>
+            <tr><td><b>Dark mode</b></td><td class="old">Deferred to v1.1, Chakra colour mode only</td><td class="arrow">→</td><td><b>Fully tokenised, shipped.</b> One codebase, two themes, both audited</td></tr>
+            <tr><td><b>Density</b></td><td class="old">One size</td><td class="arrow">→</td><td>Comfortable / compact toggle, persisted per vendor</td></tr>
+            <tr><td><b>Search</b></td><td class="old">Decorative bell, per-page search boxes</td><td class="arrow">→</td><td><b>⌘K command palette</b> across products, trades and history</td></tr>
+            <tr><td><b>Loading</b></td><td class="old">Spinners</td><td class="arrow">→</td><td>Skeletons shaped like the final content</td></tr>
+          </table>
+          <p class="hint">Try the two controls in the header: <b>Dark</b> switches the theme, and the row icon switches density. Both re-render this entire page — that is the proof that everything resolves through tokens rather than hard-coded values.</p>
+        </div>
+      </section>
+
+      <!-- ===== 2. COLOUR ===== -->
+      <section class="sec" id="colour">
+        <p class="kicker">02 — Foundations</p>
+        <h2>Dual-mode colour</h2>
+        <p class="sec-lede">Every colour resolves through a semantic variable — <code>--panel</code>, <code>--text-2</code>, <code>--bad</code> — never a raw hex. Light and dark are two value sets behind the same names, which is why the toggle works and why a component written once is correct in both.</p>
+
+        <div class="panel">
+          <h3 class="h">Light mode</h3>
+          <div class="swgrid">
+            <div class="swc"><div class="band" style="background:#FFFFFF;border-bottom:1px solid var(--hairline)"></div><div class="m"><b>--bg</b><span>#FFFFFF · canvas</span></div></div>
+            <div class="swc"><div class="band" style="background:#F4F7FC"></div><div class="m"><b>--panel</b><span>#F4F7FC · panels</span></div></div>
+            <div class="swc"><div class="band" style="background:#EAF0F9"></div><div class="m"><b>--panel-2</b><span>#EAF0F9 · nested</span></div></div>
+            <div class="swc"><div class="band" style="background:#7A88A3"><span class="r d">3.57</span></div><div class="m"><b>--control-border</b><span>#7A88A3 · inputs</span></div></div>
+            <div class="swc"><div class="band" style="background:#0B1424"><span class="r d">18.4</span></div><div class="m"><b>--text</b><span>#0B1424</span></div></div>
+            <div class="swc"><div class="band" style="background:#3D4B68"><span class="r d">8.73</span></div><div class="m"><b>--text-2</b><span>#3D4B68</span></div></div>
+            <div class="swc"><div class="band" style="background:#5A6883"><span class="r d">5.61</span></div><div class="m"><b>--text-3</b><span>#5A6883</span></div></div>
+            <div class="swc"><div class="band" style="background:#0A3681"><span class="r d">11.3</span></div><div class="m"><b>--brand</b><span>#0A3681</span></div></div>
+            <div class="swc"><div class="band" style="background:#FF5F03"><span class="r">3.05</span></div><div class="m"><b>--accent</b><span>#FF5F03 · fills only</span></div></div>
+            <div class="swc"><div class="band" style="background:#D24E00"><span class="r d">4.35</span></div><div class="m"><b>--accent-text</b><span>#D24E00 · orange text</span></div></div>
+            <div class="swc"><div class="band" style="background:#0B7350"><span class="r d">5.86</span></div><div class="m"><b>--ok</b><span>#0B7350 · profit</span></div></div>
+            <div class="swc"><div class="band" style="background:#8A5205"><span class="r d">6.38</span></div><div class="m"><b>--warn</b><span>#8A5205 · pending</span></div></div>
+            <div class="swc"><div class="band" style="background:#B8112F"><span class="r d">6.65</span></div><div class="m"><b>--bad</b><span>#B8112F · loss, reject</span></div></div>
+            <div class="swc"><div class="band" style="background:#14479C"><span class="r d">8.71</span></div><div class="m"><b>--note</b><span>#14479C · info</span></div></div>
+          </div>
+
+          <h3 class="h">Dark mode</h3>
+          <div class="swgrid">
+            <div class="swc"><div class="band" style="background:#070C18"></div><div class="m"><b>--bg</b><span>#070C18 · canvas</span></div></div>
+            <div class="swc"><div class="band" style="background:#0E1626"></div><div class="m"><b>--panel</b><span>#0E1626</span></div></div>
+            <div class="swc"><div class="band" style="background:#16203A"></div><div class="m"><b>--panel-2</b><span>#16203A</span></div></div>
+            <div class="swc"><div class="band" style="background:#5A6C90"><span class="r d">3.43</span></div><div class="m"><b>--control-border</b><span>#5A6C90 · on panel</span></div></div>
+            <div class="swc"><div class="band" style="background:#E8EDF7"><span class="r">15.4</span></div><div class="m"><b>--text</b><span>#E8EDF7</span></div></div>
+            <div class="swc"><div class="band" style="background:#C3CDE2"><span class="r">11.3</span></div><div class="m"><b>--text-2</b><span>#C3CDE2</span></div></div>
+            <div class="swc"><div class="band" style="background:#9AA9C4"><span class="r">7.62</span></div><div class="m"><b>--text-3</b><span>#9AA9C4</span></div></div>
+            <div class="swc"><div class="band" style="background:#2E63D8"><span class="r d">5.40</span></div><div class="m"><b>--brand</b><span>#2E63D8 · white text</span></div></div>
+            <div class="swc"><div class="band" style="background:#FF6A1F"><span class="r d">6.31</span></div><div class="m"><b>--accent</b><span>#FF6A1F</span></div></div>
+            <div class="swc"><div class="band" style="background:#FF8038"><span class="r d">7.23</span></div><div class="m"><b>--accent-text</b><span>#FF8038 · passes as text</span></div></div>
+            <div class="swc"><div class="band" style="background:#3ECF9A"><span class="r d">9.12</span></div><div class="m"><b>--ok</b><span>#3ECF9A</span></div></div>
+            <div class="swc"><div class="band" style="background:#F2C14E"><span class="r d">10.8</span></div><div class="m"><b>--warn</b><span>#F2C14E</span></div></div>
+            <div class="swc"><div class="band" style="background:#FF6B7A"><span class="r d">6.57</span></div><div class="m"><b>--bad</b><span>#FF6B7A</span></div></div>
+            <div class="swc"><div class="band" style="background:#7BA5F5"><span class="r d">7.36</span></div><div class="m"><b>--note</b><span>#7BA5F5</span></div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 class="h">Three rules that carry over, and two that change</h3>
+          <div class="g2">
+            <div>
+              <div class="al al-ok"><svg><use href="#p-check-f"/></svg><div><b>Carried over — the orange rule</b><p>In <b>light</b> mode orange fills still take dark ink, never white (3.05:1 fails both ways). Orange text on light is still <code>#D24E00</code> only.</p></div></div>
+              <div class="al al-ok"><svg><use href="#p-check-f"/></svg><div><b>Carried over — warning is mustard</b><p>Never brand orange. Orange means “this is the action”; mustard means “look at this”. Both keep their filled glyph.</p></div></div>
+              <div class="al al-ok"><svg><use href="#p-check-f"/></svg><div><b>Carried over — colour is never alone</b><p>Every status carries a glyph and a word. Profit and loss also differ in sign and in position, not only in hue.</p></div></div>
+            </div>
+            <div>
+              <div class="al al-note"><svg><use href="#p-info-f"/></svg><div><b>Changed — in dark mode, orange becomes readable text</b><p><code>#FF8038</code> on the dark panel is 7.23:1. Dark mode is the one place orange may set labels and figures, which is why the dark theme can lean on it more freely.</p></div></div>
+              <div class="al al-bad"><svg><use href="#p-x-f"/></svg><div><b>Fixed — v1 input borders were failing</b><p>v1 specified <code>slate-300 #BEC7D8</code> for input borders: <b>1.70:1</b> against white. WCAG 2.2 SC 1.4.11 wants 3:1 for the boundary that identifies a control. v2 uses <code>#7A88A3</code> — <b>3.57:1</b> — and <code>#5A6C90</code> (3.43:1) in dark.</p></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 3. TYPE ===== -->
+      <section class="sec" id="type">
+        <p class="kicker">03 — Foundations</p>
+        <h2>Type: a grotesque, a humanist, and a real mono</h2>
+        <p class="sec-lede"><b>Archivo</b> for display — a tight industrial grotesque that sets a page title like a ticker header. <b>Figtree</b> for UI — warmer and rounder than Plex, and more legible in a 13px table row. <b>JetBrains Mono</b> is promoted from “IDs only” to a first-class face: every rupee figure, quantity, countdown and timestamp is set in it, because in a wallet product the numbers <i>are</i> the content and they must align in a column.</p>
+
+        <div class="panel">
+          <div class="tr"><div class="tm"><b>display-1</b>Archivo 700<br>50 / 52 · −.035em</div><div class="ty-d1">Sell now, ₹6,140 up</div></div>
+          <div class="tr"><div class="tm"><b>display-2</b>Archivo 700<br>36 / 40 · −.03em</div><div class="ty-d2">Wild products</div></div>
+          <div class="tr"><div class="tm"><b>page-title</b>Archivo 700<br>26 / 30 · −.02em</div><div class="ty-h1">Purchase history</div></div>
+          <div class="tr"><div class="tm"><b>panel-title</b>Archivo 600<br>20 / 25 · −.01em</div><div class="ty-h2">Active investments</div></div>
+          <div class="tr"><div class="tm"><b>section</b>Archivo 600<br>17 · .06em · caps</div><div class="ty-h3">Needs your attention</div></div>
+          <div class="tr"><div class="tm"><b>body</b>Figtree 400<br>15 / 23</div><div class="ty-b">This trade unlocks at 18:40 IST today. Once it unlocks you can sell it at the current selling price, and the profit lands in your wallet immediately.</div></div>
+          <div class="tr"><div class="tm"><b>body-sm</b>Figtree 400<br>13.5 / 20</div><div class="ty-s">Used in table rows, helper text and modal bodies. Never smaller than 12px anywhere.</div></div>
+          <div class="tr"><div class="tm"><b>label</b>Figtree 600<br>12 · .04em · caps</div><div class="ty-l">Amount (₹)</div></div>
+          <div class="tr"><div class="tm"><b>figure-lg</b>JetBrains 700<br>30 · −.03em</div><div class="ty-n1">₹ 48,250.00</div></div>
+          <div class="tr"><div class="tm"><b>figure</b>JetBrains 500<br>15</div><div class="ty-n2">₹ 1,240.00 · 12 units · 04:12:38</div></div>
+          <div class="tr"><div class="tm"><b>meta</b>JetBrains 400<br>12.5</div><div class="ty-n3">RVN-VD-4821 · 25 Aug 2026, 14:32 IST</div></div>
+        </div>
+
+        <div class="panel">
+          <h3 class="h">Number rules — new in v2</h3>
+          <div class="g2">
+            <div>
+              <ul class="ck">
+                <li><svg><use href="#p-check-f"/></svg>Every figure uses <code>font-variant-numeric: tabular-nums</code>. Columns of money must align on the decimal.</li>
+                <li><svg><use href="#p-check-f"/></svg>Currency is <code>₹ 48,250.00</code> — symbol, thin space, Indian grouping, always two decimals. Never <code>₹48250</code>.</li>
+                <li><svg><use href="#p-check-f"/></svg>Signed values carry the sign: <span class="pos num">+₹ 6,140.00</span> / <span class="neg num">−₹ 820.00</span>. The sign leads, before the symbol.</li>
+              </ul>
+            </div>
+            <div>
+              <ul class="ck">
+                <li><svg><use href="#p-check-f"/></svg>Countdowns are <code>HH:MM:SS</code> in mono so the digits do not jitter as they tick.</li>
+                <li><svg><use href="#p-check-f"/></svg>All timestamps say IST explicitly. Vendors reconcile against bank statements.</li>
+                <li><svg><use href="#p-check-f"/></svg>Never round a balance, a profit or a quantity to look tidier.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 4. THE CUT ===== -->
+      <section class="sec" id="cut">
+        <p class="kicker">04 — Signature</p>
+        <h2>The cut</h2>
+        <p class="sec-lede">v1's signature was the route line. v2 retires it and replaces it with <b>the cut</b>: a 45° slice off the top-right corner of any surface that carries a monetary value, with the notch filled in accent. It comes straight out of the logo — the R has a diagonal cut through it — and it does a job: <b>if a panel is cut, there is money in it.</b> Vendors learn that in one session.</p>
+
+        <div class="g3">
+          <div class="money-panel cut">
+            <div class="k">Wallet balance</div>
+            <div class="v num">₹ 48,250.00</div>
+            <div class="d"><svg><use href="#p-clock"/></svg>Synced 14:32 IST</div>
+          </div>
+          <div class="money-panel cut">
+            <div class="k">Unrealised profit</div>
+            <div class="v num pos">+₹ 6,140.00</div>
+            <div class="d"><svg style="color:var(--ok)"><use href="#p-trend"/></svg>Across 7 held trades</div>
+          </div>
+          <div class="money-panel">
+            <div class="k">Referrals</div>
+            <div class="v num">14</div>
+            <div class="d"><svg><use href="#p-users"/></svg>No cut — this is a count, not money</div>
+          </div>
+        </div>
+        <p class="hint"><b>Discipline:</b> the cut appears on money panels, the wallet balance strip, purchase and sale confirmation modals, and payout rows. It never appears on navigation, on plain content cards, on counts, or on more than four surfaces in one viewport. Applied everywhere it would stop meaning anything.</p>
+      </section>
+
+      <!-- ===== 5. BUTTONS ===== -->
+      <section class="sec" id="buttons">
+        <p class="kicker">05 — Components</p>
+        <h2>Keycap buttons</h2>
+        <p class="sec-lede">v1's buttons were flat fills. v2's have a 1px border, a 2px shelf beneath, and they physically press down two pixels when clicked. In a product where a click spends real money, the control should feel like it was pressed. Press one.</p>
+
+        <div class="panel">
+          <h3 class="h">Variants</h3>
+          <div class="row">
+            <button class="btn btn-solid"><svg><use href="#p-plus"/></svg>Add money</button>
+            <button class="btn btn-accent"><svg><use href="#p-cart"/></svg>Pay with wallet</button>
+            <button class="btn btn-quiet"><svg><use href="#p-download"/></svg>Export</button>
+            <button class="btn btn-ghost">View more</button>
+            <button class="btn btn-danger"><svg><use href="#p-x"/></svg>Cancel request</button>
+          </div>
+          <p class="hint"><b>Solid</b> is the page's one main action — navy in light, a lighter navy in dark so it stays visible. <b>Accent</b> is reserved for the money-moving moment: buy, sell, claim, submit a withdrawal. One accent per screen region, never two. <b>Quiet</b> replaces v1's secondary. <b>Ghost</b> for in-row and low-priority. <b>Danger</b> always names the object in its confirmation.</p>
+
+          <h3 class="h">Sizes</h3>
+          <div class="row">
+            <button class="btn btn-solid btn-xs">Extra small · 30</button>
+            <button class="btn btn-solid">Default · 38</button>
+            <button class="btn btn-solid btn-lg">Large · 46</button>
+          </div>
+
+          <h3 class="h">States</h3>
+          <div class="row">
+            <button class="btn btn-accent">Default</button>
+            <button class="btn btn-accent" style="background:var(--accent-hover);border-color:var(--accent-hover)">Hover</button>
+            <button class="btn btn-accent" style="outline:2px solid var(--accent);outline-offset:3px">Focus</button>
+            <button class="btn btn-accent" style="transform:translateY(2px);box-shadow:none">Pressed</button>
+            <button class="btn btn-accent" disabled>Disabled</button>
+            <button class="btn btn-accent" disabled style="opacity:1"><span class="spin"></span>Selling</button>
+          </div>
+          <p class="hint">The loading label keeps the same width so the button does not jump mid-transaction. Verb consistency holds: <b>Sell now</b> → <b>Sold</b>. <b>Claim bonus</b> → <b>Claimed</b>.</p>
+
+          <h3 class="h">Full-width, in a purchase modal</h3>
+          <div style="max-width:340px">
+            <button class="btn btn-accent btn-lg btn-wide"><svg><use href="#p-wallet"/></svg>Pay ₹ 14,880.00 with wallet</button>
+            <p class="hint" style="margin-top:8px">Money buttons state the amount. A vendor should never have to scroll up to check what they are about to spend.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 6. ICONS ===== -->
+      <section class="sec" id="icons">
+        <p class="kicker">06 — Components</p>
+        <h2>Phosphor, bold — and matched to the real product</h2>
+        <p class="sec-lede">v1 used Lucide at 1.75px, and its inventory listed trucks, routes and map pins for a product with none of those. v2 moves to <b>Phosphor</b> at <code>weight="bold"</code> — visibly heavier and more geometric, which holds up better against Archivo and reads at a glance on a phone — and the inventory is rebuilt around what a vendor actually does. Active navigation and status glyphs use <code>weight="fill"</code>.</p>
+
+        <div class="panel">
+          <div class="ig">
+            <div class="ic"><svg><use href="#p-squares"/></svg><b>Dashboard</b><span>squares-four</span></div>
+            <div class="ic"><svg><use href="#p-package"/></svg><b>Products</b><span>package</span></div>
+            <div class="ic"><svg><use href="#p-leaf"/></svg><b>Wild products</b><span>leaf</span></div>
+            <div class="ic"><svg><use href="#p-receipt"/></svg><b>Purchases</b><span>receipt</span></div>
+            <div class="ic"><svg><use href="#p-wallet"/></svg><b>Wallet</b><span>wallet</span></div>
+            <div class="ic"><svg><use href="#p-gift"/></svg><b>Claims</b><span>gift</span></div>
+            <div class="ic"><svg><use href="#p-coins"/></svg><b>Earnings</b><span>coins</span></div>
+            <div class="ic"><svg><use href="#p-users"/></svg><b>Referrals</b><span>users-three</span></div>
+            <div class="ic"><svg><use href="#p-user"/></svg><b>Profile</b><span>user-circle</span></div>
+            <div class="ic"><svg><use href="#p-cart"/></svg><b>Buy</b><span>shopping-cart</span></div>
+            <div class="ic"><svg><use href="#p-trend"/></svg><b>Sell / profit</b><span>trend-up</span></div>
+            <div class="ic"><svg><use href="#p-trend-d"/></svg><b>Loss</b><span>trend-down</span></div>
+            <div class="ic"><svg><use href="#p-bank"/></svg><b>Withdraw</b><span>bank</span></div>
+            <div class="ic"><svg><use href="#p-hourglass"/></svg><b>Locked trade</b><span>hourglass-medium</span></div>
+            <div class="ic"><svg><use href="#p-clock"/></svg><b>Countdown</b><span>clock-countdown</span></div>
+            <div class="ic"><svg><use href="#p-copy"/></svg><b>Copy ID</b><span>copy</span></div>
+            <div class="ic"><svg><use href="#p-search"/></svg><b>Search</b><span>magnifying-glass</span></div>
+            <div class="ic"><svg><use href="#p-cmd"/></svg><b>Command</b><span>command</span></div>
+            <div class="ic"><svg><use href="#p-funnel"/></svg><b>Filter</b><span>funnel</span></div>
+            <div class="ic"><svg><use href="#p-download"/></svg><b>Export</b><span>download-simple</span></div>
+            <div class="ic"><svg><use href="#p-bell"/></svg><b>Notifications</b><span>bell</span></div>
+            <div class="ic"><svg><use href="#p-plus"/></svg><b>Add</b><span>plus</span></div>
+            <div class="ic"><svg><use href="#p-dots"/></svg><b>More</b><span>dots-three</span></div>
+            <div class="ic"><svg><use href="#p-caret"/></svg><b>Next</b><span>caret-right</span></div>
+            <div class="ic"><svg><use href="#p-caretd"/></svg><b>Expand</b><span>caret-down</span></div>
+            <div class="ic"><svg><use href="#p-x"/></svg><b>Close</b><span>x</span></div>
+            <div class="ic"><svg style="color:var(--ok)"><use href="#p-check-f"/></svg><b>Approved</b><span>check-circle · fill</span></div>
+            <div class="ic"><svg style="color:var(--warn)"><use href="#p-warn-f"/></svg><b>Pending</b><span>warning · fill</span></div>
+            <div class="ic"><svg style="color:var(--bad)"><use href="#p-x-f"/></svg><b>Rejected</b><span>x-circle · fill</span></div>
+            <div class="ic"><svg style="color:var(--note)"><use href="#p-info-f"/></svg><b>Info</b><span>info · fill</span></div>
+            <div class="ic"><svg><use href="#p-signout"/></svg><b>Log out</b><span>sign-out</span></div>
+            <div class="ic"><svg><use href="#p-arrow-ur"/></svg><b>External</b><span>arrow-up-right</span></div>
+          </div>
+
+          <div class="al al-warn" style="margin-top:20px"><svg><use href="#p-warn-f"/></svg><div><b>Two icon fixes carried in from the report</b><p>The bonus popup currently pulls coin, gift and star glyphs from <code>react-icons</code> — that library goes, and those become Phosphor <code>coins</code>, <code>gift</code> and <code>sparkle</code>. The top-bar bell is decorative with no <code>aria-label</code>; in v2 it either becomes a real notifications control or it is removed. A bell that does nothing costs trust.</p></div></div>
+        </div>
+      </section>
+
+      <!-- ===== 7. SHELL ===== -->
+      <section class="sec" id="shell">
+        <p class="kicker">07 — Layout</p>
+        <h2>Rail, context header, and a balance that never leaves</h2>
+        <p class="sec-lede">v1 spent 264px of every screen on a labelled sidebar, and put a breadcrumb, a dead bell and an account name in a 64px bar above it. v2 gives that width back to the content. Seven destinations do not need labels once the icons are learned — they need to be reachable in one click and to be obvious on a phone.</p>
+
+        <div class="g2">
+          <div class="panel">
+            <h3 class="h">The rail — 72px, always dark</h3>
+            <p class="ty-s" style="color:var(--text-2)">Dark in both themes, so the vendor always knows where the frame ends and the ledger begins. Active items use the filled glyph plus a 3px accent edge. Every button carries an <code>aria-label</code> and a tooltip on hover and on focus. Below <code>md</code> the rail becomes a bottom bar with the five most-used destinations — a phone-native pattern, not a hamburger drawer.</p>
+            <p class="hint"><b>192px reclaimed</b> on every desktop screen. On a 1366px laptop, that is 14% more room for a purchase table.</p>
+          </div>
+          <div class="panel">
+            <h3 class="h">Context header — sticky</h3>
+            <p class="ty-s" style="color:var(--text-2)">One block that replaces the breadcrumb bar and the per-page <code>h1</code>: page title, tab strip, and the <b>balance strip</b> — wallet balance and unrealised profit, on screen at all times. In v1 a vendor had to navigate to Wallet to see their balance before deciding whether they could afford a purchase. Now the answer is always in the top-right.</p>
+            <div class="balstrip cut" style="margin-top:14px">
+              <div><span class="lab">Wallet</span><span class="val num">₹ 48,250.00</span></div>
+              <div class="sep"></div>
+              <div><span class="lab">Held</span><span class="val num">₹ 92,400.00</span></div>
+              <div class="sep"></div>
+              <div><span class="lab">Unrealised</span><span class="val num pos">+₹ 6,140.00</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 class="h">Command palette — <span class="kbd">⌘</span> <span class="kbd">K</span></h3>
+          <p class="ty-s" style="color:var(--text-2);max-width:74ch">v1 had a separate search field on Purchase history, Recent activity and Referrals, and a bell that did nothing. v2 consolidates all of it into one palette that searches products, held trades, purchases and payouts, and also runs actions. It is the single cheapest thing on this list to build and the thing power vendors will notice first.</p>
+          <div class="cmdk" style="margin-top:16px">
+            <div class="cmdk-in"><svg><use href="#p-search"/></svg><span>Search or run a command…</span></div>
+            <div class="cmdk-sec">Actions</div>
+            <div class="cmdk-row on"><svg><use href="#p-plus"/></svg>Add money to wallet<span class="kbd">A</span></div>
+            <div class="cmdk-row"><svg><use href="#p-bank"/></svg>Request a withdrawal<span class="kbd">W</span></div>
+            <div class="cmdk-row"><svg><use href="#p-trend"/></svg>Sell an unlocked trade<span class="kbd">S</span></div>
+            <div class="cmdk-sec">Held trades</div>
+            <div class="cmdk-row"><svg><use href="#p-hourglass"/></svg>80 GSM kraft · 12 units<span class="kbd num">04:12:38</span></div>
+            <div class="cmdk-row"><svg style="color:var(--ok)"><use href="#p-check-f"/></svg>Wild · teak offcut · 4 units<span class="kbd">Unlocked</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 8. COMPONENTS ===== -->
+      <section class="sec" id="components">
+        <p class="kicker">08 — Components</p>
+        <h2>Tags, alerts, forms, tables, states</h2>
+
+        <div class="g2">
+          <div class="panel">
+            <h3 class="h">Status tags</h3>
+            <p class="ty-s" style="color:var(--text-2);margin-bottom:14px">v1 used sentence-case pill badges. v2 tags are mono, uppercase and tracked — they read as ledger annotations, and they visually separate from body copy at a glance in a dense row.</p>
+            <div class="row">
+              <span class="tag t-ok"><svg><use href="#p-check-f"/></svg>Approved</span>
+              <span class="tag t-warn"><svg><use href="#p-warn-f"/></svg>Pending</span>
+              <span class="tag t-bad"><svg><use href="#p-x-f"/></svg>Rejected</span>
+              <span class="tag t-note"><svg><use href="#p-hourglass"/></svg>Locked</span>
+              <span class="tag t-ok"><svg><use href="#p-trend"/></svg>Unlocked</span>
+              <span class="tag t-mute">Draft</span>
+              <span class="tag t-mute">Cancelled</span>
+            </div>
+            <h3 class="h">Quantity stepper</h3>
+            <div class="stepper">
+              <button type="button" aria-label="Decrease quantity">−</button>
+              <input value="12" aria-label="Quantity" readonly>
+              <button type="button" aria-label="Increase quantity">+</button>
+            </div>
+            <p class="hint">Steppers are keyboard-operable and typeable. The max is the lower of remaining quota and available stock, and the reason for the cap is stated in helper text — never a silently disabled button.</p>
+          </div>
+
+          <div class="panel">
+            <h3 class="h">Alerts</h3>
+            <div class="al al-ok"><svg><use href="#p-check-f"/></svg><div><b>Sale complete</b><p>12 units sold at ₹ 1,340.00. ₹ 16,080.00 has been added to your wallet.</p></div></div>
+            <div class="al al-warn"><svg><use href="#p-warn-f"/></svg><div><b>A withdrawal is already pending</b><p>Your request for ₹ 5,000.00 from 24 August is still being processed. You can submit another once it clears.</p></div></div>
+            <div class="al al-bad"><svg><use href="#p-x-f"/></svg><div><b>Not enough in your wallet</b><p>This purchase costs ₹ 14,880.00 and your balance is ₹ 9,250.00. Add ₹ 5,630.00 to continue.</p></div></div>
+            <div class="al al-note" style="margin-bottom:0"><svg><use href="#p-info-f"/></svg><div><b>Withdrawals are processed in 3 bank working days</b><p>Minimum ₹ 50, maximum ₹ 25,000 per request.</p></div></div>
+            <p class="hint">Every error states the shortfall in rupees and the exact next step. “Insufficient funds” alone is not an acceptable message in a wallet product.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 class="h">Forms</h3>
+          <div class="g3">
+            <div>
+              <div class="fld">
+                <label for="a1">Amount (₹)</label>
+                <input class="inp money" id="a1" value="5,000.00">
+                <span class="hp">Minimum ₹ 50 · maximum ₹ 25,000</span>
+              </div>
+            </div>
+            <div>
+              <div class="fld">
+                <label for="a2">Amount (₹)</label>
+                <input class="inp money bad" id="a2" value="52,000.00" aria-invalid="true" aria-describedby="a2e">
+                <span class="er" id="a2e"><svg><use href="#p-x-f"/></svg>Enter ₹ 25,000 or less.</span>
+              </div>
+            </div>
+            <div>
+              <div class="fld">
+                <label for="a3">Remarks (optional)</label>
+                <input class="inp" id="a3" placeholder="Why you need this stock">
+                <span class="hp">Seen by the admin reviewing your request.</span>
+              </div>
+            </div>
+          </div>
+          <p class="hint">Money inputs are right-aligned and set in the mono face so the vendor reads them the same way they read the balance. Labels are uppercase micro-labels, always visible. Validate on blur, then live once a field has errored.</p>
+        </div>
+
+        <div class="panel">
+          <h3 class="h">Table — held trades</h3>
+          <div class="row" style="margin-bottom:12px">
+            <span class="tag t-mute">6 trades</span>
+            <span style="margin-left:auto"></span>
+            <button class="btn btn-quiet btn-xs"><svg><use href="#p-funnel"/></svg>Filter</button>
+            <button class="btn btn-quiet btn-xs"><svg><use href="#p-download"/></svg>Export</button>
+          </div>
+          <div class="tw">
+            <table class="t">
+              <thead><tr>
+                <th>Trade</th><th>Product</th><th>Status</th><th class="right">Qty</th>
+                <th class="right">Paid</th><th class="right">Now</th><th class="right">P&amp;L</th><th></th>
+              </tr></thead>
+              <tbody>
+                <tr class="on"><td><a class="idl" href="#components">TR-90412</a></td><td>80 GSM kraft</td><td><span class="tag t-ok"><svg><use href="#p-trend"/></svg>Unlocked</span></td><td class="right num">12</td><td class="right num">₹ 14,880.00</td><td class="right num">₹ 16,080.00</td><td class="right num pos">+₹ 1,200.00</td><td class="right"><button class="btn btn-accent btn-xs">Sell now</button></td></tr>
+                <tr><td><a class="idl" href="#components">TR-90398</a></td><td>Wild · teak offcut</td><td><span class="tag t-note"><svg><use href="#p-hourglass"/></svg>04:12:38</span></td><td class="right num">4</td><td class="right num">₹ 9,600.00</td><td class="right num">₹ 10,240.00</td><td class="right num pos">+₹ 640.00</td><td class="right"><button class="btn btn-ghost btn-xs" disabled>Locked</button></td></tr>
+                <tr><td><a class="idl" href="#components">TR-90377</a></td><td>120 GSM art</td><td><span class="tag t-note"><svg><use href="#p-hourglass"/></svg>21:40:02</span></td><td class="right num">20</td><td class="right num">₹ 31,000.00</td><td class="right num">₹ 30,180.00</td><td class="right num neg">−₹ 820.00</td><td class="right"><button class="btn btn-ghost btn-xs" disabled>Locked</button></td></tr>
+                <tr><td><a class="idl" href="#components">TR-90341</a></td><td>Wild · rosewood</td><td><span class="tag t-ok"><svg><use href="#p-trend"/></svg>Unlocked</span></td><td class="right num">2</td><td class="right num">₹ 18,400.00</td><td class="right num">₹ 21,600.00</td><td class="right num pos">+₹ 3,200.00</td><td class="right"><button class="btn btn-accent btn-xs">Sell now</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="hint">Money right-aligned, mono, tabular — every decimal point lines up down the column. Countdowns live in the status tag, so a vendor scans one column to find what is sellable. Selected rows take the accent edge.</p>
+        </div>
+
+        <div class="panel">
+          <h3 class="h">Loading — skeletons, not spinners</h3>
+          <p class="ty-s" style="color:var(--text-2);max-width:74ch">The report lists spinners across dashboard widgets, charts, wallet tabs and purchase history. Spinners tell a vendor to wait; skeletons tell them what is arriving and stop the layout jumping when it does.</p>
+          <div class="g3" style="margin-top:16px">
+            <div class="money-panel cut">
+              <div class="k">Wallet balance</div>
+              <div class="sk" style="height:26px;width:72%;margin-bottom:10px"></div>
+              <div class="sk" style="height:10px;width:46%"></div>
+            </div>
+            <div class="money-panel cut">
+              <div class="k">Unrealised profit</div>
+              <div class="sk" style="height:26px;width:64%;margin-bottom:10px"></div>
+              <div class="sk" style="height:10px;width:52%"></div>
+            </div>
+            <div class="money-panel">
+              <div class="k">Held trades</div>
+              <div class="sk" style="height:26px;width:34%;margin-bottom:10px"></div>
+              <div class="sk" style="height:10px;width:60%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 9. DASHBOARD ===== -->
+      <section class="sec" id="dash">
+        <p class="kicker">09 — Rearrangement</p>
+        <h2>The dashboard, restructured</h2>
+        <p class="sec-lede">This is the change the client will feel. The v1 dashboard stacks seven blocks and reports the same money twice — six stat cards, then a four-KPI “financial snapshot” underneath. v2 collapses it to four blocks, removes the duplication, and puts the two questions a vendor actually opens the app to answer at the top: <b>what am I worth right now</b>, and <b>what needs me today</b>.</p>
+
+        <div class="panel">
+          <div class="ba">
+            <div>
+              <h4>v1 — seven stacked blocks</h4>
+              <div class="blk">1 · Page title</div>
+              <div class="blk">2 · Greeting row + copyable vendor ID</div>
+              <div class="blk">3 · Four shortcut tiles</div>
+              <div class="blk dim">4 · Six stat cards + profit banner</div>
+              <div class="blk dim">5 · Financial snapshot — 4 KPIs</div>
+              <div class="blk">6 · Two charts</div>
+              <div class="blk">7 · Recent activity (5)</div>
+              <p class="hint" style="margin-top:10px">Blocks 4 and 5 report overlapping figures. Nothing surfaces an unlocked trade, so a vendor can miss a sale window entirely.</p>
+            </div>
+            <div class="ba-mid">→</div>
+            <div>
+              <h4>v2 — four blocks, nothing repeated</h4>
+              <div class="blk new">1 · Position + Action queue (two columns)</div>
+              <div class="blk new">2 · One unified metric strip (4 tiles)</div>
+              <div class="blk">3 · Two charts</div>
+              <div class="blk">4 · Recent activity (5) + view all</div>
+              <p class="hint" style="margin-top:10px">Greeting and vendor ID move into the profile menu on the rail. Shortcut tiles are replaced by the command palette and the action queue, which are contextual rather than fixed.</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="h">Assembled — this is the screen</h3>
+        <div class="mk">
+          <div class="mk-body">
+            <nav class="mk-rail" aria-label="Demo rail">
+              <button class="rail-btn on" aria-label="Dashboard"><svg><use href="#p-squares-f"/></svg></button>
+              <button class="rail-btn" aria-label="Products"><svg><use href="#p-package"/></svg></button>
+              <button class="rail-btn" aria-label="Wild products"><svg><use href="#p-leaf"/></svg></button>
+              <button class="rail-btn" aria-label="Purchases"><svg><use href="#p-receipt"/></svg></button>
+              <button class="rail-btn" aria-label="Wallet"><svg><use href="#p-wallet"/></svg></button>
+              <button class="rail-btn" aria-label="Claims"><svg><use href="#p-gift"/></svg></button>
+            </nav>
+            <div class="mk-main">
+              <div class="mk-ctx">
+                <div class="ctx-top" style="margin-bottom:10px">
+                  <div>
+                    <h2 class="ctx-title" style="font-size:22px">Dashboard</h2>
+                    <p class="ctx-sub">Tuesday, 25 August 2026 · 14:32 IST</p>
+                  </div>
+                  <div class="ctx-right">
+                    <div class="balstrip cut">
+                      <div><span class="lab">Wallet</span><span class="val num">₹ 48,250.00</span></div>
+                      <div class="sep"></div>
+                      <div><span class="lab">Unrealised</span><span class="val num pos">+₹ 6,140.00</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tabstrip">
+                  <button class="tab on">Overview</button>
+                  <button class="tab">Activity</button>
+                  <button class="tab">Referrals</button>
+                </div>
+              </div>
+
+              <div class="mk-page">
+                <div class="g2" style="margin-bottom:var(--gap-block)">
+                  <div class="money-panel cut cut-lg">
+                    <div class="k">Your position</div>
+                    <div class="v num" style="font-size:34px">₹ 1,40,650.00</div>
+                    <div class="d" style="margin-top:12px">Wallet ₹ 48,250.00 · Held ₹ 92,400.00</div>
+                    <div style="height:1px;background:var(--border);margin:14px 0"></div>
+                    <div class="row">
+                      <span class="tag t-ok"><svg><use href="#p-trend"/></svg>+₹ 6,140.00 unrealised</span>
+                      <span class="tag t-mute">7 trades held</span>
+                    </div>
+                    <div class="row" style="margin-top:14px">
+                      <button class="btn btn-solid btn-xs"><svg><use href="#p-plus"/></svg>Add money</button>
+                      <button class="btn btn-quiet btn-xs"><svg><use href="#p-bank"/></svg>Withdraw</button>
+                    </div>
+                  </div>
+
+                  <div class="panel" style="background:var(--panel);padding:var(--pad-panel)">
+                    <div class="row" style="margin-bottom:6px">
+                      <h3 class="ty-h3" style="margin:0;font-size:14px">Needs you today</h3>
+                      <span class="tag t-warn" style="margin-left:auto">3</span>
+                    </div>
+                    <div class="q-item">
+                      <svg style="color:var(--ok)"><use href="#p-check-f"/></svg>
+                      <div class="qt">2 trades unlocked<small>₹ 4,400.00 profit available now</small></div>
+                      <button class="btn btn-accent btn-xs">Sell</button>
+                    </div>
+                    <div class="q-item">
+                      <svg style="color:var(--warn)"><use href="#p-warn-f"/></svg>
+                      <div class="qt">Withdrawal pending<small>₹ 5,000.00 · submitted 24 Aug</small></div>
+                      <button class="btn btn-ghost btn-xs">View</button>
+                    </div>
+                    <div class="q-item">
+                      <svg style="color:var(--bad)"><use href="#p-x-f"/></svg>
+                      <div class="qt">1 purchase rejected<small>Admin left a comment</small></div>
+                      <button class="btn btn-ghost btn-xs">Read</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="g4">
+                  <div class="money-panel"><div class="k">Products to buy</div><div class="v num" style="font-size:22px">18</div></div>
+                  <div class="money-panel"><div class="k">Wild available</div><div class="v num" style="font-size:22px">6</div></div>
+                  <div class="money-panel"><div class="k">Approved buys</div><div class="v num" style="font-size:22px">41</div></div>
+                  <div class="money-panel cut"><div class="k">Total spent</div><div class="v num" style="font-size:22px">₹ 3,86,200</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="hint">Two columns above the fold, one metric strip below, and the action queue answers “is there anything I am about to miss?” — the thing a held-trade product must never bury. Switch the theme with the header control and this whole screen re-renders correctly, because none of it holds a hex value.</p>
+      </section>
+
+      <!-- ===== 10. A11Y ===== -->
+      <section class="sec" id="a11y">
+        <p class="kicker">10 — Standards</p>
+        <h2>Accessibility, in both themes</h2>
+        <p class="sec-lede">WCAG 2.2 AA is the bar, and it now has to hold twice — every pairing was measured in light <i>and</i> dark. The figures on the swatches above are the real measurements, not estimates.</p>
+
+        <div class="g2">
+          <div class="panel">
+            <h3 class="h">Fixed in v2</h3>
+            <ul class="ck">
+              <li><svg><use href="#p-check-f"/></svg><span><b>Input borders now pass.</b> v1's <code>#BEC7D8</code> was 1.70:1 against white; SC 1.4.11 needs 3:1. Now 3.57:1 light, 3.43:1 dark.</span></li>
+              <li><svg><use href="#p-check-f"/></svg><span><b>Focus ring works on dark.</b> Orange on the dark canvas is 6.82:1; the ring moved to 2px with a 3px offset so it reads on both.</span></li>
+              <li><svg><use href="#p-check-f"/></svg><span><b>The bell gets a purpose or gets removed.</b> No unlabelled decorative controls in the tab order.</span></li>
+              <li><svg><use href="#p-check-f"/></svg><span><b>Bonus popup loses the bounce</b> and honours <code>prefers-reduced-motion</code>. Confetti becomes a 220ms opacity and scale settle.</span></li>
+              <li><svg><use href="#p-check-f"/></svg><span><b>Countdowns announce politely</b> at 10 minutes and at unlock, not on every tick.</span></li>
+              <li><svg><use href="#p-check-f"/></svg><span><b>Theme respects the OS</b> on first load, then remembers the vendor's choice.</span></li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3 class="h">Still non-negotiable</h3>
+            <ul class="ck">
+              <li><svg><use href="#p-check-f"/></svg>Text ≥ 4.5:1 · large text and component boundaries ≥ 3:1, <b>in both themes</b></li>
+              <li><svg><use href="#p-check-f"/></svg>Every rail button labelled; tooltips on hover <i>and</i> focus</li>
+              <li><svg><use href="#p-check-f"/></svg>Modal focus trap, <code>Esc</code> to close, focus returns to the trigger</li>
+              <li><svg><use href="#p-check-f"/></svg>Touch targets ≥ 44px; the mobile bottom bar uses 48px</li>
+              <li><svg><use href="#p-check-f"/></svg>Usable at 200% zoom; reflows at 320px with no horizontal scroll</li>
+              <li><svg><use href="#p-check-f"/></svg>Colour never alone — profit and loss carry a sign and a glyph</li>
+              <li><svg><use href="#p-check-f"/></svg>Destructive confirmations name the object and the amount</li>
+              <li><svg><use href="#p-check-f"/></svg>Greyscale test: the screen must still be fully readable with colour removed</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="foot">
+      <span>Rouvin DS v2 “Ledger” · vendor console · light + dark</span>
+      <span>Process rules: <code>sop-v2.md</code> · Code changes: <code>frontend-migration-v2.md</code></span>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('themebtn');
+  var icon = document.getElementById('themeicon');
+  var label = document.getElementById('themelabel');
+  var dens = document.getElementById('density');
+
+  function paint(theme) {
+    root.setAttribute('data-theme', theme);
+    var dark = theme === 'dark';
+    btn.setAttribute('aria-pressed', String(dark));
+    label.textContent = dark ? 'Light' : 'Dark';
+    icon.innerHTML = '<use href="' + (dark ? '#p-sun' : '#p-moon') + '"/>';
+  }
+
+  // Respect the OS on first load; the toggle wins afterwards.
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  paint(prefersDark ? 'dark' : 'light');
+
+  btn.addEventListener('click', function () {
+    paint(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  dens.addEventListener('click', function () {
+    var next = root.getAttribute('data-density') === 'compact' ? 'comfortable' : 'compact';
+    root.setAttribute('data-density', next);
+    dens.setAttribute('title', next === 'compact' ? 'Compact rows' : 'Comfortable rows');
+  });
+
+  // Tab strip scrolls to the section and marks itself current.
+  window.jump = function (id) {
+    var el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.ctx .tab'));
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (x) { x.classList.remove('on'); });
+      t.classList.add('on');
+    });
+  });
+})();
+</script>
+</body>
+</html>

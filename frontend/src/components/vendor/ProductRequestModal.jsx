@@ -5,6 +5,7 @@ import {
     NumberInput, NumberInputField, Alert, AlertIcon, Textarea, HStack, Tag
 } from '@chakra-ui/react';
 import { useAuth } from '../../AppContext';
+import { RV, rvAccentBtn, rvSecondaryBtn } from '../../theme/rv';
 
 const ProductRequestModal = ({ isOpen, onClose, url, currentBalance, onRequestSuccess }) => {
     const { token } = useAuth();
@@ -186,10 +187,10 @@ const ProductRequestModal = ({ isOpen, onClose, url, currentBalance, onRequestSu
                     </VStack>
                 </ModalBody>
                 <ModalFooter>
-                    <Button variant="ghost" mr={3} onClick={resetAndClose}>Cancel</Button>
+                    <Button {...rvSecondaryBtn} mr={3} onClick={resetAndClose}>Cancel</Button>
                     {!pendingRequest && (
-                        <Button type="submit" colorScheme="blue" isLoading={isLoading} loadingText="Submitting...">
-                            Submit Request
+                        <Button type="submit" {...rvAccentBtn} isLoading={isLoading} loadingText="Submitting...">
+                            Submit request
                         </Button>
                     )}
                 </ModalFooter>

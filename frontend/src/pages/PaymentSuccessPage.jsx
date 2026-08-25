@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
     Box, Container, VStack, HStack, Text, Button, Alert, AlertIcon,
-    Heading, Divider, useColorModeValue, Spinner, useToast
+    Heading, Divider, useColorModeValue, Spinner, useToast, Image
 } from '@chakra-ui/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircleIcon, ExternalLinkIcon } from '@chakra-ui/icons';
@@ -17,7 +17,7 @@ const PaymentSuccessPage = () => {
     const bgColor = useColorModeValue('white', 'gray.800');
     const borderColor = useColorModeValue('gray.200', 'gray.600');
     
-    document.title = "NAVIU | Payment Success";
+    document.title = "Rouvin | Payment Success";
 
     useEffect(() => {
         // Show success toast
@@ -42,6 +42,7 @@ const PaymentSuccessPage = () => {
         <Box minH="100vh" bg={useColorModeValue('gray.50', 'gray.900')} py={8}>
             <Container maxW="md">
                 <VStack spacing={6} bg={bgColor} p={8} borderRadius="lg" boxShadow="lg" border="1px" borderColor={borderColor}>
+                    <Image src="/rouvin.png" alt="Rouvin" h="48px" objectFit="contain" />
                     <CheckCircleIcon w={16} h={16} color="green.500" />
                     
                     <VStack spacing={2}>

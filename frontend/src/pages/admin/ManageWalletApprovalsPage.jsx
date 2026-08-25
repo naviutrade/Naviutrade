@@ -677,7 +677,7 @@ const ManageWalletApprovalsPage = ({ url }) => {
     setPage(1);
   };
 
-  document.title = "NAVIU | Wallet Approvals";
+  document.title = "Rouvin | Wallet Approvals";
 
   return (
     <Flex minH="100vh" bg={pageBg}>

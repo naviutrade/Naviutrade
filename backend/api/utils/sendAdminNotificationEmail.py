@@ -33,7 +33,7 @@ try:
     s.login(FROM_EMAIL, FROM_PASSWORD)
 
     msg = MIMEMultipart()
-    msg["From"] = f"NAVIU <{FROM_EMAIL}>"
+    msg["From"] = f"Rouvin <{FROM_EMAIL}>"
     msg["To"] = ADMIN_EMAIL
     msg["Subject"] = subject
 
@@ -84,7 +84,7 @@ except Exception as e:
 #     s.starttls()
 #     s.login(FROM_EMAIL, FROM_PASSWORD)
 
-#     message = f"From: ESE Paper Trading <{FROM_EMAIL}>\nTo: {ADMIN_EMAIL}\nSubject: {subject}\n\n{message_body}"
+#     message = f"From: Rouvin <{FROM_EMAIL}>\nTo: {ADMIN_EMAIL}\nSubject: {subject}\n\n{message_body}"
 #     s.sendmail(FROM_EMAIL, ADMIN_EMAIL, message)
 #     s.quit()
 #     print("✅ Email sent to admin successfully.")

@@ -1,9 +1,9 @@
 {
-  "short_name": "NAVIU",
-  "name": "NAVIU",
+  "short_name": "Rouvin",
+  "name": "Rouvin",
   "icons": [
     {
-      "src": "naviu.png",
+      "src": "rouvin.png",
       "sizes": "192x192 512x512",
       "type": "image/png"
     }

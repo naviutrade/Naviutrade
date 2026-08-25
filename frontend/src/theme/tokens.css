@@ -1,0 +1,221 @@
+/* Rouvin DS v2 — Ledger.
+   Tokens live on :root so portaled modals/toasts still resolve.
+   Admin/coordinator do not consume these variables. */
+
+:root {
+  --rv-navy: #0A3681;
+  --rv-orange: #FF5F03;
+
+  --bg: #FFFFFF;
+  --panel: #F4F7FC;
+  --panel-2: #EAF0F9;
+  --panel-inv: #0B1424;
+  --hairline: #DCE3F0;
+  --border: #C9D4E8;
+  --control-border: #7A88A3;
+  --text: #0B1424;
+  --text-2: #3D4B68;
+  --text-3: #5A6883;
+  --brand: #0A3681;
+  --brand-hover: #072B67;
+  --brand-on: #FFFFFF;
+  --accent: #FF5F03;
+  --accent-hover: #EE5800;
+  --accent-on: #0B1424;
+  --accent-text: #D24E00;
+  --ok: #0B7350; --ok-bg: #E4F4EC; --ok-bd: #A8DCC6;
+  --warn: #8A5205; --warn-bg: #FBF1DC; --warn-bd: #EBCF9A;
+  --bad: #B8112F; --bad-bg: #FCEAEE; --bad-bd: #F3B7C2;
+  --note: #14479C; --note-bg: #E6EDFB; --note-bd: #BBD0F4;
+  --rail: #05204F;
+  --rail-text: #C7D5EE;
+  --shadow-pop: 0 12px 32px rgba(11, 20, 36, 0.14);
+  --skel: linear-gradient(90deg, #EAF0F9 25%, #F4F7FC 50%, #EAF0F9 75%);
+
+  --f-display: "Archivo", system-ui, sans-serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-num: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --r-structure: 4px;
+  --r-control: 8px;
+  --r-tag: 999px;
+  --rail-w: 72px;
+  --row-h: 48px;
+  --pad-panel: 22px;
+  --gap-block: 22px;
+  --dur-1: 90ms;
+  --dur-2: 150ms;
+  --dur-3: 220ms;
+  --ease: cubic-bezier(0.32, 0.72, 0.28, 1);
+}
+
+html[data-theme="dark"] {
+  --bg: #070C18;
+  --panel: #0E1626;
+  --panel-2: #16203A;
+  --panel-inv: #E8EDF7;
+  --hairline: #1E2A45;
+  --border: #22304F;
+  --control-border: #5A6C90;
+  --text: #E8EDF7;
+  --text-2: #C3CDE2;
+  --text-3: #9AA9C4;
+  --brand: #2E63D8;
+  --brand-hover: #3B6FE0;
+  --brand-on: #FFFFFF;
+  --accent: #FF6A1F;
+  --accent-hover: #FF8038;
+  --accent-on: #0B1424;
+  --accent-text: #FF8038;
+  --ok: #3ECF9A; --ok-bg: rgba(62, 207, 154, 0.10); --ok-bd: rgba(62, 207, 154, 0.34);
+  --warn: #F2C14E; --warn-bg: rgba(242, 193, 78, 0.10); --warn-bd: rgba(242, 193, 78, 0.32);
+  --bad: #FF6B7A; --bad-bg: rgba(255, 107, 122, 0.10); --bad-bd: rgba(255, 107, 122, 0.32);
+  --note: #7BA5F5; --note-bg: rgba(123, 165, 245, 0.10); --note-bd: rgba(123, 165, 245, 0.30);
+  --rail: #050912;
+  --rail-text: #9AA9C4;
+  --shadow-pop: 0 12px 36px rgba(0, 0, 0, 0.55);
+  --skel: linear-gradient(90deg, #16203A 25%, #1E2A45 50%, #16203A 75%);
+}
+
+.rv-vendor {
+  font-family: var(--f-body);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.rv-vendor h1,
+.rv-vendor h2,
+.rv-vendor h3 {
+  font-family: var(--f-display);
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.rv-vendor :focus-visible,
+html.rv-session .chakra-modal__content :focus-visible,
+html.rv-session .chakra-alert-dialog__content :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--r-control);
+}
+
+.rv-cut {
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+}
+.rv-cut::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(45deg, transparent 50%, var(--accent) 50%);
+  pointer-events: none;
+}
+.rv-cut-lg {
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%);
+}
+.rv-cut-lg::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(45deg, transparent 50%, var(--accent) 50%);
+  pointer-events: none;
+}
+
+.rv-skip {
+  position: absolute;
+  left: 12px;
+  top: -40px;
+  z-index: 2000;
+  background: var(--brand);
+  color: var(--brand-on);
+  padding: 8px 12px;
+  border-radius: var(--r-control);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.rv-skip:focus {
+  top: 12px;
+}
+
+.rv-vendor .chakra-input,
+.rv-vendor .chakra-textarea,
+.rv-vendor .chakra-numberinput__field,
+.rv-vendor .chakra-select,
+html.rv-session .chakra-modal__content .chakra-input,
+html.rv-session .chakra-modal__content .chakra-textarea,
+html.rv-session .chakra-modal__content .chakra-numberinput__field,
+html.rv-session .chakra-modal__content .chakra-select,
+html.rv-session .chakra-alert-dialog__content .chakra-input {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--control-border);
+  border-radius: var(--r-control);
+}
+.rv-vendor .chakra-input::placeholder,
+.rv-vendor .chakra-textarea::placeholder,
+html.rv-session .chakra-modal__content .chakra-input::placeholder,
+html.rv-session .chakra-modal__content .chakra-textarea::placeholder,
+html.rv-session .chakra-modal__content .chakra-numberinput__field::placeholder {
+  color: var(--text-3);
+}
+
+html.rv-session .chakra-modal__content,
+html.rv-session .chakra-alert-dialog__content {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  border-radius: var(--r-structure) !important;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-pop);
+}
+html.rv-session .chakra-modal__overlay,
+html.rv-session .chakra-alert-dialog__overlay {
+  background: rgba(6, 11, 22, 0.60) !important;
+}
+
+.rv-vendor .chakra-table th {
+  font-family: var(--f-num);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  background: var(--panel);
+}
+
+.rv-vendor .chakra-table td {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes rv-shim {
+  to { background-position: -200% 0; }
+}
+.rv-skel {
+  background: var(--skel);
+  background-size: 200% 100%;
+  animation: rv-shim 1.2s var(--ease) infinite;
+  border-radius: var(--r-structure);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rv-vendor *,
+  .rv-vendor *::before,
+  .rv-vendor *::after,
+  .chakra-modal__content *,
+  .chakra-modal__content *::before,
+  .chakra-modal__content *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

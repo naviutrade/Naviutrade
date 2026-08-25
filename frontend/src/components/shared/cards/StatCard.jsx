@@ -65,7 +65,7 @@ const StatCard = ({ icon, label, value, iconBgColor = 'blue.500', to = null }) =
             boxShadow="sm"
             align="center"
             transition="all 0.2s ease-in-out"
-            {...linkProps} // Spread the link-related props here
+            {...linkProps}
         >
             {/* HStack makes horizontal layout simple */}
             <HStack spacing={4} w="full" align="center">

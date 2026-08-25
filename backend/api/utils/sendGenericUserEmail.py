@@ -8,7 +8,7 @@ def send(to_email, subject, body, from_email, from_password):
         s.starttls()
         s.login(from_email, from_password)
         msg = MIMEMultipart()
-        msg['From'] = f"esepapertrading <{from_email}>"
+        msg['From'] = f"Rouvin <{from_email}>"
         msg['To'] = to_email
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain', 'utf-8'))

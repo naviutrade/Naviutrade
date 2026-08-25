@@ -129,9 +129,9 @@ const WithdrawModal = ({ isOpen, onClose, url, currentBalance, onWithdrawalSucce
                     </VStack>
                 </ModalBody>
                 <ModalFooter>
-                    <Button variant="ghost" mr={3} onClick={resetAndClose}>Cancel</Button>
-                    <Button type="submit" colorScheme="orange" isLoading={isLoading} loadingText="Submitting...">
-                        Submit Request
+                    <Button variant="rvQuiet" mr={3} onClick={resetAndClose}>Cancel</Button>
+                    <Button type="submit" variant="rvAccent" isLoading={isLoading} loadingText="Submitting">
+                        Submit request
                     </Button>
                 </ModalFooter>
             </ModalContent>

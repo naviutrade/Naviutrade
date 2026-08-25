@@ -41,7 +41,7 @@ const VendorsLast8DaysPage = ({ url }) => {
   const tableHeaderBg = useColorModeValue('gray.50', 'gray.700');
   const tableRowHoverBg = useColorModeValue('gray.50', 'gray.700');
 
-  document.title = "NAVIU | Recent Vendors";
+  document.title = "Rouvin | Recent Vendors";
 
   // Fetch vendors from last 8 days with dedicated logic
   const fetchVendorsLast8Days = useCallback(async (page = 1, search = '', sort = 'created_at', order = 'DESC') => {

@@ -143,7 +143,7 @@ const ReferralPage = ({ url }) => {
             p={{ base: 4, md: 6 }} 
             borderRadius="xl" 
             shadow="lg"
-            w={{ base: '100%', lg: '80%' }}
+            w="100%"
             mx="auto"
         >
             <VStack spacing={8} align="stretch">
@@ -169,7 +169,7 @@ const ReferralPage = ({ url }) => {
 
                 <Box>
                     <Button
-                        colorScheme="green"
+                        variant="rvAccent"
                         onClick={handleClaimAll}
                         isLoading={isClaiming}
                         isDisabled={isLoading || unclaimedTrades.length === 0}
@@ -183,22 +183,20 @@ const ReferralPage = ({ url }) => {
                 {/* Tab Navigation */}
                 <Flex borderBottom="1px" borderColor={borderColor}>
                     <Button
-                        variant={activeTab === 'unclaimed' ? 'solid' : 'ghost'}
-                        colorScheme="purple"
+                        variant={activeTab === 'unclaimed' ? 'rvPrimary' : 'ghost'}
                         onClick={() => setActiveTab('unclaimed')}
                         borderRadius="0"
                         borderBottom="2px"
-                        borderColor={activeTab === 'unclaimed' ? 'purple.500' : 'transparent'}
+                        borderColor={activeTab === 'unclaimed' ? 'accent.500' : 'transparent'}
                     >
                         Unclaimed ({unclaimedTrades.length})
                     </Button>
                     <Button
-                        variant={activeTab === 'history' ? 'solid' : 'ghost'}
-                        colorScheme="purple"
+                        variant={activeTab === 'history' ? 'rvPrimary' : 'ghost'}
                         onClick={() => setActiveTab('history')}
                         borderRadius="0"
                         borderBottom="2px"
-                        borderColor={activeTab === 'history' ? 'purple.500' : 'transparent'}
+                        borderColor={activeTab === 'history' ? 'accent.500' : 'transparent'}
                     >
                         History ({claimedHistory.length})
                     </Button>

@@ -17,11 +17,11 @@ def send_email(to_email, otp, from_email, from_password):
         s.login(from_email, from_password)
 
         # Prepare the message with the updated company name
-        message = f"""From: esepapertrading <{from_email}>
+        message = f"""From: Rouvin <{from_email}>
 To: {to_email}
-Subject: Your One-Time Password (OTP) for esepapertrading
+Subject: Your One-Time Password (OTP) for Rouvin
 
-Your OTP for esepapertrading is: {otp}
+Your OTP for Rouvin is: {otp}
 
 This code will expire in 10 minutes.
 """

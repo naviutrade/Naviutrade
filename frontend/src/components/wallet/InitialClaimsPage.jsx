@@ -103,7 +103,7 @@ const InitialClaimsPage = ({ url, cardBg, pageBg }) => {
                     <Text color="gray.500" fontSize="sm">ID: {user.id}</Text>
                   </VStack>
                   <Button
-                    colorScheme="green"
+                    variant="rvAccent"
                     isLoading={isClaiming === user.id}
                     onClick={() => handleClaim(user.id)}
                   >
@@ -145,7 +145,7 @@ const InitialClaimsPage = ({ url, cardBg, pageBg }) => {
               {claimedHistory.map((user) => (
                 <Flex key={user.id} bg={pageBg} p={3} borderRadius="md" justify="space-between" align="center">
                   <Text fontWeight="semibold">{user.name}</Text>
-                  <Tag colorScheme="purple">Claimed</Tag>
+                  <Tag colorScheme="orange">Claimed</Tag>
                 </Flex>
               ))}
             </VStack>

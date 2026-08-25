@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import {
     Box, Container, VStack, HStack, Text, Button, Alert, AlertIcon,
-    Heading, Divider, useColorModeValue, useToast
+    Heading, Divider, useColorModeValue, useToast, Image
 } from '@chakra-ui/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircleIcon } from '@chakra-ui/icons';
@@ -17,7 +17,7 @@ const RegistrationSuccessPage = () => {
     const bgColor = useColorModeValue('white', 'gray.800');
     const borderColor = useColorModeValue('gray.200', 'gray.600');
     
-    document.title = "NAVIU | Registration Success";
+    document.title = "Rouvin | Registration Success";
 
     useEffect(() => {
         // Show success toast
@@ -65,6 +65,7 @@ const RegistrationSuccessPage = () => {
         <Box minH="100vh" bg={useColorModeValue('gray.50', 'gray.900')} py={8}>
             <Container maxW="md">
                 <VStack spacing={6} bg={bgColor} p={8} borderRadius="lg" boxShadow="lg" border="1px" borderColor={borderColor}>
+                    <Image src="/rouvin.png" alt="Rouvin" h="48px" objectFit="contain" />
                     <CheckCircleIcon w={16} h={16} color="green.500" />
                     
                     <VStack spacing={2}>

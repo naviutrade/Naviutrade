@@ -294,12 +294,12 @@ const AddMoneyModal = ({ isOpen, onClose, url, onTransactionComplete }) => {
                     
                     <ModalFooter>
                         <HStack spacing={3}>
-                            <Button variant="ghost" onClick={resetAndClose} isDisabled={isLoading}>
+                            <Button variant="rvQuiet" onClick={resetAndClose} isDisabled={isLoading}>
                                 Cancel
                             </Button>
                             <Button 
                                 type="submit" 
-                                colorScheme="blue" 
+                                variant="rvAccent"
                                 isLoading={isLoading}
                                 loadingText="Processing..."
                                 isDisabled={!amount || parseFloat(amount) < minDepositAmount || configLoading}

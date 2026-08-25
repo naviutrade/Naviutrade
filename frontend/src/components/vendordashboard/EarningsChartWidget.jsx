@@ -1,467 +1,125 @@
-// // // // import React from 'react';
-// // // // import { Box, Center, Icon, Text } from '@chakra-ui/react';
-// // // // import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
-// // // // import { AreaChart } from 'lucide-react'; 
-// // // // import useApi from '../../hooks/useApi';
-// // // // import WidgetCard from './WidgetCard';
-
-// // // // // Helper to format currency
-// // // // const formatCurrency = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(value);
-
-// // // // const EarningsChartWidget = ({ url }) => {
-// // // //     const { data, isLoading, error } = useApi(url, '/api/vendor/dashboard/earnings-over-time');
-
-// // // //     // Data handling logic
-// // // //     let chartData = []; 
-// // // //     const hasData = !isLoading && !error && data && data.length > 0;
-
-// // // //     if (hasData) {
-// // // //         if (data.length === 1) {
-// // // //             chartData = [{ name: 'Start', earnings: 0 }, ...data];
-// // // //         } else {
-// // // //             chartData = data;
-// // // //         }
-// // // //     }
-
-// // // //     return (
-// // // //         <WidgetCard title="Earnings Growth (Last 10 Weeks)" isLoading={isLoading} error={error} height="400px">
-// // // //         {
-// // // //             hasData ? (
-// // // //                 <Box 
-// // // //                     width="100%" 
-// // // //                     height="100%" 
-// // // //                     _focus={{ outline: 'none' }}
-// // // //                     sx={{
-// // // //                         "-webkit-user-select": "none",
-// // // //                         "-moz-user-select": "none",
-// // // //                         "-ms-user-select": "none",
-// // // //                         "user-select": "none",
-// // // //                     }}
-// // // //                 >
-// // // //                     <ResponsiveContainer width="100%" height="100%">
-// // // //                         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 5, bottom: 30 }}>
-// // // //                             <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-// // // //                             <XAxis 
-// // // //                                 dataKey="name" 
-// // // //                                 angle={-45} 
-// // // //                                 textAnchor="end" 
-// // // //                                 height={60} 
-// // // //                                 tick={{ fontSize: 12 }}
-// // // //                                 // ✅ THIS IS THE NEW LINE THAT ADDS THE SPACE
-// // // //                                 // padding={{ left: 30 }}
-// // // //                             />
-// // // //                             <YAxis tickFormatter={(value) => `₹${value / 1000}k`} tick={{ fontSize: 12 }} />
-                            
-// // // //                             <Line
-// // // //                                 type="natural"
-// // // //                                 dataKey="earnings"
-// // // //                                 stroke="#0088FE" 
-// // // //                                 strokeWidth={3}
-// // // //                                 dot={{ r: 4, fill: '#0088FE' }}
-// // // //                                 activeDot={false}
-// // // //                             />
-// // // //                         </LineChart>
-// // // //                     </ResponsiveContainer>
-// // // //                 </Box>
-// // // //             ) : (
-// // // //                 !isLoading && !error && (
-// // // //                     <Center h="100%" flexDir="column" gap={2}>
-// // // //                         <Icon as={AreaChart} boxSize={10} color="gray.400" />
-// // // //                         <Text color="gray.500" textAlign="center">
-// // // //                             No earnings data to display yet.
-// // // //                         </Text>
-// // // //                         <Text fontSize="sm" color="gray.400" textAlign="center">
-// // // //                             Sales and commission claims will appear here.
-// // // //                         </Text>
-// // // //                     </Center>
-// // // //                 )
-// // // //             )
-// // // //         }
-// // // //         </WidgetCard>
-// // // //     );
-// // // // };
-
-// // // // export default EarningsChartWidget;
-// // // import React from 'react';
-// // // import { Box, Center, Icon, Text } from '@chakra-ui/react';
-// // // import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
-// // // import { AreaChart } from 'lucide-react'; 
-// // // import useApi from '../../hooks/useApi';
-// // // import WidgetCard from './WidgetCard';
-
-// // // // Helper to format currency
-// // // const formatCurrency = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(value);
-
-// // // const EarningsChartWidget = ({ url }) => {
-// // //     const { data, isLoading, error } = useApi(url, '/api/vendor/dashboard/earnings-over-time');
-
-// // //     // Data handling logic
-// // //     let chartData = []; 
-// // //     const hasData = !isLoading && !error && data && data.length > 0;
-
-// // //     if (hasData) {
-// // //         if (data.length === 1) {
-// // //             chartData = [{ name: 'Start', earnings: 0 }, ...data];
-// // //         } else {
-// // //             chartData = data;
-// // //         }
-// // //     }
-
-// // //     return (
-// // //         <WidgetCard title="Earnings Growth (Last 10 Weeks)" isLoading={isLoading} error={error} height="400px">
-// // //         {
-// // //             hasData ? (
-// // //                 // ✅ DEFINITIVE FIX: The sx prop applies the CSS to disable all mouse events.
-// // //                 <Box 
-// // //                     width="100%" 
-// // //                     height="100%" 
-// // //                     sx={{
-// // //                         "& .recharts-wrapper": {
-// // //                            pointerEvents: "none",
-// // //                         },
-// // //                         // Also prevents text selection on double click for a cleaner feel
-// // //                         userSelect: "none",
-// // //                     }}
-// // //                 >
-// // //                     <ResponsiveContainer width="100%" height="100%">
-// // //                         {/* ✅ Tightened up the bottom margin to reduce empty space */}
-// // //                         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 5, bottom: 10 }}>
-// // //                             <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-// // //                             <XAxis 
-// // //                                 dataKey="name" 
-// // //                                 angle={-45} 
-// // //                                 textAnchor="end" 
-// // //                                 height={60} 
-// // //                                 tick={{ fontSize: 12 }}
-// // //                                 padding={{ left: 30 }}
-// // //                             />
-// // //                             <YAxis tickFormatter={(value) => `₹${value / 1000}k`} tick={{ fontSize: 12 }} />
-                            
-// // //                             <Line
-// // //                                 type="natural"
-// // //                                 dataKey="earnings"
-// // //                                 stroke="#0088FE" 
-// // //                                 strokeWidth={3}
-// // //                                 dot={{ r: 4, fill: '#0088FE' }}
-// // //                                 activeDot={false} // This remains to disable line-specific hover effects
-// // //                             />
-// // //                         </LineChart>
-// // //                     </ResponsiveContainer>
-// // //                 </Box>
-// // //             ) : (
-// // //                 !isLoading && !error && (
-// // //                     <Center h="100%" flexDir="column" gap={2}>
-// // //                         <Icon as={AreaChart} boxSize={10} color="gray.400" />
-// // //                         <Text color="gray.500" textAlign="center">
-// // //                             No earnings data to display yet.
-// // //                         </Text>
-// // //                         <Text fontSize="sm" color="gray.400" textAlign="center">
-// // //                             Sales and commission claims will appear here.
-// // //                         </Text>
-// // //                     </Center>
-// // //                 )
-// // //             )
-// // //         }
-// // //         </WidgetCard>
-// // //     );
-// // // };
-
-// // // export default EarningsChartWidget;
-// // import React from 'react';
-// // import { Box, Center, Icon, Text, useBreakpointValue } from '@chakra-ui/react';
-// // import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
-// // import { AreaChart } from 'lucide-react'; 
-// // import useApi from '../../hooks/useApi';
-// // import WidgetCard from './WidgetCard';
-
-// // // Helper to format currency
-// // const formatCurrency = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(value);
-
-// // const EarningsChartWidget = ({ url }) => {
-// //     const { data, isLoading, error } = useApi(url, '/api/vendor/dashboard/earnings-over-time');
-
-// //     // --- RESPONSIVE LAYOUT LOGIC ---
-// //     const responsiveHeight = useBreakpointValue({ base: '300px', md: '400px' });
-// //     const chartMargin = useBreakpointValue({
-// //         base: { top: 20, right: 20, left: -5, bottom: 10 },
-// //         md: { top: 20, right: 30, left: 5, bottom: 10 }
-// //     });
-// //     const xAxisPadding = useBreakpointValue({
-// //         base: { left: 15 },
-// //         md: { left: 30 }
-// //     });
-
-// //     // --- DATA HANDLING LOGIC ---
-// //     let chartData = []; 
-// //     const hasData = !isLoading && !error && data && data.length > 0;
-
-// //     if (hasData) {
-// //         if (data.length === 1) {
-// //             chartData = [{ name: 'Start', earnings: 0 }, ...data];
-// //         } else {
-// //             chartData = data;
-// //         }
-// //     }
-
-// //     return (
-// //         <WidgetCard title="Earnings Growth (Last 10 Weeks)" isLoading={isLoading} error={error} height={responsiveHeight}>
-// //         {
-// //             hasData ? (
-// //                 <Box 
-// //                     width="100%" 
-// //                     height="100%" 
-// //                     sx={{
-// //                         "& .recharts-wrapper": {
-// //                            pointerEvents: "none",
-// //                         },
-// //                         userSelect: "none",
-// //                     }}
-// //                 >
-// //                     <ResponsiveContainer width="100%" height="100%">
-// //                         <LineChart data={chartData} margin={chartMargin}>
-// //                             <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-// //                             <XAxis 
-// //                                 dataKey="name" 
-// //                                 angle={-45} 
-// //                                 textAnchor="end" 
-// //                                 height={60} 
-// //                                 tick={{ fontSize: 12 }}
-// //                                 padding={xAxisPadding}
-// //                             />
-// //                             <YAxis tickFormatter={(value) => `₹${value / 1000}k`} tick={{ fontSize: 12 }} />
-                            
-// //                             <Line
-// //                                 type="natural"
-// //                                 dataKey="earnings"
-// //                                 stroke="#0088FE" 
-// //                                 strokeWidth={3}
-// //                                 dot={{ r: 4, fill: '#0088FE' }}
-// //                                 activeDot={false}
-// //                             />
-// //                         </LineChart>
-// //                     </ResponsiveContainer>
-// //                 </Box>
-// //             ) : (
-// //                 !isLoading && !error && (
-// //                     <Center h="100%" flexDir="column" gap={2}>
-// //                         <Icon as={AreaChart} boxSize={10} color="gray.400" />
-// //                         <Text color="gray.500" textAlign="center">
-// //                             No earnings data to display yet.
-// //                         </Text>
-// //                         <Text fontSize="sm" color="gray.400" textAlign="center">
-// //                             Sales and commission claims will appear here.
-// //                         </Text>
-// //                     </Center>
-// //                 )
-// //             )
-// //         }
-// //         </WidgetCard>
-// //     );
-// // };
-
-// // export default EarningsChartWidget;
-
-// import React from 'react';
-// import { Box, Center, Icon, Text, useBreakpointValue } from '@chakra-ui/react';
-// import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
-// import { AreaChart } from 'lucide-react'; 
-// import useApi from '../../hooks/useApi';
-// import WidgetCard from './WidgetCard';
-
-// // Helper to format currency
-// const formatCurrency = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(value);
-
-// const EarningsChartWidget = ({ url }) => {
-//     const { data, isLoading, error } = useApi(url, '/api/vendor/dashboard/earnings-over-time');
-
-//     // --- RESPONSIVE LAYOUT LOGIC ---
-//     // ✅ INCREASED PHONE HEIGHT: The height on mobile is now taller.
-//     const responsiveHeight = useBreakpointValue({ base: '350px', md: '400px' });
-    
-//     // ✅ PUSHED UP: The top margin on mobile is now smaller, pushing the chart up.
-//     const chartMargin = useBreakpointValue({
-//         base: { top: 10, right: 20, left: -5, bottom: 10 }, 
-//         md: { top: 20, right: 30, left: 5, bottom: 10 }
-//     });
-//     const xAxisPadding = useBreakpointValue({
-//         base: { left: 15 },
-//         md: { left: 30 }
-//     });
-
-//     // Data handling logic
-//     let chartData = []; 
-//     const hasData = !isLoading && !error && data && data.length > 0;
-
-//     if (hasData) {
-//         if (data.length === 1) {
-//             chartData = [{ name: 'Start', earnings: 0 }, ...data];
-//         } else {
-//             chartData = data;
-//         }
-//     }
-
-//     return (
-//         <WidgetCard title="Earnings Growth (Last 10 Weeks)" isLoading={isLoading} error={error} height={responsiveHeight}>
-//         {
-//             hasData ? (
-//                 <Box 
-//                     width="100%" 
-//                     height="90%" 
-//                     sx={{
-//                         "& .recharts-wrapper": {
-//                            pointerEvents: "none",
-//                         },
-//                         userSelect: "none",
-//                     }}
-//                 >
-//                     <ResponsiveContainer width="100%" height="100%">
-//                         <LineChart data={chartData} margin={chartMargin}>
-//                             <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-//                             <XAxis 
-//                                 dataKey="name" 
-//                                 angle={-45} 
-//                                 textAnchor="end" 
-//                                 height={60} 
-//                                 tick={{ fontSize: 12 }}
-//                                 padding={xAxisPadding}
-//                             />
-//                             <YAxis tickFormatter={(value) => `₹${value / 1000}k`} tick={{ fontSize: 12 }} />
-                            
-//                             <Line
-//                                 type="natural"
-//                                 dataKey="earnings"
-//                                 stroke="#0088FE" 
-//                                 strokeWidth={3}
-//                                 dot={{ r: 4, fill: '#0088FE' }}
-//                                 activeDot={false}
-//                             />
-//                         </LineChart>
-//                     </ResponsiveContainer>
-//                 </Box>
-//             ) : (
-//                 !isLoading && !error && (
-//                     <Center h="90%" flexDir="column" gap={2}>
-//                         <Icon as={AreaChart} boxSize={10} color="gray.400" />
-//                         <Text color="gray.500" textAlign="center">
-//                             No earnings data to display yet.
-//                         </Text>
-//                         <Text fontSize="sm" color="gray.400" textAlign="center">
-//                             Sales and commission claims will appear here.
-//                         </Text>
-//                     </Center>
-//                 )
-//             )
-//         }
-//         </WidgetCard>
-//     );
-// };
-
-// export default EarningsChartWidget;
 import React, { useMemo } from 'react';
-import { Box, Center, Icon, Text, useBreakpointValue } from '@chakra-ui/react';
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { AreaChart } from 'lucide-react'; 
+import { Box, Center, Flex, Text } from '@chakra-ui/react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from 'recharts';
+import { ChartBar } from '@phosphor-icons/react';
 import useApi from '../../hooks/useApi';
 import WidgetCard from './WidgetCard';
+import { axisMoney, sampleTicks, ChartTip, StatChip } from './chartUtils';
+import { formatMoney } from '../common/Money';
 
-// Helper to format currency
-const formatCurrency = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(value);
+const MAX_BARS = 30;
 
 const EarningsChartWidget = ({ url }) => {
-    const { data, isLoading, error } = useApi(url, '/api/vendor/dashboard/earnings-over-time');
+  const { data, isLoading, error } = useApi(url, '/api/vendor/dashboard/earnings-over-time');
 
-    const responsiveHeight = useBreakpointValue({ base: '350px', md: '400px' });
-    const chartMargin = { top: 20, right: 30, left: 5, bottom: 10 };
-    const xAxisPadding = { left: 30 };
+  const { chartData, ticks, latest, dayChange, weekChange, clipped } = useMemo(() => {
+    const rows = Array.isArray(data) ? data : [];
+    if (!rows.length) {
+      return { chartData: [], ticks: [], latest: 0, dayChange: 0, weekChange: 0, clipped: false };
+    }
 
-    // --- DATA HANDLING & LABEL SAMPLING LOGIC ---
-    const { chartData, ticks } = useMemo(() => {
-        if (!data || data.length === 0) {
-            return { chartData: [], ticks: [] };
-        }
+    const daily = rows.map((row, i, arr) => {
+      const earnings = Number(row.earnings) || 0;
+      const prev = i === 0 ? 0 : Number(arr[i - 1].earnings) || 0;
+      return {
+        name: row.name,
+        earned: Math.max(0, earnings - prev),
+        earnings,
+      };
+    });
 
-        let processedData = data;
-        if (data.length === 1) {
-            processedData = [{ name: 'Start', earnings: 0 }, ...data];
-        }
+    const last = daily[daily.length - 1];
+    const weekAgo = daily[Math.max(0, daily.length - 8)];
+    const clipped = daily.length > MAX_BARS;
+    const chartData = clipped ? daily.slice(-MAX_BARS) : daily;
 
-        // --- Smart Label Sampling ---
-        let sampledTicks = [];
-        const totalPoints = processedData.length;
-        const maxTicks = 4; // We want a maximum of 4 labels
+    return {
+      chartData,
+      ticks: sampleTicks(chartData.map((d) => d.name), 5),
+      latest: last.earnings,
+      dayChange: last.earned,
+      weekChange: last.earnings - weekAgo.earnings,
+      clipped,
+    };
+  }, [data]);
 
-        if (totalPoints <= maxTicks) {
-            // If there are few points, use all of them as labels
-            sampledTicks = processedData.map(d => d.name);
-        } else {
-            // If there are many points, sample them evenly
-            const interval = Math.floor((totalPoints - 1) / (maxTicks - 1));
-            for (let i = 0; i < maxTicks; i++) {
-                const index = Math.min(i * interval, totalPoints - 1);
-                sampledTicks.push(processedData[index].name);
-            }
-             // Ensure the last tick is always the last data point's name
-            if (!sampledTicks.includes(processedData[totalPoints - 1].name)) {
-                sampledTicks[maxTicks-1] = processedData[totalPoints - 1].name;
-            }
-        }
-        
-        return { chartData: processedData, ticks: sampledTicks };
-    }, [data]);
+  const hasData = !isLoading && !error && chartData.length > 0;
 
-    const hasData = !isLoading && !error && chartData.length > 0;
-
-    return (
-        <WidgetCard title="Total Earnings Growth" isLoading={isLoading} error={error} height={responsiveHeight}>
-        {
-            hasData ? (
-                <Box 
-                    width="100%" 
-                    height="100%" 
-                    sx={{
-                        "& .recharts-wrapper": { pointerEvents: "none" },
-                        userSelect: "none",
-                    }}
-                >
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={chartData} margin={chartMargin}>
-                            <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                            <XAxis 
-                                dataKey="name" 
-                                angle={-45} 
-                                textAnchor="end" 
-                                height={60} 
-                                tick={{ fontSize: 12 }}
-                                padding={xAxisPadding}
-                                // ✅ Use our calculated smart labels
-                                ticks={ticks} 
-                            />
-                            <YAxis tickFormatter={(value) => `₹${value / 1000}k`} tick={{ fontSize: 12 }} />
-                            
-                            <Line
-                                type="natural"
-                                dataKey="earnings"
-                                stroke="#0088FE" 
-                                strokeWidth={3}
-                                dot={{ r: 4, fill: '#0088FE' }}
-                                activeDot={false}
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
-                </Box>
-            ) : (
-                !isLoading && !error && (
-                    <Center h="100%" flexDir="column" gap={2}>
-                        <Icon as={AreaChart} boxSize={10} color="gray.400" />
-                        <Text color="gray.500" textAlign="center">
-                            No earnings data to display yet.
-                        </Text>
-                    </Center>
-                )
-            )
-        }
-        </WidgetCard>
-    );
+  return (
+    <WidgetCard
+      title="Earnings over time"
+      isLoading={isLoading}
+      error={error}
+      height={{ base: '380px', md: '420px' }}
+      aside={hasData ? (
+        <Flex gap={5} display={{ base: 'none', sm: 'flex' }}>
+          <StatChip label="Lifetime" value={latest} />
+          <StatChip label="Last day" value={dayChange} signed />
+        </Flex>
+      ) : null}
+    >
+      {hasData ? (
+        <Box flex="1" minH={0} display="flex" flexDir="column">
+          <Flex gap={5} mb={3} display={{ base: 'flex', sm: 'none' }}>
+            <StatChip label="Lifetime" value={latest} />
+            <StatChip label="Last day" value={dayChange} signed />
+            <StatChip label="7 days" value={weekChange} signed />
+          </Flex>
+          <Box flex="1" minH="220px">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
+                <CartesianGrid stroke="var(--hairline)" vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  ticks={ticks}
+                  tick={{ fontSize: 12, fill: 'var(--text-3)', fontFamily: 'var(--f-num)' }}
+                  axisLine={{ stroke: 'var(--border)' }}
+                  tickLine={false}
+                  minTickGap={16}
+                />
+                <YAxis
+                  tickFormatter={axisMoney}
+                  width={56}
+                  tick={{ fontSize: 12, fill: 'var(--text-3)', fontFamily: 'var(--f-num)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip content={<ChartTip />} cursor={{ fill: 'var(--panel-2)' }} />
+                <Bar
+                  dataKey="earned"
+                  name="Earned that day"
+                  fill="var(--brand)"
+                  radius={[3, 3, 0, 0]}
+                  maxBarSize={36}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </Box>
+          <Flex gap={3} mt={2} align="center" color="var(--text-3)" fontSize="12.5px">
+            <Text>Each bar is what you earned that day.</Text>
+            <Text ml="auto" fontFamily="var(--f-num)" display={{ base: 'none', sm: 'block' }}>
+              {clipped ? 'Last 30 days · ' : ''}7 days {formatMoney(weekChange, { signed: true })}
+            </Text>
+          </Flex>
+        </Box>
+      ) : (
+        !isLoading && !error && (
+          <Center h="100%" flexDir="column" gap={2} color="var(--text-3)">
+            <ChartBar size={40} weight="bold" />
+            <Text textAlign="center">No earnings yet. Sales and claims will show as daily bars.</Text>
+          </Center>
+        )
+      )}
+    </WidgetCard>
+  );
 };
 
 export default EarningsChartWidget;
