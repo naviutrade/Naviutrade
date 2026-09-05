@@ -47,7 +47,7 @@ const MoreSheet = ({ isOpen, onClose, pathname, search, onLogout }) => {
           >
             More
           </Text>
-          <Grid templateColumns={{ base: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' }} gap={2}>
+          <Grid templateColumns="repeat(3, 1fr)" gap={2}>
             {MORE_MOBILE.map((id) => {
               const dest = DESTINATIONS[id];
               const Icon = dest.Icon;

@@ -149,7 +149,7 @@ const VendorTradingSection = ({ stats = {} }) => {
           </Text>
         </Box>
         <Box bg="var(--panel)" border="1px solid" borderColor="var(--border)" borderRadius="var(--r-structure)" p={4}>
-          <Text fontSize="10px" fontWeight={600} letterSpacing="0.14em" textTransform="uppercase" color="var(--text-3)">Wild available</Text>
+          <Text fontSize="10px" fontWeight={600} letterSpacing="0.14em" textTransform="uppercase" color="var(--text-3)">Elite available</Text>
           <Text fontFamily="var(--f-num)" fontWeight={700} fontSize="30px" color="var(--text)" letterSpacing="-0.03em">
             {n(stats.availableWildProducts).toLocaleString('en-IN')}
           </Text>

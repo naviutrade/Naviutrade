@@ -18,7 +18,7 @@ import {
 const TITLE_MAP = [
   { match: '/vendor/dashboard', title: 'Dashboard' },
   { match: '/vendor/products', title: 'Products' },
-  { match: '/vendor/wild-products', title: 'Wild products' },
+  { match: '/vendor/wild-products', title: 'Elite products' },
   { match: '/vendor/purchase-history', title: 'Purchase history' },
   { match: '/vendor/wallet', title: 'Wallet' },
   { match: '/vendor/profile', title: 'Profile' },
@@ -99,12 +99,12 @@ const SegmentBar = ({ segments }) => {
           flex="1"
           align="center"
           justify="center"
-          h="34px"
+          h={{ base: '34px', md: '38px' }}
           borderRadius="6px"
           bg={seg.active ? 'var(--bg)' : 'transparent'}
           color={seg.active ? 'var(--text)' : 'var(--text-3)'}
           fontWeight={600}
-          fontSize="13.5px"
+          fontSize={{ base: '13.5px', md: '14px' }}
           boxShadow={seg.active ? '0 1px 2px rgba(11,20,36,.10)' : 'none'}
           aria-current={seg.active ? 'page' : undefined}
         >
@@ -188,7 +188,11 @@ const ContextHeader = ({ title, subtitle, tabs, actions, rootRef, segments }) =>
     </Box>
 
     {segments?.length > 0 && (
-      <Box display={{ base: 'block', md: 'none' }} mb={3}>
+      <Box
+        mb={3}
+        mt={{ base: 0, md: 1 }}
+        maxW={{ base: '100%', md: segments.length > 2 ? '480px' : '360px' }}
+      >
         <SegmentBar segments={segments} />
       </Box>
     )}
@@ -224,10 +228,18 @@ const VendorShellInner = ({ children, title, subtitle, tabs, actions }) => {
   const location = useLocation();
   const rootRef = useRef(null);
   const isMobile = useBreakpointValue({ base: true, md: false }, { fallback: 'md' });
+  const isBuyPath =
+    location.pathname.startsWith('/vendor/products') ||
+    location.pathname.startsWith('/vendor/wild-products');
   const mobileTitle = mobileTitleFor(location.pathname);
-  const pageTitle = (isMobile && mobileTitle) || title || resolveTitle(location.pathname, location.search);
+  const pageTitle =
+    (isBuyPath && mobileTitle) ||
+    (isMobile && mobileTitle) ||
+    title ||
+    resolveTitle(location.pathname, location.search);
   const pageSubtitle = subtitle === undefined ? istStamp() : subtitle;
-  const segments = mobileSegmentsFor(location.pathname);
+  const allSegments = mobileSegmentsFor(location.pathname);
+  const segments = isMobile || isBuyPath ? allSegments : null;
 
   useEffect(() => {
     rememberNavSegment(location.pathname);

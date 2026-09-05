@@ -668,7 +668,7 @@ const AdminDashboard = ({ url }) => {
                      {stats.availableWildProducts || 0}
                    </Text>
                    <Text fontSize="lg" color="gray.600" textAlign="center" fontWeight="medium">
-                     Wild Products
+                     Elite Products
                    </Text>
                  </VStack>
                  <Button 
@@ -683,7 +683,7 @@ const AdminDashboard = ({ url }) => {
                    }}
                    transition="all 0.2s ease"
                  >
-                   Manage Wild Products
+                   Manage Elite Products
                  </Button>
                </VStack>
              </Box>
@@ -1117,7 +1117,7 @@ const AdminDashboard = ({ url }) => {
                         </VStack>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text fontSize="sm" color="gray.600">Wild Products:</Text>
+                        <Text fontSize="sm" color="gray.600">Elite Products:</Text>
                         <VStack spacing={0} align="end">
                           <Text fontSize="sm" fontWeight="medium" color="orange.600">
                             Bought: ₹{dailyTradingStats.wildProductBought?.toLocaleString() || '0'}

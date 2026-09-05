@@ -17,7 +17,7 @@ const WildProductModal = ({ isOpen, onClose, onSave, wildProduct, isEditing }) =
     product_name: '',
     base_price: '',
     selling_price: '',
-    gst_percentage: 18.00,
+    gst_percentage: 0,
     available_stock: '',
     selling_date_count: 30
   };
@@ -33,7 +33,7 @@ const WildProductModal = ({ isOpen, onClose, onSave, wildProduct, isEditing }) =
           product_name: wildProduct.product_name || '',
           base_price: wildProduct.base_price || '',
           selling_price: wildProduct.selling_price || '',
-          gst_percentage: wildProduct.gst_percentage || 18.00,
+          gst_percentage: 0,
           available_stock: wildProduct.available_stock || '',
           selling_date_count: wildProduct.selling_date_count || 30
         });
@@ -65,16 +65,11 @@ const WildProductModal = ({ isOpen, onClose, onSave, wildProduct, isEditing }) =
     setIsLoading(false);
   };
 
-  // Calculate final price for display
-  const finalPrice = formData.base_price && formData.gst_percentage 
-    ? (parseFloat(formData.base_price) * (1 + parseFloat(formData.gst_percentage) / 100)).toFixed(2)
-    : '0.00';
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered size="lg">
       <ModalOverlay />
       <ModalContent as="form" onSubmit={handleSubmit}>
-        <ModalHeader fontWeight="bold">{isEditing ? 'Edit Wild Product' : 'Add New Wild Product'}</ModalHeader>
+        <ModalHeader fontWeight="bold">{isEditing ? 'Edit Elite Product' : 'Add New Elite Product'}</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
           {!isEditing && (
@@ -129,19 +124,6 @@ const WildProductModal = ({ isOpen, onClose, onSave, wildProduct, isEditing }) =
           </FormControl>
 
           <FormControl mt={4} isRequired>
-            <FormLabel fontWeight="bold">GST Percentage (%)</FormLabel>
-            <NumberInput 
-              value={formData.gst_percentage || 18.00} 
-              onChange={(value) => handleNumberChange(value, 'gst_percentage')}
-              min={0}
-              max={100}
-              precision={2}
-            >
-              <NumberInputField fontWeight="bold" placeholder="Enter GST percentage" />
-            </NumberInput>
-          </FormControl>
-
-          <FormControl mt={4} isRequired>
             <FormLabel fontWeight="bold">Available Stock</FormLabel>
             <NumberInput 
               value={formData.available_stock || ''} 
@@ -163,20 +145,13 @@ const WildProductModal = ({ isOpen, onClose, onSave, wildProduct, isEditing }) =
             </NumberInput>
           </FormControl>
 
-          {formData.base_price && formData.gst_percentage && (
-            <Box mt={4} p={3} bg="blue.50" borderRadius="md">
-              <Text fontSize="sm" color="blue.600">
-                <strong>Final Price (including GST): ₹{finalPrice}</strong>
-              </Text>
-            </Box>
-          )}
         </ModalBody>
         <ModalFooter>
           <Button fontWeight="bold" variant="ghost" mr={3} onClick={onClose}>
             Cancel
           </Button>
           <Button fontWeight="bold" colorScheme="blue" type="submit" isLoading={isLoading}>
-            {isEditing ? 'Update' : 'Add'} Wild Product
+            {isEditing ? 'Update' : 'Add'} Elite Product
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -209,12 +184,12 @@ const WildProductManagementPage = ({ url }) => {
         headers: { 'Authorization': `Bearer ${token}` } 
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Failed to fetch wild products');
+      if (!response.ok) throw new Error(data.message || 'Failed to fetch elite products');
       console.log('🔍 Fetched wild products:', data);
       setWildProducts(data);
     } catch (error) {
       toast({ 
-        title: 'Error fetching wild products', 
+        title: 'Error fetching elite products', 
         description: error.message, 
         status: 'error', 
         isClosable: true 
@@ -233,7 +208,7 @@ const WildProductManagementPage = ({ url }) => {
       ...formData,
       base_price: formData.base_price === '' || formData.base_price === null ? null : Number(formData.base_price),
       selling_price: formData.selling_price === '' || formData.selling_price === null ? null : Number(formData.selling_price),
-      gst_percentage: formData.gst_percentage === '' || formData.gst_percentage === null ? 18.00 : Number(formData.gst_percentage),
+      gst_percentage: 0,
       available_stock: formData.available_stock === '' || formData.available_stock === null ? null : Number(formData.available_stock),
       selling_date_count: formData.selling_date_count === '' || formData.selling_date_count === null ? 30 : Number(formData.selling_date_count),
     };
@@ -267,11 +242,11 @@ const WildProductManagementPage = ({ url }) => {
 
       console.log('🔍 Wild product save response:', data);
 
-      if (!response.ok) throw new Error(data.message || 'Failed to save wild product');
+      if (!response.ok) throw new Error(data.message || 'Failed to save elite product');
 
       toast({
-        title: isEditing ? 'Wild Product Updated' : 'Wild Product Added',
-        description: isEditing ? 'Wild product has been updated successfully' : 'Wild product has been added successfully',
+        title: isEditing ? 'Elite Product Updated' : 'Elite Product Added',
+        description: isEditing ? 'Elite product has been updated successfully' : 'Elite product has been added successfully',
         status: 'success',
         isClosable: true,
       });
@@ -309,12 +284,12 @@ const WildProductManagementPage = ({ url }) => {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || 'Failed to delete wild product');
+        throw new Error(data.message || 'Failed to delete elite product');
       }
 
       toast({
-        title: 'Wild Product Deleted',
-        description: 'Wild product has been deleted successfully',
+        title: 'Elite Product Deleted',
+        description: 'Elite product has been deleted successfully',
         status: 'success',
         isClosable: true,
       });
@@ -345,7 +320,7 @@ const WildProductManagementPage = ({ url }) => {
     }
   };
 
-  document.title = "Rouvin | Wild Products";
+  document.title = "Rouvin | Elite Products";
 
   return (
     <Flex minH="100vh" bg={pageBg}>
@@ -372,7 +347,7 @@ const WildProductManagementPage = ({ url }) => {
             variant="ghost"
           />
           <Heading as="h1" fontSize="lg" color={headingColor} lineHeight="1.2">
-            Wild Product Management
+            Elite Product Management
           </Heading>
         </Flex>
 
@@ -381,10 +356,10 @@ const WildProductManagementPage = ({ url }) => {
           <Box>
             <HStack justify="space-between" align="center" mb={4}>
               <Heading size="lg" color={headingColor}>
-                Wild Product Management
+                Elite Product Management
               </Heading>
               <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={handleAdd}>
-                Add Wild Product
+                Add Elite Product
               </Button>
             </HStack>
           </Box>
@@ -402,8 +377,6 @@ const WildProductManagementPage = ({ url }) => {
                     <Th>Product Name</Th>
                     <Th>Base Price</Th>
                     <Th>Selling Price</Th>
-                    <Th>GST %</Th>
-                    <Th>Final Price</Th>
                     <Th>Profit</Th>
                     <Th>Stock</Th>
                     <Th>Status</Th>
@@ -415,9 +388,8 @@ const WildProductManagementPage = ({ url }) => {
                 <Tbody>
                   {wildProducts.map((wildProduct) => {
                     const basePrice = parseFloat(wildProduct.base_price);
-                    const profit = parseFloat(wildProduct.profit);
-                    const finalPrice = parseFloat(wildProduct.final_price);
-                    const marginPercentage = profit !== null && finalPrice > 0 ? (profit * 100) / finalPrice : null;
+                    const profit = parseFloat(wildProduct.selling_price) - basePrice;
+                    const marginPercentage = !Number.isNaN(profit) && basePrice > 0 ? (profit * 100) / basePrice : null;
                     
                     return (
                     <Tr key={wildProduct.wild_product_id}>
@@ -437,12 +409,8 @@ const WildProductManagementPage = ({ url }) => {
                       <Td fontWeight="medium">{wildProduct.product_name}</Td>
                       <Td>₹{wildProduct.base_price}</Td>
                       <Td>₹{wildProduct.selling_price}</Td>
-                      <Td>{wildProduct.gst_percentage}%</Td>
-                      <Td fontWeight="bold" color="green.500">
-                        ₹{wildProduct.final_price}
-                      </Td>
-                      <Td fontWeight="bold" color={wildProduct.profit >= 0 ? "green.500" : "red.500"}>
-                        ₹{wildProduct.profit?.toFixed(2) || '0.00'}
+                      <Td fontWeight="bold" color={profit >= 0 ? "green.500" : "red.500"}>
+                        ₹{(profit || 0).toFixed(2)}
                       </Td>
                       <Td>{wildProduct.available_stock}</Td>
                       <Td>
@@ -458,7 +426,7 @@ const WildProductManagementPage = ({ url }) => {
                         <HStack spacing={2}>
                           <IconButton
                             icon={<EditIcon />}
-                            aria-label="Edit wild product"
+                            aria-label="Edit elite product"
                             size="sm"
                             colorScheme="blue"
                             variant="ghost"
@@ -466,7 +434,7 @@ const WildProductManagementPage = ({ url }) => {
                           />
                           <IconButton
                             icon={<DeleteIcon />}
-                            aria-label="Delete wild product"
+                            aria-label="Delete elite product"
                             size="sm"
                             colorScheme="red"
                             variant="ghost"
@@ -501,7 +469,7 @@ const WildProductManagementPage = ({ url }) => {
           <AlertDialogOverlay>
             <AlertDialogContent>
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Delete Wild Product
+                Delete Elite Product
               </AlertDialogHeader>
               <AlertDialogBody fontWeight="bold">
                 Are you sure you want to delete "{wildProductToDelete?.product_name}"? 

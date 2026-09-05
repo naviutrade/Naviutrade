@@ -39,7 +39,8 @@ const getNextWildProductId = async (client) => {
  * CREATE: Add a new wild product and upload its image to Cloudflare R2.
  */
 exports.addWildProduct = async (req, res) => {
-    const { product_name, base_price, selling_price, gst_percentage = 18.00, available_stock } = req.body;
+    const { product_name, base_price, selling_price, available_stock } = req.body;
+    const gst_percentage = 0;
     const productImageFile = req.file;
 
     if (!product_name || !base_price || !selling_price || !available_stock || !productImageFile) {
@@ -138,11 +139,11 @@ exports.getAllWildProducts = async (req, res) => {
         const { rows } = await db.query(query);
         console.log('🔍 Wild products fetched:', rows.length, 'products');
         
-        // Calculate final_price and profit for each row
+        // GST is 0% — final price equals base; profit is selling minus base
         const processedRows = rows.map(row => ({
             ...row,
-            final_price: Math.round((row.base_price * (1 + row.gst_percentage / 100)) * 100) / 100,
-            profit: Math.round((row.selling_price - (row.base_price * (1 + row.gst_percentage / 100))) * 100) / 100
+            final_price: Math.round(parseFloat(row.base_price) * 100) / 100,
+            profit: Math.round((parseFloat(row.selling_price) - parseFloat(row.base_price)) * 100) / 100
         }));
         
         res.status(200).json(processedRows);
@@ -242,11 +243,11 @@ exports.getAvailableWildProducts = async (req, res) => {
         const { rows } = await db.query(query);
         console.log('🔍 Available wild products fetched:', rows.length, 'products');
         
-        // Calculate final_price and profit for each row
+        // GST is 0% — final price equals base; profit is selling minus base
         const processedRows = rows.map(row => ({
             ...row,
-            final_price: Math.round((row.base_price * (1 + row.gst_percentage / 100)) * 100) / 100,
-            profit: Math.round((row.selling_price - (row.base_price * (1 + row.gst_percentage / 100))) * 100) / 100
+            final_price: Math.round(parseFloat(row.base_price) * 100) / 100,
+            profit: Math.round((parseFloat(row.selling_price) - parseFloat(row.base_price)) * 100) / 100
         }));
         
         res.status(200).json({
@@ -279,10 +280,11 @@ exports.getAvailableWildProducts = async (req, res) => {
  */
 exports.updateWildProduct = async (req, res) => {
     const { wildProductId } = req.params;
-    const { base_price, selling_price, available_stock, gst_percentage, selling_date_count } = req.body;
+    const { base_price, selling_price, available_stock, selling_date_count } = req.body;
+    const gst_percentage = 0;
 
-    if (base_price === undefined || selling_price === undefined || available_stock === undefined || gst_percentage === undefined) {
-        return res.status(400).json({ message: 'Base price, Selling price, GST percentage, and available stock are required for an update.' });
+    if (base_price === undefined || selling_price === undefined || available_stock === undefined) {
+        return res.status(400).json({ message: 'Base price, Selling price, and available stock are required for an update.' });
     }
 
     try {

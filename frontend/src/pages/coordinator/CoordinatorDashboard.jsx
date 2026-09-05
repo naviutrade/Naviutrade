@@ -569,7 +569,7 @@ const CoordinatorDashboard = ({ url }) => {
                      {stats.availableWildProducts || 0}
                    </Text>
                    <Text fontSize="lg" color="gray.600" textAlign="center" fontWeight="medium">
-                     Wild Products
+                     Elite Products
                    </Text>
                  </VStack>
                       <Button
@@ -584,7 +584,7 @@ const CoordinatorDashboard = ({ url }) => {
                    }}
                    transition="all 0.2s ease"
                  >
-                   Manage Wild Products
+                   Manage Elite Products
                       </Button>
                </VStack>
              </Box>

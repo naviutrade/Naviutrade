@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Box, Button, Spinner, Text, useToast, Heading, SimpleGrid,
-  Avatar, Flex, Input, Center, useDisclosure, HStack,
+  Avatar, Flex, Input, Center, useDisclosure, HStack, useClipboard,
 } from '@chakra-ui/react';
-import { SignOut, Camera, IdentificationCard, Bank, EnvelopeSimple, Phone, MapPin } from '@phosphor-icons/react';
+import { SignOut, Camera, IdentificationCard, Bank, EnvelopeSimple, Phone, MapPin, CopySimple } from '@phosphor-icons/react';
 import axios from 'axios';
 import { useAuth } from '../../AppContext';
 import VendorShell from '../../components/layout/VendorShell';
@@ -74,7 +74,7 @@ const SectionCard = ({ icon: Icon, title, hint, children }) => (
 );
 
 const VendorProfile = ({ url }) => {
-  const { token, logout } = useAuth();
+  const { token, logout, user } = useAuth();
   const toast = useToast();
   const { isOpen: isPhotoOpen, onOpen: onPhotoOpen, onClose: onPhotoClose } = useDisclosure();
   const { isOpen: isLogoutOpen, onOpen: onLogoutOpen, onClose: onLogoutClose } = useDisclosure();
@@ -141,6 +141,8 @@ const VendorProfile = ({ url }) => {
   };
 
   const photoSrc = previewUrl || profile?.passportPhotoUrl || '';
+  const vendorId = profile?.vendorId || user?.id || '';
+  const { onCopy, hasCopied } = useClipboard(vendorId);
 
   return (
     <VendorShell
@@ -201,6 +203,33 @@ const VendorProfile = ({ url }) => {
                 >
                   {profile.vendorName || 'Vendor'}
                 </Text>
+                {vendorId && (
+                  <HStack
+                    spacing={2}
+                    justify={{ base: 'center', md: 'flex-start' }}
+                    mb={3}
+                  >
+                    <Text
+                      fontFamily="var(--f-num)"
+                      fontSize="15px"
+                      fontWeight={600}
+                      color="var(--text-2)"
+                    >
+                      {vendorId}
+                    </Text>
+                    <Button
+                      size="sm"
+                      h="28px"
+                      px={2}
+                      variant="rvQuiet"
+                      leftIcon={<CopySimple size={14} weight="bold" />}
+                      onClick={onCopy}
+                      aria-label={hasCopied ? 'Vendor ID copied' : 'Copy vendor ID'}
+                    >
+                      {hasCopied ? 'Copied' : 'Copy'}
+                    </Button>
+                  </HStack>
+                )}
                 <Flex
                   direction={{ base: 'column', sm: 'row' }}
                   gap={{ base: 1, sm: 5 }}

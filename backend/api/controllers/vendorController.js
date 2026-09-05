@@ -247,6 +247,7 @@ exports.getVendorProfile = async (req, res) => {
   try {
     const query = `
       SELECT 
+        id,
         vendor_name,
         email,
         phone_number,
@@ -267,6 +268,7 @@ exports.getVendorProfile = async (req, res) => {
 
     const row = result.rows[0];
     res.json({
+      vendorId: row.id,
       vendorName: row.vendor_name,
       email: row.email,
       phoneNumber: row.phone_number,

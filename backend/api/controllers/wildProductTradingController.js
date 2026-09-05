@@ -37,14 +37,13 @@ exports.purchaseWildProduct = async (req, res) => {
             return res.status(400).json({ message: 'Insufficient stock available.' });
         }
 
-        // Calculate prices
+        // GST is 0% — buy price equals base price
         const basePrice = parseFloat(product.base_price);
-        const gstPercentage = parseFloat(product.gst_percentage);
-        const finalPrice = Math.round((basePrice * (1 + gstPercentage / 100)) * 100) / 100; // Round to 2 decimal places
-        const gstAmount = Math.round((basePrice * quantityNum * gstPercentage / 100) * 100) / 100; // Round to 2 decimal places
-        const totalAmount = Math.round((finalPrice * quantityNum) * 100) / 100; // Round to 2 decimal places
+        const gstPercentage = 0;
+        const finalPrice = Math.round((basePrice * (1 + gstPercentage / 100)) * 100) / 100;
+        const totalAmount = Math.round((finalPrice * quantityNum) * 100) / 100;
         
-        console.log('🔍 Wild Product Purchase Calculation:', {
+        console.log('🔍 Elite Product Purchase Calculation:', {
             wildProductId,
             basePrice,
             gstPercentage,

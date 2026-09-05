@@ -11,6 +11,9 @@ import { SearchIcon, CalendarIcon } from '@chakra-ui/icons';
 import { useAuth } from '../../AppContext';
 import { formatISTDate } from '../../utils/dateUtils';
 
+const formatTypeLabel = (type) =>
+  String(type || '').replace(/Wild/g, 'Elite').replace(/wild/g, 'elite').replace(/_/g, ' ');
+
 // Helper to format date strings for display in filter chips
 const formatDateForChip = (dateString) => {
   if (!dateString) return '—';
@@ -290,7 +293,7 @@ const CoordinatorTransactions = ({ url }) => {
             <Popover placement="bottom-start">
               <PopoverTrigger>
                 <Button variant="outline" size="sm">
-                  {appliedType ? `Type: ${appliedType}` : 'Filter Type'}
+                  {appliedType ? `Type: ${formatTypeLabel(appliedType)}` : 'Filter Type'}
                 </Button>
               </PopoverTrigger>
               <PopoverContent>
@@ -347,7 +350,7 @@ const CoordinatorTransactions = ({ url }) => {
               {appliedType && (
                 <WrapItem>
                   <Tag size="md" variant="subtle" colorScheme={getTransactionTypeColor(appliedType)} borderRadius="full">
-                    <TagLabel>Type: {appliedType}</TagLabel>
+                    <TagLabel>Type: {formatTypeLabel(appliedType)}</TagLabel>
                     <TagCloseButton onClick={removeTypeFilter} />
                   </Tag>
                 </WrapItem>
@@ -400,7 +403,7 @@ const CoordinatorTransactions = ({ url }) => {
                       {formatTimestampIST(transaction.created_at)}
                     </Td>
                     <Td fontWeight="bold">
-                      <Tag colorScheme={getTransactionTypeColor(transaction.transaction_type)}>{transaction.transaction_type}</Tag>
+                      <Tag colorScheme={getTransactionTypeColor(transaction.transaction_type)}>{formatTypeLabel(transaction.transaction_type)}</Tag>
                     </Td>
                     <Td isNumeric color={getTransactionTypeColor(transaction.transaction_type) + ".400"} fontWeight="bold">
                       ₹{Number(transaction.amount || 0).toFixed(2)}
@@ -428,7 +431,7 @@ const CoordinatorTransactions = ({ url }) => {
                 <VStack spacing={2} align="stretch">
                   <Flex justify="space-between" align="center">
                     <Text fontWeight="bold" fontSize="md">{transaction.vendor_name || 'N/A'}</Text>
-                    <Tag colorScheme={getTransactionTypeColor(transaction.transaction_type)} size="sm">{transaction.transaction_type}</Tag>
+                    <Tag colorScheme={getTransactionTypeColor(transaction.transaction_type)} size="sm">{formatTypeLabel(transaction.transaction_type)}</Tag>
                   </Flex>
                   <Text fontSize="sm" color={textColor}>{transaction.email || 'N/A'}</Text>
                   <Text fontSize="sm" color={textColor}>{transaction.phone_number || 'N/A'}</Text>

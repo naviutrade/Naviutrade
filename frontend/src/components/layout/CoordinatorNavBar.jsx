@@ -75,7 +75,7 @@ const CoordinatorNavContent = ({ onLinkClick, showLabels }) => {
   const links = [
     { icon: <FaUserCog size={22} />, label: 'Dashboard', to: '/coordinator/dashboard' },
     { icon: <FaBox size={22} />, label: 'Products', to: '/coordinator/products' },
-    { icon: <FaLeaf size={22} />, label: 'Wild Products', to: '/coordinator/wild-products' },
+    { icon: <FaLeaf size={22} />, label: 'Elite Products', to: '/coordinator/wild-products' },
     { icon: <FaClipboardList size={22} />, label: 'Product Requests', to: '/coordinator/product-requests' },
   ];
 

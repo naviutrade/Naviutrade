@@ -54,7 +54,7 @@ const RecentActivityPage = ({ url }) => {
     {
       key: 'transaction_type',
       header: 'Type',
-      render: (tx) => String(tx.transaction_type || '').replace(/_/g, ' '),
+      render: (tx) => String(tx.transaction_type || '').replace(/wild/gi, 'elite').replace(/_/g, ' '),
     },
     {
       key: 'created_at',

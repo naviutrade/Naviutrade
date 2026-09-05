@@ -35,7 +35,7 @@ export const DESTINATIONS = {
   },
   wild: {
     id: 'wild',
-    label: 'Wild products',
+    label: 'Elite products',
     to: '/vendor/wild-products',
     Icon: Leaf,
     match: ['/vendor/wild-products'],
@@ -91,13 +91,13 @@ export const DESTINATIONS = {
   },
 };
 
-export const RAIL_DESKTOP = ['dashboard', 'products', 'wild', 'purchases', 'wallet', 'claims', 'referrals'];
+export const RAIL_DESKTOP = ['dashboard', 'buy', 'purchases', 'wallet', 'claims', 'referrals'];
 export const TABS_MOBILE = ['dashboard', 'buy', 'wallet', 'history'];
-export const MORE_MOBILE = ['wild', 'claims', 'referrals', 'profile'];
+export const MORE_MOBILE = ['claims', 'referrals', 'profile'];
 
 export const BUY_SEGMENTS = [
   { id: 'reg', label: 'Regular', to: '/vendor/products' },
-  { id: 'wild', label: 'Wild', to: '/vendor/wild-products' },
+  { id: 'wild', label: 'Elite', to: '/vendor/wild-products' },
 ];
 
 export const HISTORY_SEGMENTS = [

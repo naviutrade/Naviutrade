@@ -15,6 +15,7 @@ const TYPE_LABEL = {
   sale: 'Sale',
   deposit: 'Deposit',
   purchase: 'Purchase',
+  wild_product_purchase: 'Elite purchase',
   withdrawal: 'Withdrawal',
   commission_claim: 'Commission claim',
   referral_bonus: 'Sign-up bonus',

@@ -595,7 +595,7 @@ const AdminNavContent = ({ onLinkClick, showLabels }) => {
     { icon: <LayoutDashboard size={22} />, label: 'Dashboard',                to: '/admin/dashboard' },
     { icon: <BadgeCheck       size={22} />, label: 'Manage Approvals',        to: '/admin/manage-approvals' },
     { icon: <Package          size={22} />, label: 'Manage Products',         to: '/admin/manage-products' },
-    { icon: <Package2         size={22} />, label: 'Wild Products',           to: '/admin/wild-products' },
+    { icon: <Package2         size={22} />, label: 'Elite Products',           to: '/admin/wild-products' },
     { icon: <Users            size={22} />, label: 'Manage Referrals',        to: '/admin/manage-percentages' },
     { icon: <Wallet           size={22} />, label: 'Manage Wallet Approvals', to: '/admin/wallet-approvals' },
     { icon: <ShoppingCart     size={22} />, label: 'Product Requests',         to: '/admin/product-requests' },

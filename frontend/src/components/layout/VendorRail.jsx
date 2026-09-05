@@ -3,7 +3,7 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { Box, Flex, Image, Tooltip } from '@chakra-ui/react';
 import { UserCircle, SignOut } from '@phosphor-icons/react';
 import { useAuth } from '../../AppContext';
-import { DESTINATIONS, RAIL_DESKTOP, isDestActive } from './nav.config';
+import { DESTINATIONS, RAIL_DESKTOP, isDestActive, getBuyPath } from './nav.config';
 
 const RailButton = ({ icon: Icon, label, to, onClick, active, danger }) => (
   <Tooltip label={label} placement="right" hasArrow openDelay={200}>
@@ -64,12 +64,13 @@ const VendorRail = () => {
       <Image src="/rouvin.png" alt="Rouvin" w="36px" h="36px" mb="14px" objectFit="contain" />
       {RAIL_DESKTOP.map((id) => {
         const dest = DESTINATIONS[id];
+        const to = id === 'buy' ? getBuyPath() : dest.to;
         return (
           <RailButton
             key={id}
             icon={dest.Icon}
             label={dest.railLabel || dest.label}
-            to={dest.to}
+            to={to}
             active={isDestActive(dest, location.pathname, location.search)}
           />
         );

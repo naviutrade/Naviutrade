@@ -81,14 +81,16 @@ const WildProductPurchaseModal = ({ isOpen, onClose, wildProduct, onSuccess, url
 
     // convert string -> number for calculations
     const numericQuantity = parseInt(quantity, 10) || 0;
-    const totalCost = numericQuantity * (Number(wildProduct.final_price) || 0);
+    const unitPrice = Number(wildProduct.base_price) || 0;
+    const profit = Number(wildProduct.selling_price) - unitPrice;
+    const totalCost = numericQuantity * unitPrice;
     const hasEnoughFunds = walletBalance >= totalCost;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader fontWeight="bold">Buy Wild Product: {wildProduct.product_name}</ModalHeader>
+                <ModalHeader fontWeight="bold">Buy Elite Product: {wildProduct.product_name}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                     <VStack align="stretch" spacing={3}>
@@ -104,12 +106,10 @@ const WildProductPurchaseModal = ({ isOpen, onClose, wildProduct, onSuccess, url
                             />
                         </Box>
                         
-                        <Text fontWeight="bold">Price per Unit: ₹{wildProduct.final_price}</Text>
-                        <Text fontSize="sm" color="gray.600">Base Price: ₹{wildProduct.base_price}</Text>
+                        <Text fontWeight="bold">Base Price: ₹{wildProduct.base_price}</Text>
                         <Text fontSize="sm" color="gray.600">Selling Price: ₹{wildProduct.selling_price}</Text>
-                        <Text fontSize="sm" color="gray.600">GST ({wildProduct.gst_percentage}%): ₹{(wildProduct.base_price * wildProduct.gst_percentage / 100).toFixed(2)}</Text>
-                        <Text fontSize="sm" fontWeight="bold" color={wildProduct.profit >= 0 ? "green.500" : "red.500"}>
-                            Profit: ₹{wildProduct.profit?.toFixed(2) || '0.00'}
+                        <Text fontSize="sm" fontWeight="bold" color={profit >= 0 ? "green.500" : "red.500"}>
+                            Profit: ₹{profit.toFixed(2)}
                         </Text>
                         
                         <FormControl>
@@ -192,17 +192,9 @@ const WildProductCard = ({ wildProduct, onBuyClick, url }) => {
                         <Text fontSize="sm">₹{wildProduct.selling_price}</Text>
                     </HStack>
                     <HStack justify="space-between">
-                        <Text fontSize="sm" color="gray.600">GST ({wildProduct.gst_percentage}%):</Text>
-                        <Text fontSize="sm">₹{(wildProduct.base_price * wildProduct.gst_percentage / 100).toFixed(2)}</Text>
-                    </HStack>
-                    <HStack justify="space-between">
-                        <Text fontSize="sm" color="gray.600">Final Price:</Text>
-                        <Text fontSize="lg" fontWeight="bold" color="green.500">₹{wildProduct.final_price}</Text>
-                    </HStack>
-                    <HStack justify="space-between">
                         <Text fontSize="sm" color="gray.600">Profit:</Text>
-                        <Text fontSize="sm" fontWeight="bold" color={wildProduct.profit >= 0 ? "green.500" : "red.500"}>
-                            ₹{wildProduct.profit?.toFixed(2) || '0.00'}
+                        <Text fontSize="sm" fontWeight="bold" color={(Number(wildProduct.selling_price) - Number(wildProduct.base_price)) >= 0 ? "green.500" : "red.500"}>
+                            ₹{(Number(wildProduct.selling_price) - Number(wildProduct.base_price) || 0).toFixed(2)}
                         </Text>
                     </HStack>
                 </VStack>
@@ -225,7 +217,7 @@ const WildProductCard = ({ wildProduct, onBuyClick, url }) => {
                     onClick={() => onBuyClick(wildProduct)}
                     isDisabled={wildProduct.available_stock === 0}
                 >
-                    {wildProduct.available_stock === 0 ? 'Out of stock' : `Buy stock · ${formatMoney(wildProduct.final_price)}`}
+                    {wildProduct.available_stock === 0 ? 'Out of stock' : `Buy stock · ${formatMoney(wildProduct.base_price)}`}
                 </Button>
             </Box>
         </Box>
@@ -255,7 +247,7 @@ const WildProductTradingPage = ({ url }) => {
                 fetch(`${url}/api/wild-products/available`, { headers: { Authorization: `Bearer ${token}` } }),
                 fetch(`${url}/api/wallet`, { headers: { Authorization: `Bearer ${token}` } })
             ]);
-            if (!wildProductsRes.ok) throw new Error('Failed to fetch wild products.');
+            if (!wildProductsRes.ok) throw new Error('Failed to fetch elite products.');
             if (!walletRes.ok) throw new Error('Failed to fetch wallet balance.');
             const wildProductsData = await wildProductsRes.json();
             const walletData = await walletRes.json();
@@ -264,8 +256,8 @@ const WildProductTradingPage = ({ url }) => {
             if (wildProductsData.success === false) {
                 // Wild products not available due to time constraints
                 toast({ 
-                    title: 'Wild Products Not Available', 
-                    description: wildProductsData.message, 
+                    title: 'Elite Products Not Available',
+                    description: String(wildProductsData.message || '').replace(/Wild/g, 'Elite').replace(/wild/g, 'elite'),
                     status: 'warning', 
                     isClosable: true,
                     duration: 5000
@@ -294,7 +286,7 @@ const WildProductTradingPage = ({ url }) => {
     };
 
     return (
-        <VendorShell title="Wild products" url={url}>
+        <VendorShell title="Elite products" url={url}>
                 {loading && wildProducts.length === 0 ? (
                     <SkeletonGrid count={6} />
                 ) : error ? (
@@ -305,7 +297,7 @@ const WildProductTradingPage = ({ url }) => {
                 ) : wildProducts.length === 0 ? (
                     <EmptyState
                       icon={Package}
-                      headline="No wild products available"
+                      headline="No elite products available"
                       body="Nothing is listed right now. Refresh to check again."
                       actionLabel="Refresh"
                       onAction={fetchWildProducts}
@@ -313,7 +305,7 @@ const WildProductTradingPage = ({ url }) => {
                 ) : (
                     <Box>
                         <Text mb={6} color={RV.slate[700]}>
-                            Exclusive wild products with GST included. Pay from wallet.
+                            Exclusive elite products. Pay from wallet.
                         </Text>
                         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8}>
                             {wildProducts.map(wildProduct => (

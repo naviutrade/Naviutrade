@@ -117,6 +117,9 @@ const TYPES = [
   'commission_claim', 'registration_fee', 'referral_bonus'
 ];
 
+const formatTypeLabel = (type) =>
+  String(type || '').replace(/Wild/g, 'Elite').replace(/wild/g, 'elite').replace(/_/g, ' ');
+
 const typeColor = (type) => {
   switch (String(type).toLowerCase()) {
     case 'deposit': return 'green';
@@ -375,7 +378,7 @@ const TransactionsPage = ({ url }) => {
             <Popover placement="bottom-start">
               <PopoverTrigger>
                 <Button variant="outline" size="sm">
-                  {appliedType ? `Type: ${appliedType}` : 'Filter Type'}
+                  {appliedType ? `Type: ${formatTypeLabel(appliedType)}` : 'Filter Type'}
                 </Button>
               </PopoverTrigger>
               <PopoverContent>
@@ -389,7 +392,7 @@ const TransactionsPage = ({ url }) => {
                       onChange={(e) => setUiType(e.target.value)}
                     >
                       {TYPES.map(type => (
-                        <option key={type} value={type}>{type}</option>
+                        <option key={type} value={type}>{formatTypeLabel(type)}</option>
                       ))}
                     </Select>
                     <Button size="sm" colorScheme="blue" onClick={applyTypeFilter}>
@@ -428,7 +431,7 @@ const TransactionsPage = ({ url }) => {
               {appliedType && (
                 <WrapItem>
                   <Tag size="md" variant="subtle" colorScheme={typeColor(appliedType)} borderRadius="full">
-                    <TagLabel>Type: {appliedType}</TagLabel>
+                    <TagLabel>Type: {formatTypeLabel(appliedType)}</TagLabel>
                     <TagCloseButton onClick={removeType} />
                   </Tag>
                 </WrapItem>
@@ -473,7 +476,7 @@ const TransactionsPage = ({ url }) => {
                         {formatTimestampIST(tx.created_at)}
                       </Td>
                       <Td fontWeight="bold">
-                        <Tag colorScheme={typeColor(tx.transaction_type)}>{tx.transaction_type}</Tag>
+                        <Tag colorScheme={typeColor(tx.transaction_type)}>{formatTypeLabel(tx.transaction_type)}</Tag>
                       </Td>
                       <Td isNumeric color={typeColor(tx.transaction_type) + ".400"} fontWeight="bold">
                         ₹{Number(tx.amount || 0).toFixed(2)}
@@ -501,7 +504,7 @@ const TransactionsPage = ({ url }) => {
                   <VStack spacing={2} align="stretch">
                     <Flex justify="space-between" align="center">
                       <Text fontWeight="bold" fontSize="md">{tx.vendor_name || tx.user_id}</Text>
-                      <Tag colorScheme={typeColor(tx.transaction_type)} size="sm">{tx.transaction_type}</Tag>
+                      <Tag colorScheme={typeColor(tx.transaction_type)} size="sm">{formatTypeLabel(tx.transaction_type)}</Tag>
                     </Flex>
                     <Text fontSize="sm" color={textColor}>{tx.email}</Text>
                     <Text fontSize="sm" color={textColor}>{tx.phone_number}</Text>
