@@ -42,6 +42,7 @@ const allowedOrigins = [
 
   'http://localhost:10000', 
   'https://naviutrade.onrender.com',
+  'https://rouvin.onrender.com',
   'http://localhost:3000',
   'https://pay.easebuzz.in', // Easebuzz payment gateway
   // 'https://testpay.easebuzz.in' // Easebuzz test payment gateway
