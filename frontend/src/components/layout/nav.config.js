@@ -29,7 +29,7 @@ export const DESTINATIONS = {
   buy: {
     id: 'buy',
     label: 'Buy',
-    to: '/vendor/products',
+    to: '/vendor/wild-products',
     Icon: Package,
     match: ['/vendor/products', '/vendor/wild-products'],
   },
@@ -96,8 +96,8 @@ export const TABS_MOBILE = ['dashboard', 'buy', 'wallet', 'history'];
 export const MORE_MOBILE = ['claims', 'referrals', 'profile'];
 
 export const BUY_SEGMENTS = [
-  { id: 'reg', label: 'Regular', to: '/vendor/products' },
   { id: 'wild', label: 'Elite', to: '/vendor/wild-products' },
+  { id: 'reg', label: 'Regular', to: '/vendor/products' },
 ];
 
 export const HISTORY_SEGMENTS = [
@@ -137,9 +137,9 @@ export const rememberNavSegment = (pathname) => {
 
 export const getBuyPath = () => {
   try {
-    return sessionStorage.getItem(BUY_KEY) === 'wild' ? '/vendor/wild-products' : '/vendor/products';
+    return sessionStorage.getItem(BUY_KEY) === 'reg' ? '/vendor/products' : '/vendor/wild-products';
   } catch {
-    return '/vendor/products';
+    return '/vendor/wild-products';
   }
 };
 

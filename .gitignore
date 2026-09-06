@@ -38,5 +38,6 @@ __pycache__/
 
 # Temporary files
 backend/temp/
+_backup/
 frontend/src/utils/coordinatorInvestorDemo.js
 
