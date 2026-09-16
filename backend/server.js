@@ -42,6 +42,8 @@ const allowedOrigins = [
 
   'http://localhost:10000', 
   'https://rouvin.onrender.com',
+  'https://rouvin.in',
+  'https://www.rouvin.in',
   'http://localhost:3000',
   'https://pay.easebuzz.in', // Easebuzz payment gateway
   // 'https://testpay.easebuzz.in' // Easebuzz test payment gateway
