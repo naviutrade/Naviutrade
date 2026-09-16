@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { AppProvider } from './AppContext';
 import theme from './theme';
@@ -70,6 +70,11 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import PaymentFailurePage from './pages/PaymentFailurePage';
 import RegistrationSuccessPage from './pages/RegistrationSuccessPage';
 import NotFound from './components/NotFound';
+import PortalLayout from './components/public/PortalLayout';
+import PortalHomePage from './pages/public/PortalHomePage';
+import PayrollPage from './pages/public/PayrollPage';
+import TomatoExportPage from './pages/public/TomatoExportPage';
+import ITConsultancyPage from './pages/public/ITConsultancyPage';
 
 
 
@@ -83,11 +88,16 @@ function App() {
         <AppProvider>
           <Routes>
 
-      {/* testing */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            
-            {/* Public-only routes (redirect to dashboard if already logged in) */}
+            {/* Public marketing portal */}
             <Route element={<RouteGuard isPrivate={false} />}>
+              <Route element={<PortalLayout />}>
+                <Route path="/" element={<PortalHomePage />} />
+                <Route path="/payroll" element={<PayrollPage />} />
+                <Route path="/tomato-export" element={<TomatoExportPage />} />
+                <Route path="/it-consultancy" element={<ITConsultancyPage />} />
+              </Route>
+
+              {/* Public-only auth routes (redirect to dashboard if already logged in) */}
               <Route element={<AuthLayout />}>
                 <Route path="/login" element={<LoginPage url={url} />} />
                 <Route path="/register" element={<RegistrationPage url={url} />} />

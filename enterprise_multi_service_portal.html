@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rouvin | IT Consultancy, Tomato Trade & Payroll Solutions</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        tomato: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            500: '#e11d48',
+                            600: '#be123c',
+                            700: '#9f1239',
+                        },
+                        it: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .page-view {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .page-view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Keyframe Animations */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
+        @keyframes floatReverse {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(10px) rotate(-1deg); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-float {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+        .animate-float-delayed {
+            animation: floatReverse 7s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+        .animate-slide-up {
+            animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Interactive Micro-animations */
+        .card-interactive {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-interactive:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+        }
+        .icon-bounce-hover:hover i {
+            transform: scale(1.15) rotate(-5deg);
+        }
+        .icon-transition i {
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-sky-500 selection:text-white">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 glass-nav border-b border-slate-200/80 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="navigateTo('home')">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-violet-600 via-sky-600 to-rose-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-sky-500/20 group-hover:scale-105 group-hover:rotate-3 transition-transform duration-300">
+                        <i class="fa-solid fa-cubes animate-pulse-glow"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold tracking-tight text-slate-900 group-hover:text-sky-600 transition-colors">Rou<span class="text-sky-600">vin</span></span>
+                        <span class="block text-[10px] font-semibold tracking-wider text-slate-400 uppercase">IT, Agriculture & Payroll</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                    <button onclick="navigateTo('home')" id="nav-home" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition-all text-sky-600 bg-sky-50 flex items-center gap-2 group">
+                        <i class="fa-solid fa-house text-xs group-hover:scale-110 transition-transform"></i>
+                        <span>Home Summary</span>
+                    </button>
+                    <button onclick="navigateTo('it')" id="nav-it" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:text-violet-600 hover:bg-violet-50 flex items-center gap-2 group">
+                        <i class="fa-solid fa-laptop-code text-xs text-violet-500 group-hover:rotate-6 transition-transform"></i>
+                        <span>IT Consultancy</span>
+                    </button>
+                    <button onclick="navigateTo('tomato')" id="nav-tomato" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:text-rose-600 hover:bg-rose-50 flex items-center gap-2 group">
+                        <i class="fa-solid fa-wheat-awn text-xs text-rose-500 group-hover:rotate-12 transition-transform"></i>
+                        <span>Tomato Trade</span>
+                    </button>
+                    <button onclick="navigateTo('payroll')" id="nav-payroll" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition-all text-slate-600 hover:text-sky-600 hover:bg-sky-50 flex items-center gap-2 group">
+                        <i class="fa-solid fa-calculator text-xs text-sky-600 group-hover:scale-110 transition-transform"></i>
+                        <span>Payroll Management</span>
+                    </button>
+                </nav>
+
+                <!-- Auth Buttons (Top Right) -->
+                <div class="hidden sm:flex items-center space-x-3">
+                    <button onclick="openAuthModal('login')" class="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-sky-600 border border-slate-300 hover:border-sky-500 rounded-lg transition-all shadow-sm hover:shadow-md flex items-center gap-2 active:scale-95">
+                        <i class="fa-solid fa-right-to-bracket text-sky-600"></i>
+                        <span>Log In</span>
+                    </button>
+                    <button onclick="openAuthModal('register')" class="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-sky-600 via-indigo-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 rounded-lg shadow-md shadow-sky-600/20 hover:shadow-lg hover:shadow-sky-600/30 transition-all flex items-center gap-2 active:scale-95">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Register</span>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="flex sm:hidden items-center space-x-2">
+                    <button onclick="toggleMobileMenu()" class="p-2.5 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none transition-colors">
+                        <i class="fa-solid fa-bars text-xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div id="mobile-menu" class="hidden sm:hidden border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 pt-2 pb-4 space-y-2 animate-slide-up">
+            <button onclick="navigateTo('home'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-sky-50 hover:text-sky-600 flex items-center gap-3">
+                <i class="fa-solid fa-house text-sky-600"></i> Home Summary
+            </button>
+            <button onclick="navigateTo('it'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-violet-50 hover:text-violet-600 flex items-center gap-3">
+                <i class="fa-solid fa-laptop-code text-violet-600"></i> IT Consultancy Services
+            </button>
+            <button onclick="navigateTo('tomato'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-rose-50 hover:text-rose-600 flex items-center gap-3">
+                <i class="fa-solid fa-wheat-awn text-rose-500"></i> Tomato Import & Export
+            </button>
+            <button onclick="navigateTo('payroll'); toggleMobileMenu();" class="w-full text-left px-3 py-2.5 rounded-lg text-base font-medium text-slate-700 hover:bg-sky-50 hover:text-sky-600 flex items-center gap-3">
+                <i class="fa-solid fa-calculator text-sky-600"></i> Payroll Management
+            </button>
+            <div class="pt-3 border-t border-slate-100 flex gap-2">
+                <button onclick="openAuthModal('login')" class="w-1/2 py-2.5 text-center text-sm font-semibold text-slate-700 border border-slate-300 rounded-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket text-xs"></i> Log In
+                </button>
+                <button onclick="openAuthModal('register')" class="w-1/2 py-2.5 text-center text-sm font-semibold text-white bg-sky-600 rounded-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-plus text-xs"></i> Register
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow">
+        
+        <!-- ================= PAGE 0: MAIN HOME SUMMARY PORTAL ================= -->
+        <section id="page-home" class="page-view active">
+            <!-- Hero Banner -->
+            <div class="relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-900 text-white py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                <!-- Background Mesh Accent & Decorative Animated Floating Badges -->
+                <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:20px_20px]"></div>
+                <div class="absolute -top-24 -left-24 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+                <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-rose-600/20 rounded-full blur-3xl pointer-events-none animate-pulse-glow" style="animation-delay: 2s;"></div>
+                
+                <!-- Floating Decorative Chips (Desktop Visual Polish) -->
+                <div class="hidden lg:flex absolute top-16 left-12 animate-float bg-slate-900/80 backdrop-blur-md border border-slate-700 px-4 py-2.5 rounded-2xl shadow-xl items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-violet-500/20 text-violet-400 flex items-center justify-center">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="text-xs">
+                        <div class="font-bold text-slate-200">Enterprise Security</div>
+                        <div class="text-slate-400">Cybersecurity & Audit</div>
+                    </div>
+                </div>
+
+                <div class="hidden lg:flex absolute bottom-16 right-12 animate-float-delayed bg-slate-900/80 backdrop-blur-md border border-slate-700 px-4 py-2.5 rounded-2xl shadow-xl items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </div>
+                    <div class="text-xs">
+                        <div class="font-bold text-slate-200">Global Logistics</div>
+                        <div class="text-slate-400">Fresh Produce Freight</div>
+                    </div>
+                </div>
+
+                <div class="max-w-7xl mx-auto relative z-10 text-center">
+                    <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-6 shadow-inner">
+                        <i class="fa-solid fa-wand-magic-sparkles text-sky-400 animate-spin" style="animation-duration: 8s;"></i> Integrated Multi-Service Enterprise Portal
+                    </span>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight">
+                        Technology Solutions, Global Trade & Corporate Payroll
+                    </h1>
+                    <p class="mt-6 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                        Drive business growth with tailored IT consultancy, streamline produce logistics with international fresh tomato trading, and automate your entire payroll workflow.
+                    </p>
+                    <div class="mt-10 flex flex-wrap justify-center gap-4">
+                        <button onclick="navigateTo('it')" class="group px-6 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold shadow-lg shadow-violet-600/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-2.5">
+                            <i class="fa-solid fa-laptop-code group-hover:scale-110 transition-transform"></i>
+                            <span>IT Consultancy Hub</span>
+                            <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                        <button onclick="navigateTo('tomato')" class="group px-6 py-3.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold shadow-lg shadow-rose-600/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-2.5">
+                            <i class="fa-solid fa-earth-americas group-hover:rotate-12 transition-transform"></i>
+                            <span>Tomato Import & Export</span>
+                            <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                        <button onclick="navigateTo('payroll')" class="group px-6 py-3.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold shadow-lg shadow-sky-600/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-2.5">
+                            <i class="fa-solid fa-calculator group-hover:scale-110 transition-transform"></i>
+                            <span>Payroll Management</span>
+                            <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Cards Section for 3 Main Pages -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div class="text-center mb-14">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-100">Integrated Services</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-3">Explore Our Three Primary Divisions</h2>
+                    <p class="mt-3 text-slate-600 max-w-2xl mx-auto text-base">Click on any card below to navigate directly to the dedicated detail page and access specialized services.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <!-- Card 1: IT Consultancy Services -->
+                    <div class="group bg-white rounded-2xl p-8 border border-slate-200/80 shadow-md card-interactive flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-bl-full pointer-events-none group-hover:bg-violet-500/10 transition-colors"></div>
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-violet-100 text-violet-600 flex items-center justify-center text-2xl font-bold mb-6 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300 shadow-sm">
+                                <i class="fa-solid fa-laptop-code"></i>
+                            </div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-violet-600 bg-violet-50 px-2.5 py-1 rounded-md border border-violet-100">Division 01</span>
+                            <h3 class="text-2xl font-bold text-slate-900 mt-3 mb-3 group-hover:text-violet-600 transition-colors">IT Consultancy Services</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                Smart technology solutions for your business. From IT strategy, software & app development to cybersecurity, cloud migration, and tech support.
+                            </p>
+                            <ul class="mt-6 space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-violet-500 text-sm"></i> IT Strategy & Digital Transformation</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-violet-500 text-sm"></i> Custom Software & Web Applications</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-violet-500 text-sm"></i> Cybersecurity & Cloud Migration</li>
+                            </ul>
+                        </div>
+                        <div class="mt-8 pt-6 border-t border-slate-100">
+                            <button onclick="navigateTo('it')" class="w-full py-3 px-4 rounded-xl bg-slate-900 group-hover:bg-violet-600 text-white font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 shadow-md">
+                                <span>Go to IT Consultancy Page</span>
+                                <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Tomato Import & Export -->
+                    <div class="group bg-white rounded-2xl p-8 border border-slate-200/80 shadow-md card-interactive flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-bl-full pointer-events-none group-hover:bg-rose-500/10 transition-colors"></div>
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-2xl font-bold mb-6 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300 shadow-sm">
+                                <i class="fa-solid fa-earth-americas"></i>
+                            </div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-2.5 py-1 rounded-md border border-rose-100">Division 02</span>
+                            <h3 class="text-2xl font-bold text-slate-900 mt-3 mb-3 group-hover:text-rose-600 transition-colors">Tomato Export & Import</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                Fresh tomatoes, reliable supply, global markets. Sourcing directly from orchards with strict grading, cold-chain, and packaging.
+                            </p>
+                            <ul class="mt-6 space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500 text-sm"></i> Premium & Transport Grading</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500 text-sm"></i> Cold-Chain & Custom Packaging</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500 text-sm"></i> Global Logistics & Documentation</li>
+                            </ul>
+                        </div>
+                        <div class="mt-8 pt-6 border-t border-slate-100">
+                            <button onclick="navigateTo('tomato')" class="w-full py-3 px-4 rounded-xl bg-slate-900 group-hover:bg-rose-600 text-white font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 shadow-md">
+                                <span>Go to Tomato Trade Page</span>
+                                <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Payroll Management Services -->
+                    <div class="group bg-white rounded-2xl p-8 border border-slate-200/80 shadow-md card-interactive flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 rounded-bl-full pointer-events-none group-hover:bg-sky-500/10 transition-colors"></div>
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-2xl font-bold mb-6 group-hover:scale-110 group-hover:rotate-3 group-hover:bg-sky-600 group-hover:text-white transition-all duration-300 shadow-sm">
+                                <i class="fa-solid fa-calculator"></i>
+                            </div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-sky-600 bg-sky-50 px-2.5 py-1 rounded-md border border-sky-100">Division 03</span>
+                            <h3 class="text-2xl font-bold text-slate-900 mt-3 mb-3 group-hover:text-sky-600 transition-colors">Payroll Management</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed">
+                                Simplify your payroll and empower your employees with accurate salary processing, statutory compliance (PF/ESI/TDS), and payslips.
+                            </p>
+                            <ul class="mt-6 space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500 text-sm"></i> Salary & Attendance Processing</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500 text-sm"></i> Statutory Support (PF, ESI, TDS)</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500 text-sm"></i> Automated Payslip & Tax Reports</li>
+                            </ul>
+                        </div>
+                        <div class="mt-8 pt-6 border-t border-slate-100">
+                            <button onclick="navigateTo('payroll')" class="w-full py-3 px-4 rounded-xl bg-slate-900 group-hover:bg-sky-600 text-white font-semibold text-sm transition-all duration-300 flex items-center justify-center gap-2 shadow-md">
+                                <span>Go to Payroll Page</span>
+                                <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Trust Pillars Section -->
+            <div class="bg-slate-100/80 border-y border-slate-200 py-16 px-4 sm:px-6 lg:px-8 relative">
+                <div class="max-w-7xl mx-auto text-center">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-sky-600 bg-white px-3 py-1 rounded-full border border-slate-200">Our Enterprise Pillars</span>
+                    <h2 class="text-3xl font-extrabold text-slate-900 mt-3">Built for Accuracy, Speed & Security</h2>
+                    <p class="text-slate-600 mt-4 leading-relaxed max-w-3xl mx-auto text-base">
+                        Whether you are scaling an SME IT infrastructure, managing bulk fresh agricultural export shipments, or running error-free monthly corporate payrolls, our system delivers operational perfection.
+                    </p>
+                    <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                        <div class="p-6 bg-white rounded-2xl shadow-sm border border-slate-200 text-center card-interactive group">
+                            <div class="w-14 h-14 bg-violet-100 text-violet-600 rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-4 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-microchip"></i>
+                            </div>
+                            <div class="font-bold text-slate-900 text-lg">IT Solutions</div>
+                            <div class="text-xs text-slate-500 mt-1 leading-relaxed">Custom Digital Infrastructure & Managed Cyber Defense</div>
+                        </div>
+                        <div class="p-6 bg-white rounded-2xl shadow-sm border border-slate-200 text-center card-interactive group">
+                            <div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-4 group-hover:scale-110 group-hover:bg-rose-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-boxes-packing"></i>
+                            </div>
+                            <div class="font-bold text-slate-900 text-lg">Global Logistics</div>
+                            <div class="text-xs text-slate-500 mt-1 leading-relaxed">Quality Sourced Fresh Produce Export & Import Trade</div>
+                        </div>
+                        <div class="p-6 bg-white rounded-2xl shadow-sm border border-slate-200 text-center card-interactive group">
+                            <div class="w-14 h-14 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-4 group-hover:scale-110 group-hover:bg-sky-600 group-hover:text-white transition-all">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div class="font-bold text-slate-900 text-lg">Payroll Compliance</div>
+                            <div class="text-xs text-slate-500 mt-1 leading-relaxed">Statutory & Accurate Monthly Salary Processing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 1: IT CONSULTANCY SERVICES ================= -->
+        <section id="page-it" class="page-view">
+            <!-- Header Banner -->
+            <div class="relative bg-gradient-to-r from-violet-950 via-slate-900 to-indigo-950 text-white py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                    <div>
+                        <div class="flex items-center gap-2 text-violet-400 text-sm font-semibold mb-2">
+                            <button onclick="navigateTo('home')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-house text-xs"></i> Home</button>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-violet-500"></i>
+                            <span>IT Consultancy</span>
+                        </div>
+                        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight">IT Consultancy Services</h1>
+                        <p class="text-violet-200 mt-3 max-w-2xl text-base">Smart Technology Solutions for Your Business. We help you use technology effectively, securely, and efficiently.</p>
+                    </div>
+                    <button onclick="openAuthModal('register')" class="group px-6 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm shadow-lg shadow-violet-600/30 transition-all flex items-center gap-2.5 whitespace-nowrap active:scale-95">
+                        <i class="fa-solid fa-calendar-check text-base group-hover:scale-110 transition-transform"></i>
+                        <span>Schedule IT Consultation</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Page 1 Main Content -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
+                
+                <!-- Introductory Subtitle -->
+                <div class="bg-violet-50/80 border border-violet-100 rounded-2xl p-6 sm:p-8 text-slate-700 leading-relaxed text-base shadow-sm flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-violet-600 text-white flex-shrink-0 flex items-center justify-center font-bold text-lg shadow-md">
+                        <i class="fa-solid fa-quote-left"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-lg mb-1">Tailored Technology Strategy</h3>
+                        <p class="text-slate-600">From technology planning and software solutions to cybersecurity and IT infrastructure, we help you make the right technology decisions tailored to your business goals, budget, and future growth.</p>
+                    </div>
+                </div>
+
+                <!-- 6 IT Consultancy Services Grid -->
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 border-l-4 border-violet-600 pl-4 flex items-center gap-3">
+                        <span>Our Core IT Consultancy Services</span>
+                        <i class="fa-solid fa-laptop-code text-violet-600 text-xl"></i>
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        
+                        <!-- Service 1 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-violet-100 text-violet-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-violet-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-diagram-project"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-violet-600 transition-colors">1. IT Strategy & Planning</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-violet-500"></i> IT infrastructure planning</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-violet-500"></i> Technology strategy definition</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-violet-500"></i> Digital transformation consulting</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-violet-500"></i> IT budget planning</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-violet-500"></i> Technology & readiness assessment</li>
+                            </ul>
+                        </div>
+
+                        <!-- Service 2 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-code"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">2. Software & Application Solutions</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-indigo-500"></i> Business software consulting</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-indigo-500"></i> Modern website development</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-indigo-500"></i> Web application development</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-indigo-500"></i> Mobile application solutions</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-indigo-500"></i> Custom software & integration</li>
+                            </ul>
+                        </div>
+
+                        <!-- Service 3 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-sky-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-server"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-sky-600 transition-colors">3. IT Infrastructure</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Enterprise server solutions</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Network setup & management</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Secure cloud solutions</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Data storage & backup systems</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Hardware & software consulting</li>
+                            </ul>
+                        </div>
+
+                        <!-- Service 4 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-rose-600 transition-colors">4. Cybersecurity</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Security assessment & audit</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Data protection policies</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Network security architecture</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Identity & access management</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Cybersecurity planning & awareness</li>
+                            </ul>
+                        </div>
+
+                        <!-- Service 5 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-cloud"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors">5. Cloud Consulting</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Cloud migration planning</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Cloud infrastructure deployment</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> High-availability cloud storage</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Backup & disaster recovery</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Cloud cost optimization</li>
+                            </ul>
+                        </div>
+
+                        <!-- Service 6 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-amber-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-headset"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-amber-600 transition-colors">6. IT Support & Maintenance</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> 24/7 technical support</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> Real-time system monitoring</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> Routine software maintenance</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> Network troubleshooting</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> IT helpdesk support</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- IT Consulting Process -->
+                <div class="bg-slate-900 rounded-2xl p-8 border border-slate-800 text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-violet-600/10 rounded-full blur-2xl"></div>
+                    <h2 class="text-xl sm:text-2xl font-bold mb-8 text-center flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-diagram-next text-violet-400"></i>
+                        <span>Our Structured IT Consulting Process</span>
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 text-center">
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 hover:border-violet-500 transition-colors group">
+                            <div class="w-8 h-8 rounded-full bg-violet-600 text-white font-black text-xs flex items-center justify-center mx-auto mb-3 shadow-md">1</div>
+                            <h4 class="font-bold text-xs uppercase text-violet-300">Business Context</h4>
+                            <p class="text-xs text-slate-400 mt-1">Understand Business</p>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 hover:border-violet-500 transition-colors group">
+                            <div class="w-8 h-8 rounded-full bg-violet-600 text-white font-black text-xs flex items-center justify-center mx-auto mb-3 shadow-md">2</div>
+                            <h4 class="font-bold text-xs uppercase text-violet-300">Audit & Review</h4>
+                            <p class="text-xs text-slate-400 mt-1">Assess Current Tech</p>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 hover:border-violet-500 transition-colors group">
+                            <div class="w-8 h-8 rounded-full bg-violet-600 text-white font-black text-xs flex items-center justify-center mx-auto mb-3 shadow-md">3</div>
+                            <h4 class="font-bold text-xs uppercase text-violet-300">Analysis</h4>
+                            <p class="text-xs text-slate-400 mt-1">Identify Requirements</p>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 hover:border-violet-500 transition-colors group">
+                            <div class="w-8 h-8 rounded-full bg-violet-600 text-white font-black text-xs flex items-center justify-center mx-auto mb-3 shadow-md">4</div>
+                            <h4 class="font-bold text-xs uppercase text-violet-300">Strategy</h4>
+                            <p class="text-xs text-slate-400 mt-1">Recommend Solutions</p>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 hover:border-violet-500 transition-colors group">
+                            <div class="w-8 h-8 rounded-full bg-violet-600 text-white font-black text-xs flex items-center justify-center mx-auto mb-3 shadow-md">5</div>
+                            <h4 class="font-bold text-xs uppercase text-violet-300">Execution</h4>
+                            <p class="text-xs text-slate-400 mt-1">Implementation</p>
+                        </div>
+                        <div class="bg-violet-600 p-4 rounded-xl text-white font-semibold shadow-lg shadow-violet-600/30">
+                            <div class="w-8 h-8 rounded-full bg-white text-violet-700 font-black text-xs flex items-center justify-center mx-auto mb-3 shadow-sm">6</div>
+                            <h4 class="font-bold text-xs uppercase text-white">Sustained Growth</h4>
+                            <p class="text-xs text-violet-100 mt-1">Support & Optimize</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Why Choose Us & Industries We Serve -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    
+                    <!-- Why Choose -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm card-interactive">
+                        <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-violet-600"></i>
+                            <span>Why Choose Our IT Consultancy?</span>
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-check text-violet-600 text-base mt-1"></i>
+                                <span class="text-slate-700 text-sm"><strong>Business-focused:</strong> Technology solutions designed around ROI.</span>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-check text-violet-600 text-base mt-1"></i>
+                                <span class="text-slate-700 text-sm"><strong>Experienced team:</strong> Certified software and infrastructure architects.</span>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-check text-violet-600 text-base mt-1"></i>
+                                <span class="text-slate-700 text-sm"><strong>Cost-effective:</strong> Optimized tech spending with scalable pricing.</span>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-check text-violet-600 text-base mt-1"></i>
+                                <span class="text-slate-700 text-sm"><strong>Scalable planning:</strong> Infrastructure built to handle future expansion.</span>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-check text-violet-600 text-base mt-1"></i>
+                                <span class="text-slate-700 text-sm"><strong>Security-focused:</strong> Proactive defense against modern cyber threats.</span>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <i class="fa-solid fa-check text-violet-600 text-base mt-1"></i>
+                                <span class="text-slate-700 text-sm"><strong>Ongoing support:</strong> Dedicated technical support & system monitoring.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Industries Served -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm card-interactive">
+                        <h3 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-building-user text-violet-600"></i>
+                            <span>Industries We Serve</span>
+                        </h3>
+                        <p class="text-slate-600 text-sm mb-6">We provide customized technology consulting across diverse commercial sectors:</p>
+                        <div class="flex flex-wrap gap-2.5">
+                            <span class="px-3.5 py-2 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 border border-violet-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-default"><i class="fa-solid fa-briefcase text-[11px]"></i> Small & Medium Businesses</span>
+                            <span class="px-3.5 py-2 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 border border-violet-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-default"><i class="fa-solid fa-rocket text-[11px]"></i> Startups</span>
+                            <span class="px-3.5 py-2 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 border border-violet-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-default"><i class="fa-solid fa-industry text-[11px]"></i> Manufacturing</span>
+                            <span class="px-3.5 py-2 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 border border-violet-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-default"><i class="fa-solid fa-cart-shopping text-[11px]"></i> Retail</span>
+                            <span class="px-3.5 py-2 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 border border-violet-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-default"><i class="fa-solid fa-graduation-cap text-[11px]"></i> Education</span>
+                            <span class="px-3.5 py-2 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 border border-violet-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-default"><i class="fa-solid fa-heart-pulse text-[11px]"></i> Healthcare</span>
+                            <span class="px-3.5 py-2 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 border border-violet-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-default"><i class="fa-solid fa-helmet-safety text-[11px]"></i> Construction</span>
+                            <span class="px-3.5 py-2 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 border border-violet-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-default"><i class="fa-solid fa-coins text-[11px]"></i> Finance</span>
+                            <span class="px-3.5 py-2 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 border border-violet-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-default"><i class="fa-solid fa-truck-ramp-box text-[11px]"></i> Logistics</span>
+                            <span class="px-3.5 py-2 bg-violet-50 hover:bg-violet-600 hover:text-white text-violet-700 border border-violet-100 rounded-xl text-xs font-semibold transition-colors flex items-center gap-2 cursor-default"><i class="fa-solid fa-hands-holding-child text-[11px]"></i> NGOs</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Consultation CTA Banner -->
+                <div class="bg-gradient-to-r from-violet-900 to-indigo-900 text-white p-8 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                        <h3 class="text-2xl font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-violet-400"></i>
+                            <span>Transform Your Business With Technology</span>
+                        </h3>
+                        <p class="text-violet-200 text-sm mt-2 max-w-2xl">Let our IT consultants help you choose, implement, and manage the right technology for your business goals and growth strategy.</p>
+                    </div>
+                    <button onclick="openAuthModal('register')" class="px-6 py-3.5 rounded-xl bg-violet-500 hover:bg-violet-400 text-white font-bold text-sm shadow-md transition-all whitespace-nowrap active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Contact Us For IT Consultation
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: TOMATO EXPORT & IMPORT ================= -->
+        <section id="page-tomato" class="page-view">
+            <!-- Header Banner -->
+            <div class="relative bg-gradient-to-r from-rose-950 via-rose-900 to-slate-900 text-white py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#e11d48_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                    <div>
+                        <div class="flex items-center gap-2 text-rose-400 text-sm font-semibold mb-2">
+                            <button onclick="navigateTo('home')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-house text-xs"></i> Home</button>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-rose-500"></i>
+                            <span>Tomato Trade</span>
+                        </div>
+                        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight">Tomato Export & Import</h1>
+                        <p class="text-rose-200 mt-3 max-w-2xl text-base">Fresh Tomatoes. Reliable Supply. Global Markets. Sourcing quality tomatoes for domestic and international buyers.</p>
+                    </div>
+                    <button onclick="openAuthModal('register')" class="group px-6 py-3.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm shadow-lg shadow-rose-600/30 transition-all flex items-center gap-2.5 whitespace-nowrap active:scale-95">
+                        <i class="fa-solid fa-paper-plane text-base group-hover:scale-110 transition-transform"></i>
+                        <span>Enquire Bulk Wholesale Quote</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Page 2 Main Content -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
+                
+                <!-- Introductory Subtitle -->
+                <div class="bg-rose-50/80 border border-rose-100 rounded-2xl p-6 sm:p-8 text-slate-700 leading-relaxed text-base shadow-sm flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-rose-600 text-white flex-shrink-0 flex items-center justify-center font-bold text-lg shadow-md">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-lg mb-1">Global Agriculture Produce Logistics</h3>
+                        <p class="text-slate-600">We specialize in the export and import of fresh tomatoes, connecting quality tomato producers and suppliers with domestic and international markets. Our focus is on quality sourcing, proper grading, safe packaging, efficient logistics, and timely delivery.</p>
+                    </div>
+                </div>
+
+                <!-- Tomato Products Catalog -->
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 border-l-4 border-rose-600 pl-4 flex items-center gap-3">
+                        <span>Our Tomato Product Catalog</span>
+                        <i class="fa-solid fa-seedling text-rose-600 text-xl"></i>
+                    </h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center card-interactive group">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl mb-3 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-sm"><i class="fa-solid fa-star"></i></div>
+                            <h4 class="font-bold text-slate-900">Premium Grade</h4>
+                            <p class="text-xs text-slate-500 mt-1">Supermarket & Retail</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center card-interactive group">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl mb-3 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-sm"><i class="fa-solid fa-basket-shopping"></i></div>
+                            <h4 class="font-bold text-slate-900">Classic Tomatoes</h4>
+                            <p class="text-xs text-slate-500 mt-1">Standard Wholesale</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center card-interactive group">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl mb-3 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-sm"><i class="fa-solid fa-truck-fast"></i></div>
+                            <h4 class="font-bold text-slate-900">Transport-Grade</h4>
+                            <p class="text-xs text-slate-500 mt-1">Long-distance freight</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center card-interactive group">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl mb-3 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-sm"><i class="fa-solid fa-bottle-droplet"></i></div>
+                            <h4 class="font-bold text-slate-900">Processing / Juice</h4>
+                            <p class="text-xs text-slate-500 mt-1">Sauce & paste plants</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center card-interactive group">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl mb-3 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-sm"><i class="fa-solid fa-seedling"></i></div>
+                            <h4 class="font-bold text-slate-900">Fresh Farm Tomatoes</h4>
+                            <p class="text-xs text-slate-500 mt-1">Direct orchard harvests</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center card-interactive group">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl mb-3 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-sm"><i class="fa-solid fa-boxes-packing"></i></div>
+                            <h4 class="font-bold text-slate-900">Bulk Tomatoes</h4>
+                            <p class="text-xs text-slate-500 mt-1">High volume supply</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center card-interactive group">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl mb-3 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-sm"><i class="fa-solid fa-store"></i></div>
+                            <h4 class="font-bold text-slate-900">Commercial-Grade</h4>
+                            <p class="text-xs text-slate-500 mt-1">Food services & dining</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center card-interactive group">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl mb-3 group-hover:bg-rose-600 group-hover:text-white transition-all shadow-sm"><i class="fa-solid fa-earth-americas"></i></div>
+                            <h4 class="font-bold text-slate-900">Global Varieties</h4>
+                            <p class="text-xs text-slate-500 mt-1">International import grades</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export & Import Services Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Export Services -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm card-interactive">
+                        <div class="flex items-center gap-3.5 mb-6">
+                            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-2xl shadow-sm"><i class="fa-solid fa-plane-departure"></i></div>
+                            <h3 class="text-xl font-bold text-slate-900">Tomato Export Services</h3>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-4">We source fresh tomatoes from reliable growers and prepare them for global markets through:</p>
+                        <ul class="space-y-2.5 text-sm text-slate-600">
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Quality inspection</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Sorting & grading</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Proper packaging</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Bulk order management</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Cold-chain coordination where required</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Transportation & logistics</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Complete export documentation</li>
+                        </ul>
+                    </div>
+
+                    <!-- Import Services -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm card-interactive">
+                        <div class="flex items-center gap-3.5 mb-6">
+                            <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-2xl shadow-sm"><i class="fa-solid fa-plane-arrival"></i></div>
+                            <h3 class="text-xl font-bold text-slate-900">Tomato Import Services</h3>
+                        </div>
+                        <p class="text-slate-600 text-sm mb-4">We help domestic buyers source tomatoes from international suppliers according to required specs:</p>
+                        <ul class="space-y-2.5 text-sm text-slate-600">
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Custom quantity & volume matching</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Quality & grade verification</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Size & firmness criteria compliance</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Customized packaging configurations</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Specified delivery location dispatch</li>
+                            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-rose-500"></i> Reliable delivery schedule tracking</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Quality, Packaging & Export Process Flow -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Quality & Grading -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm card-interactive">
+                        <h3 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-microscope text-rose-600"></i>
+                            <span>Quality & Grading Criteria</span>
+                        </h3>
+                        <p class="text-slate-600 text-sm mb-4">Our tomatoes are strictly selected based on parameters:</p>
+                        <div class="grid grid-cols-2 gap-2 text-xs font-bold text-slate-700 mb-4">
+                            <div class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-800 text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-weight-scale text-rose-500"></i> Size & Firmness</div>
+                            <div class="p-3 bg-rose-50 border border-rose-100 rounded-lg text-rose-800 text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-palette text-rose-500"></i> Colour & Freshness</div>
+                            <div class="p-3 bg-rose-50 border border-rose-100 rounded-lg text-rose-800 text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-eye text-rose-500"></i> Visual Appearance</div>
+                            <div class="p-3 bg-rose-50 border border-rose-100 rounded-lg text-rose-800 text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-hourglass-half text-rose-500"></i> Extended Shelf Life</div>
+                        </div>
+                        <p class="text-xs text-slate-500 flex items-center gap-1.5"><i class="fa-solid fa-shield-cat text-rose-600"></i> Guaranteed damage-free quality delivered to your harbor or facility.</p>
+                    </div>
+
+                    <!-- Packaging Options -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm card-interactive">
+                        <h3 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-box-open text-rose-600"></i>
+                            <span>Packaging & Transportation</span>
+                        </h3>
+                        <p class="text-slate-600 text-sm mb-4">Options designed to reduce damage during transit:</p>
+                        <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-box text-slate-500"></i> Plastic Crates</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-cubes-stacked text-slate-500"></i> Heavy-duty Cartons</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-wind text-slate-500"></i> Ventilated Boxes</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-pallet text-slate-500"></i> Bulk Wooden Pallets</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl text-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-pen-ruler text-slate-500"></i> Custom Buyer Packaging</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Supply Chain Process -->
+                <div class="bg-slate-900 text-white rounded-2xl p-8 border border-slate-800 shadow-xl relative overflow-hidden">
+                    <h3 class="text-xl sm:text-2xl font-bold mb-8 text-center flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-route text-rose-400"></i>
+                        <span>Our Export Supply Chain Process</span>
+                    </h3>
+                    <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs font-bold">
+                        <span class="bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-tractor text-rose-400"></i> Farmer/Supplier</span>
+                        <i class="fa-solid fa-angle-right text-rose-500"></i>
+                        <span class="bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-clipboard-check text-rose-400"></i> Quality Checking</span>
+                        <i class="fa-solid fa-angle-right text-rose-500"></i>
+                        <span class="bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-filter text-rose-400"></i> Sorting & Grading</span>
+                        <i class="fa-solid fa-angle-right text-rose-500"></i>
+                        <span class="bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-box text-rose-400"></i> Packaging</span>
+                        <i class="fa-solid fa-angle-right text-rose-500"></i>
+                        <span class="bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-file-contract text-rose-400"></i> Documentation</span>
+                        <i class="fa-solid fa-angle-right text-rose-500"></i>
+                        <span class="bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-truck-moving text-rose-400"></i> Transportation</span>
+                        <i class="fa-solid fa-angle-right text-rose-500"></i>
+                        <span class="bg-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-ship text-rose-400"></i> Shipment</span>
+                        <i class="fa-solid fa-angle-right text-rose-500"></i>
+                        <span class="bg-rose-600 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-rose-600/30 flex items-center gap-1.5"><i class="fa-solid fa-house-circle-check"></i> Buyer Delivery</span>
+                    </div>
+                </div>
+
+                <!-- Who We Serve -->
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm card-interactive">
+                    <h3 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-users-rectangle text-rose-600"></i>
+                        <span>Who We Serve & Global Supply</span>
+                    </h3>
+                    <p class="text-slate-600 text-sm mb-6">We build reliable connections between Indian tomato suppliers and international buyers:</p>
+                    <div class="flex flex-wrap gap-2 text-xs font-semibold text-slate-700">
+                        <span class="px-3.5 py-2 bg-slate-100 hover:bg-rose-600 hover:text-white rounded-xl transition-colors">Importers & Exporters</span>
+                        <span class="px-3.5 py-2 bg-slate-100 hover:bg-rose-600 hover:text-white rounded-xl transition-colors">Wholesale Markets</span>
+                        <span class="px-3.5 py-2 bg-slate-100 hover:bg-rose-600 hover:text-white rounded-xl transition-colors">Supermarkets & Retail Chains</span>
+                        <span class="px-3.5 py-2 bg-slate-100 hover:bg-rose-600 hover:text-white rounded-xl transition-colors">Food Processing Companies</span>
+                        <span class="px-3.5 py-2 bg-slate-100 hover:bg-rose-600 hover:text-white rounded-xl transition-colors">Juice & Sauce Manufacturers</span>
+                        <span class="px-3.5 py-2 bg-slate-100 hover:bg-rose-600 hover:text-white rounded-xl transition-colors">Hotels & Restaurants</span>
+                        <span class="px-3.5 py-2 bg-slate-100 hover:bg-rose-600 hover:text-white rounded-xl transition-colors">Distributors & Buyers</span>
+                    </div>
+                </div>
+
+                <!-- Trade Enquiry Banner -->
+                <div class="bg-gradient-to-r from-rose-900 to-slate-900 text-white p-8 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                        <h3 class="text-2xl font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-earth-americas text-rose-400"></i>
+                            <span>Looking for Fresh Tomatoes?</span>
+                        </h3>
+                        <p class="text-rose-200 text-sm mt-2 max-w-2xl">Tell us your required quantity, tomato grade, destination, packaging requirements, and delivery date.</p>
+                    </div>
+                    <button onclick="openAuthModal('register')" class="px-6 py-3.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm shadow-md transition-all whitespace-nowrap active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Send Tomato Import/Export Enquiry
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: PAYROLL MANAGEMENT ================= -->
+        <section id="page-payroll" class="page-view">
+            <!-- Header Banner -->
+            <div class="relative bg-gradient-to-r from-slate-900 via-sky-950 to-slate-900 text-white py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#0284c7_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                    <div>
+                        <div class="flex items-center gap-2 text-sky-400 text-sm font-semibold mb-2">
+                            <button onclick="navigateTo('home')" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-house text-xs"></i> Home</button>
+                            <i class="fa-solid fa-chevron-right text-[10px] text-sky-500"></i>
+                            <span>Payroll Management</span>
+                        </div>
+                        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight">Payroll Management Services</h1>
+                        <p class="text-slate-300 mt-3 max-w-2xl text-base">Simplify Your Payroll. Empower Your Employees. Accurate salary calculations, statutory compliance, and payslips.</p>
+                    </div>
+                    <button onclick="openAuthModal('register')" class="group px-6 py-3.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm shadow-lg shadow-sky-600/30 transition-all flex items-center gap-2.5 whitespace-nowrap active:scale-95">
+                        <i class="fa-solid fa-user-plus text-base group-hover:scale-110 transition-transform"></i>
+                        <span>Get Started Today</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Page 3 Main Content -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
+                
+                <!-- Subtitle Intro -->
+                <div class="bg-sky-50/80 border border-sky-100 rounded-2xl p-6 sm:p-8 text-slate-700 leading-relaxed text-base shadow-sm flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex-shrink-0 flex items-center justify-center font-bold text-lg shadow-md">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-lg mb-1">Automated HR & Payroll Operations</h3>
+                        <p class="text-slate-600">Our Payroll Management Services help businesses manage employee salaries, attendance, deductions, statutory compliance, payslips, and payroll records accurately and efficiently. We take care of the payroll process so you can focus on growing your business.</p>
+                    </div>
+                </div>
+
+                <!-- 5 Services Sections Grid -->
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-8 border-l-4 border-sky-600 pl-4 flex items-center gap-3">
+                        <span>Our Payroll Services Breakdown</span>
+                        <i class="fa-solid fa-receipt text-sky-600 text-xl"></i>
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        
+                        <!-- Service 1 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-sky-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-money-bill-wave"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-sky-600 transition-colors">1. Employee Payroll Processing</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Monthly salary calculation</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Basic salary & allowances</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Overtime & incentive logic</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Bonuses & commissions</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Salary revisions</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-sky-500"></i> Full & final settlement</li>
+                            </ul>
+                        </div>
+
+                        <!-- Service 2 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">2. Attendance & Leave</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-indigo-500"></i> Employee attendance tracking</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-indigo-500"></i> Leave management</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-indigo-500"></i> Late coming & overtime calculation</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-indigo-500"></i> Paid & unpaid leave calculation</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-indigo-500"></i> Attendance-based salary processing</li>
+                            </ul>
+                        </div>
+
+                        <!-- Service 3 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-scale-balanced"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors">3. Statutory Payroll Compliance</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> PF calculation & support</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> ESI calculation & support</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Professional Tax (PT)</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> TDS & salary compliance</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Labour law payroll support</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Statutory reports & records</li>
+                            </ul>
+                        </div>
+
+                        <!-- Service 4 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-amber-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-amber-600 transition-colors">4. Payslip & Salary Documents</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> Monthly employee payslips</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> Detailed salary statements</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> Form 16 support</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> Salary certificates</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> Bank salary transfer statements</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-amber-500"></i> Complete payroll registers</li>
+                            </ul>
+                        </div>
+
+                        <!-- Service 5 -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm card-interactive group">
+                            <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900 mb-3 group-hover:text-purple-600 transition-colors">5. Clear Payroll Reports</h3>
+                            <ul class="space-y-2.5 text-sm text-slate-600">
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-purple-500"></i> Employee salary report</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-purple-500"></i> Department-wise payroll report</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-purple-500"></i> Attendance & deduction logs</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-purple-500"></i> PF & ESI filing reports</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-purple-500"></i> Tax deduction reports</li>
+                                <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-purple-500"></i> Monthly payroll summary</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Process Flow -->
+                <div class="bg-slate-900 text-white rounded-2xl p-8 border border-slate-800 shadow-xl relative overflow-hidden">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-8 text-center flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrows-split-up-and-left text-sky-400"></i>
+                        <span>Standard Payroll Execution Flow</span>
+                    </h2>
+                    <div class="flex flex-wrap items-center justify-center gap-3 text-center text-xs font-semibold">
+                        <span class="bg-slate-800 px-4 py-3 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-users text-sky-400"></i> Employee Data</span>
+                        <i class="fa-solid fa-arrow-right text-slate-500"></i>
+                        <span class="bg-slate-800 px-4 py-3 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-calendar text-sky-400"></i> Attendance & Leave</span>
+                        <i class="fa-solid fa-arrow-right text-slate-500"></i>
+                        <span class="bg-slate-800 px-4 py-3 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-calculator text-sky-400"></i> Salary Calculation</span>
+                        <i class="fa-solid fa-arrow-right text-slate-500"></i>
+                        <span class="bg-slate-800 px-4 py-3 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-minus-circle text-sky-400"></i> Deductions</span>
+                        <i class="fa-solid fa-arrow-right text-slate-500"></i>
+                        <span class="bg-slate-800 px-4 py-3 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-scale-balanced text-sky-400"></i> Statutory Calc</span>
+                        <i class="fa-solid fa-arrow-right text-slate-500"></i>
+                        <span class="bg-slate-800 px-4 py-3 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-file-pdf text-sky-400"></i> Payslip Gen</span>
+                        <i class="fa-solid fa-arrow-right text-slate-500"></i>
+                        <span class="bg-sky-600 text-white px-5 py-3 rounded-xl shadow-lg shadow-sky-600/30 flex items-center gap-1.5"><i class="fa-solid fa-chart-line"></i> Payroll Reports</span>
+                    </div>
+                </div>
+
+                <!-- Why Choose & Who Can Use -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Why Choose -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm card-interactive">
+                        <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                            <i class="fa-solid fa-award text-sky-600"></i>
+                            <span>Why Choose Our Payroll Services?</span>
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0 font-bold"><i class="fa-solid fa-bullseye"></i></div>
+                                <div><strong class="text-slate-900 block text-sm">Accuracy</strong><span class="text-slate-600 text-sm">Reduce payroll calculation errors and maintain accurate salary records.</span></div>
+                            </div>
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0 font-bold"><i class="fa-solid fa-clock"></i></div>
+                                <div><strong class="text-slate-900 block text-sm">Time Saving</strong><span class="text-slate-600 text-sm">Save valuable time by outsourcing repetitive payroll activities.</span></div>
+                            </div>
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0 font-bold"><i class="fa-solid fa-shield"></i></div>
+                                <div><strong class="text-slate-900 block text-sm">Compliance Support</strong><span class="text-slate-600 text-sm">Stay organized with payroll records and statutory compliance requirements.</span></div>
+                            </div>
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0 font-bold"><i class="fa-solid fa-lock"></i></div>
+                                <div><strong class="text-slate-900 block text-sm">Data Security</strong><span class="text-slate-600 text-sm">Employee salary and payroll information is handled with confidentiality.</span></div>
+                            </div>
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-9 h-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0 font-bold"><i class="fa-solid fa-file-chart-column"></i></div>
+                                <div><strong class="text-slate-900 block text-sm">Easy Reporting</strong><span class="text-slate-600 text-sm">Get clear payroll reports whenever you need them.</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Who Can Use -->
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm card-interactive">
+                        <h3 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-user-gear text-sky-600"></i>
+                            <span>Who Can Use Our Payroll Services?</span>
+                        </h3>
+                        <p class="text-slate-600 text-sm mb-6">Our payroll management solutions are suitable for:</p>
+                        <div class="flex flex-wrap gap-2 text-xs font-semibold text-slate-700">
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl hover:bg-sky-600 hover:text-white transition-colors">Startups</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl hover:bg-sky-600 hover:text-white transition-colors">Small & Medium Businesses</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl hover:bg-sky-600 hover:text-white transition-colors">Private Companies</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl hover:bg-sky-600 hover:text-white transition-colors">Schools & Educational Institutions</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl hover:bg-sky-600 hover:text-white transition-colors">Hospitals</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl hover:bg-sky-600 hover:text-white transition-colors">NGOs</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl hover:bg-sky-600 hover:text-white transition-colors">Retail Businesses</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl hover:bg-sky-600 hover:text-white transition-colors">Manufacturing Companies</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl hover:bg-sky-600 hover:text-white transition-colors">Construction Companies</span>
+                            <span class="px-3.5 py-2 bg-slate-100 rounded-xl hover:bg-sky-600 hover:text-white transition-colors">Service Businesses</span>
+                        </div>
+                        <div class="mt-8 p-5 bg-sky-50 rounded-2xl border border-sky-100">
+                            <h4 class="font-bold text-sky-900 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-bullseye text-sky-600"></i> Our Mission & Goal
+                            </h4>
+                            <p class="text-xs text-sky-800 mt-2 leading-relaxed">To provide simple, accurate, secure, and compliant payroll management solutions that reduce administrative workload and help businesses manage their employees efficiently.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Let Us Manage Your Payroll CTA -->
+                <div class="bg-gradient-to-r from-slate-900 to-sky-950 text-white p-8 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                        <h3 class="text-2xl font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-user-check text-sky-400"></i>
+                            <span>Let Us Manage Your Payroll</span>
+                        </h3>
+                        <p class="text-slate-300 text-sm mt-2 max-w-2xl">Focus on your business while we take care of your payroll operations.</p>
+                    </div>
+                    <button onclick="openAuthModal('register')" class="px-6 py-3.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm shadow-md transition-all whitespace-nowrap active:scale-95 flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Contact Us For Payroll Services
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- AUTHENTICATION MODAL (LOGIN & REGISTER) -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md transition-all">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 relative transform transition-all animate-slide-up">
+            
+            <!-- Close Button -->
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 w-9 h-9 rounded-full flex items-center justify-center bg-slate-100 hover:bg-slate-200 transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Modal Header Tabs -->
+            <div class="flex border-b border-slate-200 mb-6">
+                <button id="tab-login-btn" onclick="switchAuthTab('login')" class="w-1/2 py-3 text-center font-bold text-sm border-b-2 border-sky-600 text-sky-600 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket text-xs"></i> Log In
+                </button>
+                <button id="tab-register-btn" onclick="switchAuthTab('register')" class="w-1/2 py-3 text-center font-bold text-sm text-slate-400 border-b-2 border-transparent hover:text-slate-600 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-plus text-xs"></i> Register Account
+                </button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="form-login" onsubmit="handleAuthSubmit(event, 'login')" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-envelope text-slate-400"></i> Work Email</label>
+                    <input type="email" required placeholder="name@company.com" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:outline-none text-sm transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-lock text-slate-400"></i> Password</label>
+                    <input type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-sky-500 focus:outline-none text-sm transition-all">
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                    <label class="flex items-center gap-2 text-slate-600 cursor-pointer">
+                        <input type="checkbox" class="rounded border-slate-300 text-sky-600 focus:ring-sky-500"> Remember me
+                    </label>
+                    <a href="#" onclick="showToast('Password reset instructions sent to your registered email.'); return false;" class="text-sky-600 hover:underline font-semibold">Forgot Password?</a>
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl shadow-md shadow-sky-600/30 transition-all text-sm mt-2 flex items-center justify-center gap-2 active:scale-95">
+                    <i class="fa-solid fa-right-to-bracket"></i> Log In to Portal
+                </button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="form-register" onsubmit="handleAuthSubmit(event, 'register')" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-user text-slate-400"></i> Full Name</label>
+                    <input type="text" required placeholder="Jane Doe" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-building text-slate-400"></i> Company / Organization</label>
+                    <input type="text" required placeholder="Acme Global Solutions" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-list-check text-slate-400"></i> Primary Division Interest</label>
+                    <select class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white transition-all">
+                        <option>IT Consultancy Services</option>
+                        <option>Tomato Import & Export</option>
+                        <option>Payroll Management Services</option>
+                        <option>All Services Hub</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-envelope text-slate-400"></i> Work Email</label>
+                    <input type="email" required placeholder="jane@company.com" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5 flex items-center gap-1.5"><i class="fa-solid fa-key text-slate-400"></i> Create Password</label>
+                    <input type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md shadow-indigo-600/30 transition-all text-sm mt-2 flex items-center justify-center gap-2 active:scale-95">
+                    <i class="fa-solid fa-user-plus"></i> Create Account
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 max-w-sm">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-xl flex-shrink-0" id="toast-icon"></i>
+        <span id="toast-message" class="text-sm font-medium">Notification message</span>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 text-slate-400 border-t border-slate-800 text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2.5 text-white font-bold text-lg mb-3">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-violet-600 via-sky-600 to-rose-600 flex items-center justify-center text-white text-sm">
+                            <i class="fa-solid fa-cubes"></i>
+                        </div>
+                        <span>Rouvin</span>
+                    </div>
+                    <p class="text-xs leading-relaxed text-slate-400">
+                        Empowering businesses with modern IT consultancy, global produce export/import logistics, and complete payroll automation.
+                    </p>
+                </div>
+                <div>
+                    <h5 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fa-solid fa-compass text-sky-500"></i> Quick Navigation</h5>
+                    <ul class="space-y-2 text-xs">
+                        <li><button onclick="navigateTo('home')" class="hover:text-white transition-colors">Home Summary Hub</button></li>
+                        <li><button onclick="navigateTo('it')" class="hover:text-white transition-colors">IT Consultancy</button></li>
+                        <li><button onclick="navigateTo('tomato')" class="hover:text-white transition-colors">Tomato Import & Export</button></li>
+                        <li><button onclick="navigateTo('payroll')" class="hover:text-white transition-colors">Payroll Management</button></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fa-solid fa-headset text-rose-500"></i> Division Contact Desks</h5>
+                    <p class="text-xs flex items-center gap-2"><i class="fa-solid fa-laptop-code text-violet-400"></i> IT Helpdesk: Available via Portal</p>
+                    <p class="text-xs mt-2 flex items-center gap-2"><i class="fa-solid fa-wheat-awn text-rose-400"></i> Tomato Trade Desk: Available via Enquiry</p>
+                    <p class="text-xs mt-2 flex items-center gap-2"><i class="fa-solid fa-calculator text-sky-400"></i> Payroll Desk: Available via Client Portal</p>
+                </div>
+                <div>
+                    <h5 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fa-solid fa-user-shield text-violet-500"></i> Account Portal</h5>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="openAuthModal('login')" class="w-full py-2.5 px-3 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white text-xs font-semibold rounded-xl text-center transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-right-to-bracket text-sky-400"></i> Log In
+                        </button>
+                        <button onclick="openAuthModal('register')" class="w-full py-2.5 px-3 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-xl text-center shadow-md transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-user-plus"></i> Register Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-6 border-t border-slate-800 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>&copy; 2026 Rouvin Portal. All rights reserved.</div>
+                <div class="flex items-center gap-4 text-xs text-slate-400">
+                    <a href="#" onclick="showToast('Privacy Policy details loaded'); return false;" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <span>•</span>
+                    <a href="#" onclick="showToast('Terms of Service details loaded'); return false;" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        function navigateTo(pageId) {
+            // Hide all pages with animation reset
+            const pages = document.querySelectorAll('.page-view');
+            pages.forEach(p => p.classList.remove('active'));
+
+            // Show selected page
+            const targetPage = document.getElementById('page-' + pageId);
+            if(targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // Update Navigation Button Active Highlights
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.classList.remove('text-sky-600', 'bg-sky-50', 'text-violet-600', 'bg-violet-50', 'text-rose-600', 'bg-rose-50');
+                btn.classList.add('text-slate-600');
+            });
+
+            const activeBtn = document.getElementById('nav-' + pageId);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-600');
+                if (pageId === 'it') {
+                    activeBtn.classList.add('text-violet-600', 'bg-violet-50');
+                } else if (pageId === 'tomato') {
+                    activeBtn.classList.add('text-rose-600', 'bg-rose-50');
+                } else {
+                    activeBtn.classList.add('text-sky-600', 'bg-sky-50');
+                }
+            }
+
+            // Scroll to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function openAuthModal(defaultTab = 'login') {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            switchAuthTab(defaultTab);
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function switchAuthTab(tab) {
+            const loginBtn = document.getElementById('tab-login-btn');
+            const regBtn = document.getElementById('tab-register-btn');
+            const loginForm = document.getElementById('form-login');
+            const regForm = document.getElementById('form-register');
+
+            if (tab === 'login') {
+                loginBtn.className = "w-1/2 py-3 text-center font-bold text-sm border-b-2 border-sky-600 text-sky-600 flex items-center justify-center gap-2";
+                regBtn.className = "w-1/2 py-3 text-center font-bold text-sm text-slate-400 border-b-2 border-transparent hover:text-slate-600 flex items-center justify-center gap-2";
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+            } else {
+                regBtn.className = "w-1/2 py-3 text-center font-bold text-sm border-b-2 border-indigo-600 text-indigo-600 flex items-center justify-center gap-2";
+                loginBtn.className = "w-1/2 py-3 text-center font-bold text-sm text-slate-400 border-b-2 border-transparent hover:text-slate-600 flex items-center justify-center gap-2";
+                regForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        function handleAuthSubmit(e, type) {
+            e.preventDefault();
+            closeAuthModal();
+            showToast(type === 'login' ? 'Demo Login Successful! Welcome back to Rouvin.' : 'Demo Registration Successful! Account created for Rouvin.');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.innerText = msg;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
