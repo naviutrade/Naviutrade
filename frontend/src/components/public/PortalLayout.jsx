@@ -11,6 +11,7 @@ import {
   X,
   Compass,
   Shield,
+  MapPin,
 } from 'lucide-react';
 import './portal.css';
 
@@ -133,6 +134,14 @@ const PortalLayout = () => {
                   <RouterLink key={to} to={to}>{label}</RouterLink>
                 ))}
               </nav>
+            </div>
+            <div>
+              <h5 className="rv-p-footer-h">
+                <MapPin size={14} /> Office
+              </h5>
+              <address className="rv-p-footer-address">
+                Sri Sai Enclave, Arunodaya Colony, HITEC City, Madhapur, Hyderabad, Telangana 500081
+              </address>
             </div>
             <div>
               <h5 className="rv-p-footer-h">

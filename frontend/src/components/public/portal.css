@@ -670,8 +670,8 @@
 }
 .rv-p-footer-grid {
   display: grid;
-  grid-template-columns: 1.35fr 1fr 1fr;
-  gap: 2.5rem 3rem;
+  grid-template-columns: 1.25fr 0.9fr 1.15fr 0.9fr;
+  gap: 2.5rem 2.25rem;
   margin-bottom: 2.25rem;
 }
 .rv-p-footer-brand {
@@ -709,8 +709,19 @@
   flex-shrink: 0;
   color: #38bdf8;
 }
+.rv-p-footer-grid > div:nth-child(3) .rv-p-footer-h svg {
+  color: #fb7185;
+}
 .rv-p-footer-grid > div:last-child .rv-p-footer-h svg {
   color: #c4b5fd;
+}
+.rv-p-footer-address {
+  margin: 0;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #94a3b8;
+  max-width: 18rem;
 }
 .rv-p-footer-links {
   display: flex;
