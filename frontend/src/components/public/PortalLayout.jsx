@@ -39,15 +39,20 @@ const PortalLayout = () => {
     setMenuOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   return (
     <div className="rv-portal">
       <header className="rv-p-nav">
-        <div className="rv-p-wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 80 }}>
+        <div className="rv-p-wrap rv-p-nav-bar">
           <RouterLink to="/" className="rv-p-brand" onClick={() => setMenuOpen(false)}>
             <img src="/rouvin.png" alt="Rouvin" className="rv-p-logo" />
           </RouterLink>
 
-          <nav className="rv-p-desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <nav className="rv-p-desktop-nav">
             {NAV.map(({ to, id, label, Icon }) => (
               <RouterLink key={id} to={to} className={navClass(id, pathname)}>
                 <Icon size={14} />
@@ -56,7 +61,7 @@ const PortalLayout = () => {
             ))}
           </nav>
 
-          <div className="rv-p-auth-desktop" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="rv-p-auth-desktop">
             <RouterLink to="/login" target="_blank" rel="noopener noreferrer" className="rv-p-btn rv-p-btn-ghost">
               <LogIn size={14} color="#0284c7" />
               Log In
@@ -70,9 +75,9 @@ const PortalLayout = () => {
           <button
             type="button"
             className="rv-p-menu-btn"
-            aria-label="Open menu"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
-            style={{ padding: 10, border: 0, background: 'transparent', borderRadius: 8, cursor: 'pointer', color: '#475569' }}
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -80,20 +85,23 @@ const PortalLayout = () => {
 
         <div className={`rv-p-mobile${menuOpen ? ' open' : ''}`}>
           {NAV.map(({ to, id, label, Icon }) => (
-            <RouterLink key={id} to={to} onClick={() => setMenuOpen(false)}>
+            <RouterLink key={id} to={to} className={navClass(id, pathname)} onClick={() => setMenuOpen(false)}>
               <Icon size={16} /> {label}
             </RouterLink>
           ))}
-          <div className="rv-p-auth-mobile" style={{ display: 'flex', gap: 8, paddingTop: 12, borderTop: '1px solid #f1f5f9' }}>
-            <RouterLink to="/login" target="_blank" rel="noopener noreferrer" className="rv-p-btn rv-p-btn-ghost" style={{ flex: 1 }} onClick={() => setMenuOpen(false)}>
+          <div className="rv-p-auth-mobile">
+            <RouterLink to="/login" target="_blank" rel="noopener noreferrer" className="rv-p-btn rv-p-btn-ghost" onClick={() => setMenuOpen(false)}>
               <LogIn size={14} /> Log In
             </RouterLink>
-            <RouterLink to="/register" target="_blank" rel="noopener noreferrer" className="rv-p-btn rv-p-btn-grad" style={{ flex: 1 }} onClick={() => setMenuOpen(false)}>
+            <RouterLink to="/register" target="_blank" rel="noopener noreferrer" className="rv-p-btn rv-p-btn-grad" onClick={() => setMenuOpen(false)}>
               <UserPlus size={14} /> Register
             </RouterLink>
           </div>
         </div>
       </header>
+      {menuOpen && (
+        <button type="button" className="rv-p-nav-scrim" aria-label="Close menu" onClick={() => setMenuOpen(false)} />
+      )}
 
       <main style={{ flexGrow: 1 }}>
         <div key={pathname} className="rv-p-page">

@@ -124,7 +124,7 @@ export const SectionHeading = ({ children, icon: Icon, accent = 'sky' }) => (
 export const CtaBanner = ({ accent, icon: Icon, title, text, button }) => (
   <div className={`rv-p-cta ${accent}`}>
     <div>
-      <h3 style={{ fontSize: 24, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
+      <h3>
         {Icon && <Icon size={22} />}
         {title}
       </h3>
@@ -141,7 +141,7 @@ export const Chip = ({ children, accent = 'slate' }) => (
 );
 
 export const PageBody = ({ children }) => (
-  <div className="rv-p-wrap" style={{ paddingTop: 64, paddingBottom: 64, display: 'grid', gap: 64 }}>
+  <div className="rv-p-wrap rv-p-body">
     {React.Children.map(children, (child, i) => (
       <Reveal delay={i * 70}>{child}</Reveal>
     ))}

@@ -42,7 +42,7 @@ const PayrollPage = () => {
 
         <div>
           <SectionHeading accent="sky" icon={Receipt}>Our Payroll Services Breakdown</SectionHeading>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
+          <div className="rv-p-cards">
             <ServiceCard accent="sky" icon={Banknote} title="1. Employee Payroll Processing" items={['Monthly salary calculation', 'Basic salary & allowances', 'Overtime & incentive logic', 'Bonuses & commissions', 'Salary revisions', 'Full & final settlement']} />
             <ServiceCard accent="indigo" icon={CalendarCheck} title="2. Attendance & Leave" items={['Employee attendance tracking', 'Leave management', 'Late coming & overtime calculation', 'Paid & unpaid leave calculation', 'Attendance-based salary processing']} />
             <ServiceCard accent="emerald" icon={Scale} title="3. Statutory Payroll Compliance" items={['PF calculation & support', 'ESI calculation & support', 'Professional Tax (PT)', 'TDS & salary compliance', 'Labour law payroll support', 'Statutory reports & records']} />
@@ -55,18 +55,18 @@ const PayrollPage = () => {
           <h2 style={{ textAlign: 'center', fontSize: 22, fontWeight: 800, marginBottom: 32, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
             <Calculator size={20} color="#38bdf8" /> Standard Payroll Execution Flow
           </h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 10, fontSize: 12, fontWeight: 700 }}>
+          <div className="rv-p-pay-flow">
             {flow.map((step) => (
               <React.Fragment key={step}>
                 <span className="rv-p-step" style={{ padding: '12px 16px' }}>{step}</span>
-                <ArrowRight size={14} color="#64748b" />
+                <ArrowRight className="rv-p-pay-arrow" size={14} color="#64748b" />
               </React.Fragment>
             ))}
             <span className="rv-p-step rv-p-step-final sky" style={{ padding: '12px 20px' }}>Payroll Reports</span>
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32 }}>
+        <div className="rv-p-split">
           <div className="rv-p-card" style={{ padding: 32 }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
               Why Choose Our Payroll Services?

@@ -32,7 +32,7 @@ const ITConsultancyPage = () => {
 
         <div>
           <SectionHeading accent="violet" icon={Laptop}>Our Core IT Consultancy Services</SectionHeading>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
+          <div className="rv-p-cards">
             <ServiceCard accent="violet" icon={Workflow} title="1. IT Strategy & Planning" items={['IT infrastructure planning', 'Technology strategy definition', 'Digital transformation consulting', 'IT budget planning', 'Technology & readiness assessment']} />
             <ServiceCard accent="indigo" icon={Code} title="2. Software & Application Solutions" items={['Business software consulting', 'Modern website development', 'Web application development', 'Mobile application solutions', 'Custom software & integration']} />
             <ServiceCard accent="sky" icon={Server} title="3. IT Infrastructure" items={['Enterprise server solutions', 'Network setup & management', 'Secure cloud solutions', 'Data storage & backup systems', 'Hardware & software consulting']} />
@@ -64,7 +64,7 @@ const ITConsultancyPage = () => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32 }}>
+        <div className="rv-p-split">
           <div className="rv-p-card" style={{ padding: 32 }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
               <Check size={18} color="#7c3aed" /> Why Choose Our IT Consultancy?

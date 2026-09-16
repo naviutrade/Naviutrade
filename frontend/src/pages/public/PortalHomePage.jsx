@@ -83,7 +83,7 @@ const PortalHomePage = () => {
           <p style={{ margin: '24px auto 0', fontSize: 'clamp(16px, 2vw, 20px)', color: '#cbd5e1', maxWidth: 720, lineHeight: 1.7 }}>
             Drive business growth with tailored IT consultancy, streamline produce logistics with international fresh tomato trading, and automate your entire payroll workflow.
           </p>
-          <div style={{ marginTop: 40, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16 }}>
+          <div className="rv-p-hero-actions">
             <RouterLink to="/it-consultancy" className="rv-p-btn rv-p-btn-solid violet">
               <Laptop size={16} /> IT Consultancy Hub <ArrowRight size={12} />
             </RouterLink>
@@ -110,7 +110,7 @@ const PortalHomePage = () => {
           </div>
         </Reveal>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32 }}>
+        <div className="rv-p-split">
           <Reveal delay={0}>
           <HomeCard
             accent="violet"
@@ -150,7 +150,7 @@ const PortalHomePage = () => {
         </div>
       </div>
 
-      <div style={{ background: 'rgba(241,245,249,0.8)', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', padding: '64px 0' }}>
+      <div className="rv-p-band" style={{ background: 'rgba(241,245,249,0.8)', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
         <div className="rv-p-wrap" style={{ textAlign: 'center' }}>
           <Reveal>
             <span className="rv-p-chip sky" style={{ background: '#fff', borderColor: '#e2e8f0' }}>Our Enterprise Pillars</span>
@@ -159,7 +159,7 @@ const PortalHomePage = () => {
               Whether you are scaling an SME IT infrastructure, managing bulk fresh agricultural export shipments, or running error-free monthly corporate payrolls, our system delivers operational perfection.
             </p>
           </Reveal>
-          <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24, maxWidth: 880, marginLeft: 'auto', marginRight: 'auto' }}>
+          <div className="rv-p-pillars">
             <Reveal delay={0}><Pillar icon={Cpu} accent="#7c3aed" bg="#ede9fe" title="IT Solutions" text="Custom Digital Infrastructure & Managed Cyber Defense" /></Reveal>
             <Reveal delay={120}><Pillar icon={Package} accent="#e11d48" bg="#ffe4e6" title="Global Logistics" text="Quality Sourced Fresh Produce Export & Import Trade" /></Reveal>
             <Reveal delay={240}><Pillar icon={Shield} accent="#0284c7" bg="#e0f2fe" title="Payroll Compliance" text="Statutory & Accurate Monthly Salary Processing" /></Reveal>

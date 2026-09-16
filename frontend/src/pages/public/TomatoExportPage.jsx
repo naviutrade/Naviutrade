@@ -72,7 +72,7 @@ const TomatoExportPage = () => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32 }}>
+        <div className="rv-p-split">
           <div className="rv-p-card" style={{ padding: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
               <div className="rv-p-icon" style={{ width: 48, height: 48, background: '#ffe4e6', color: '#e11d48' }}>
@@ -95,13 +95,13 @@ const TomatoExportPage = () => {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 32 }}>
+        <div className="rv-p-split">
           <div className="rv-p-card" style={{ padding: 32 }}>
             <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
               <Microscope size={18} color="#e11d48" /> Quality & Grading Criteria
             </h3>
             <p style={{ color: '#475569', fontSize: 14, marginBottom: 16 }}>Our tomatoes are strictly selected based on parameters:</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
+            <div className="rv-p-mini-grid" style={{ marginBottom: 16 }}>
               {['Size & Firmness', 'Colour & Freshness', 'Visual Appearance', 'Extended Shelf Life'].map((item) => (
                 <div key={item} style={{ padding: 12, background: '#fff1f2', border: '1px solid #ffe4e6', borderRadius: 12, color: '#9f1239', fontSize: 12, fontWeight: 700, textAlign: 'center' }}>{item}</div>
               ))}
