@@ -223,9 +223,23 @@ exports.requestWithdrawal = async (req, res) => {
         await client.query('BEGIN');
         const walletRes = await client.query('SELECT digital_money FROM wallet WHERE id = $1 FOR UPDATE', [userId]);
         if (walletRes.rows.length === 0) throw new Error('Wallet not found for this user.');
-        
+
+        const pendingRes = await client.query(
+            `SELECT trans_id FROM transaction
+             WHERE user_id = $1 AND transaction_type = 'withdrawal' AND status = 'pending'
+             LIMIT 1`,
+            [userId]
+        );
+        if (pendingRes.rows.length > 0) {
+            await client.query('ROLLBACK');
+            return res.status(409).json({
+                message: 'You already have a pending withdrawal request. Please wait for it to be processed or cancel it before submitting another.'
+            });
+        }
+
         const currentBalance = parseFloat(walletRes.rows[0].digital_money);
         if (currentBalance < withdrawalAmount) {
+            await client.query('ROLLBACK');
             return res.status(400).json({ message: 'Insufficient funds. Your withdrawal request exceeds your available balance.' });
         }
 

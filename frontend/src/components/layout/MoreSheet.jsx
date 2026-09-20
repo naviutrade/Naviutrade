@@ -12,8 +12,10 @@ import {
 } from '@chakra-ui/react';
 import { Bank, CaretRight, SignOut } from '@phosphor-icons/react';
 import { DESTINATIONS, MORE_MOBILE, isDestActive } from './nav.config';
+import { useVendorLedger } from '../../context/VendorLedgerContext';
 
 const MoreSheet = ({ isOpen, onClose, pathname, search, onLogout }) => {
+  const { hasPendingWithdrawal } = useVendorLedger();
   useEffect(() => {
     if (!isOpen) return undefined;
     const onKey = (e) => {
@@ -86,7 +88,7 @@ const MoreSheet = ({ isOpen, onClose, pathname, search, onLogout }) => {
           <Box mt={3}>
             <Flex
               as={RouterLink}
-              to="/vendor/wallet?action=withdraw"
+              to={hasPendingWithdrawal ? '/vendor/wallet?view=withdrawals' : '/vendor/wallet?action=withdraw'}
               onClick={onClose}
               align="center"
               gap={3}
@@ -98,7 +100,7 @@ const MoreSheet = ({ isOpen, onClose, pathname, search, onLogout }) => {
               _active={{ bg: 'var(--panel-2)' }}
             >
               <Box color="var(--text-3)"><Bank size={20} weight="bold" /></Box>
-              Request a withdrawal
+              {hasPendingWithdrawal ? 'View pending withdrawal' : 'Request a withdrawal'}
               <Box ml="auto" color="var(--text-3)"><CaretRight size={16} /></Box>
             </Flex>
             <Flex

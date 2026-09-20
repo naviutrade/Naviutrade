@@ -270,38 +270,49 @@ const reviewWalletTransaction = async (req, res) => {
 //     }
 // }
 
-// --- User notification emails ---
+// --- User notification emails (must not fail the already-committed review) ---
 if (decision === 'approved') {
-  const { rows: vrows } = await client.query('SELECT vendor_name, email FROM vendors WHERE id = $1', [userId]);
-  if (vrows.length) {
-    const { vendor_name, email } = vrows[0];
+  try {
+    const { rows: vrows } = await client.query('SELECT vendor_name, email FROM vendors WHERE id = $1', [userId]);
+    if (vrows.length) {
+      const { vendor_name, email } = vrows[0];
 
-    if (transaction.transaction_type === 'deposit') {
-      await runPy('../utils/sendGenericUserEmail.py', [
-        email,
-        'Deposit approved',
-        `Dear ${vendor_name},
+      if (transaction.transaction_type === 'deposit') {
+        try {
+          await runPy('../utils/sendGenericUserEmail.py', [
+            email,
+            'Deposit approved',
+            `Dear ${vendor_name},
 
 Your deposit of ₹${amount.toFixed(2)} has been approved and added to your wallet.
 
 Regards,
 Rouvin`
-      ]);
-    }
+          ]);
+        } catch (e) {
+          console.error('User email failed (deposit approved):', e?.message || e);
+        }
+      }
 
-    if (transaction.transaction_type === 'withdrawal') {
-      // This serves as “withdrawal sent” confirmation
-      await runPy('../utils/sendGenericUserEmail.py', [
-        email,
-        'Withdrawal approved and sent',
-        `Dear ${vendor_name},
+      if (transaction.transaction_type === 'withdrawal') {
+        try {
+          await runPy('../utils/sendGenericUserEmail.py', [
+            email,
+            'Withdrawal approved and sent',
+            `Dear ${vendor_name},
 
 Your withdrawal of ₹${amount.toFixed(2)} has been approved and is being processed to your registered bank account.
 
 Regards,
 Rouvin`
-      ]);
+          ]);
+        } catch (e) {
+          console.error('User email failed (withdrawal approved):', e?.message || e);
+        }
+      }
     }
+  } catch (e) {
+    console.error('User email lookup failed (approved):', e?.message || e);
   }
 }
 

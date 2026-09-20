@@ -441,6 +441,7 @@ const WalletPage = ({ url }) => {
   const [isSelling, setIsSelling] = useState(null);
   const [isAddMoneyOpen, setAddMoneyOpen] = useState(false);
   const [isWithdrawModalOpen, setWithdrawModalOpen] = useState(false);
+  const [queuedWalletAction, setQueuedWalletAction] = useState(null);
   const [depositHistory, setDepositHistory] = useState(null);
   const [withdrawalHistory, setWithdrawalHistory] = useState(null);
   const [withdrawalWindow, setWithdrawalWindow] = useState({ allowed: true });
@@ -475,14 +476,43 @@ const WalletPage = ({ url }) => {
     const view = searchParams.get('view') || 'investments';
     setActiveView(view);
     const action = searchParams.get('action');
-    if (action === 'add') setAddMoneyOpen(true);
-    if (action === 'withdraw') setWithdrawModalOpen(true);
+    if (action === 'add' || action === 'withdraw') {
+      setQueuedWalletAction(action);
+    }
     if (action) {
       const next = new URLSearchParams(searchParams);
       next.delete('action');
       setSearchParams(next, { replace: true });
     }
   }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    if (!queuedWalletAction) return;
+    if (queuedWalletAction === 'withdraw' && digitalMoney === null) return;
+
+    if (queuedWalletAction === 'add') {
+      setAddMoneyOpen(true);
+    } else if (queuedWalletAction === 'withdraw') {
+      if (hasPendingWithdrawal) {
+        showToast(toast, {
+          title: 'Withdrawal unavailable',
+          description: 'A withdrawal request is already pending. Cancel it or wait for it to be processed before submitting another.',
+          status: 'warning',
+        });
+        setActiveView('withdrawals');
+        setSearchParams({ view: 'withdrawals' }, { replace: true });
+      } else if (withdrawalWindow && !withdrawalWindow.allowed) {
+        showToast(toast, {
+          title: 'Withdrawal unavailable',
+          description: withdrawalWindow.reason || 'Withdrawals are closed right now',
+          status: 'warning',
+        });
+      } else {
+        setWithdrawModalOpen(true);
+      }
+    }
+    setQueuedWalletAction(null);
+  }, [queuedWalletAction, digitalMoney, hasPendingWithdrawal, withdrawalWindow, toast, setSearchParams]);
 
   const selectView = (view) => {
     setActiveView(view);
@@ -500,6 +530,7 @@ const WalletPage = ({ url }) => {
       setHasPendingWithdrawal(data.hasPendingWithdrawal || false);
     } catch (err) {
       toast({ title: 'Error', description: err.message, status: 'error', duration: 3000 });
+      setDigitalMoney((current) => (current === null ? 0 : current));
     }
   }, [token, url, toast]);
 

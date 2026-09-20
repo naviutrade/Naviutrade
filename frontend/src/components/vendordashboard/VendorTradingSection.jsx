@@ -36,7 +36,7 @@ const n = (v) => {
 
 const VendorTradingSection = ({ stats = {} }) => {
   const navigate = useNavigate();
-  const { balance, held, unrealised, unlockedTrades, pendingWithdrawals, rejectedPurchases } = useVendorLedger();
+  const { balance, held, unrealised, unlockedTrades, pendingWithdrawals, rejectedPurchases, hasPendingWithdrawal } = useVendorLedger();
 
   const queue = [
     ...unlockedTrades.map((t) => ({
@@ -103,8 +103,12 @@ const VendorTradingSection = ({ stats = {} }) => {
             <Button variant="rvSolid" leftIcon={<PlusCircle size={16} />} onClick={() => navigate('/vendor/wallet?action=add')}>
               Add money
             </Button>
-            <Button variant="rvAccent" leftIcon={<Bank size={16} />} onClick={() => navigate('/vendor/wallet?action=withdraw')}>
-              Withdraw
+            <Button
+              variant="rvAccent"
+              leftIcon={<Bank size={16} />}
+              onClick={() => navigate(hasPendingWithdrawal ? '/vendor/wallet?view=withdrawals' : '/vendor/wallet?action=withdraw')}
+            >
+              {hasPendingWithdrawal ? 'Pending withdrawal' : 'Withdraw'}
             </Button>
           </Flex>
         </Box>
